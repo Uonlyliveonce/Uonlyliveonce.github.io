@@ -24,7 +24,7 @@
 <meta name="description" content="最近感觉应该重新看下开源的 Runtime，希望能有更深层的理解，下面几篇都会围绕着runtime来写对象 OC 中，每一个对象都是一个类的实例，且这个对象的 isa 指针指向它所属的类。 PS:这里留下个坑，因为isa在现有的64位CPU下已经不是一个单纯的指针了，包含了引用计数和weak指向等等信息 随后的一篇我会着重讲写下 isa 相关的东西，飞机票">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Class-Model">
-<meta property="og:url" content="https://uonlyliveonce.com/2018/08/01/Class-Model/index.html">
+<meta property="og:url" content="https://uonlyliveonce.com/2018/08/01/2018_08_01_Class-Model/index.html">
 <meta property="og:site_name" content="Wong&#39;s Blog">
 <meta property="og:description" content="最近感觉应该重新看下开源的 Runtime，希望能有更深层的理解，下面几篇都会围绕着runtime来写对象 OC 中，每一个对象都是一个类的实例，且这个对象的 isa 指针指向它所属的类。 PS:这里留下个坑，因为isa在现有的64位CPU下已经不是一个单纯的指针了，包含了引用计数和weak指向等等信息 随后的一篇我会着重讲写下 isa 相关的东西，飞机票">
 <meta property="og:locale" content="zh_CN">
@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://uonlyliveonce.com/images/Class-Model/3.png">
 <meta property="og:image" content="https://uonlyliveonce.com/images/Class-Model/4.png">
 <meta property="article:published_time" content="2018-08-01T14:01:22.000Z">
-<meta property="article:modified_time" content="2021-12-12T02:41:44.771Z">
+<meta property="article:modified_time" content="2021-12-12T02:42:31.246Z">
 <meta property="article:author" content="Wong">
 <meta property="article:tag" content="iOS">
 <meta property="article:tag" content="Runtime">
@@ -41,11 +41,11 @@
 <meta name="twitter:image" content="https://uonlyliveonce.com/images/Class-Model/1.png">
 
 
-<link rel="canonical" href="https://uonlyliveonce.com/2018/08/01/Class-Model/">
+<link rel="canonical" href="https://uonlyliveonce.com/2018/08/01/2018_08_01_Class-Model/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://uonlyliveonce.com/2018/08/01/Class-Model/","path":"2018/08/01/Class-Model/","title":"Class-Model"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://uonlyliveonce.com/2018/08/01/2018_08_01_Class-Model/","path":"2018/08/01/2018_08_01_Class-Model/","title":"Class-Model"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
 <title>Class-Model | Wong's Blog</title>
@@ -194,7 +194,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://uonlyliveonce.com/2018/08/01/Class-Model/">
+    <link itemprop="mainEntityOfPage" href="https://uonlyliveonce.com/2018/08/01/2018_08_01_Class-Model/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/super-mary.PNG">
