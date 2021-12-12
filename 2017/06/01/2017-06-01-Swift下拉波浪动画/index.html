@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/super-mary.PNG">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/super-mary.PNG">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/super-mary.PNG">
+  <link rel="mask-icon" href="/images/super-mary.PNG" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"uonlyliveonce.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.8.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="我们先看一下效果，现在很多app有这种交互，普通的下拉刷新有点low，这样感觉酷炫一点">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swift下拉波浪动画">
+<meta property="og:url" content="https://uonlyliveonce.com/2017/06/01/2017-06-01-Swift%E4%B8%8B%E6%8B%89%E6%B3%A2%E6%B5%AA%E5%8A%A8%E7%94%BB/index.html">
+<meta property="og:site_name" content="Wong&#39;s Blog">
+<meta property="og:description" content="我们先看一下效果，现在很多app有这种交互，普通的下拉刷新有点low，这样感觉酷炫一点">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://uonlyliveonce.com/images/Swift-Pull-Down-Of-Animation/1.gif">
+<meta property="og:image" content="https://uonlyliveonce.com/images/Swift-Pull-Down-Of-Animation/2.png">
+<meta property="article:published_time" content="2017-06-01T05:00:11.000Z">
+<meta property="article:modified_time" content="2021-12-12T02:27:18.733Z">
+<meta property="article:author" content="Wong">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="Swift">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://uonlyliveonce.com/images/Swift-Pull-Down-Of-Animation/1.gif">
+
+
+<link rel="canonical" href="https://uonlyliveonce.com/2017/06/01/2017-06-01-Swift%E4%B8%8B%E6%8B%89%E6%B3%A2%E6%B5%AA%E5%8A%A8%E7%94%BB/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://uonlyliveonce.com/2017/06/01/2017-06-01-Swift%E4%B8%8B%E6%8B%89%E6%B3%A2%E6%B5%AA%E5%8A%A8%E7%94%BB/","path":"2017/06/01/2017-06-01-Swift下拉波浪动画/","title":"Swift下拉波浪动画"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Swift下拉波浪动画 | Wong's Blog</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Wong's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">You only live once!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">36</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">3</span></a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">10</span></a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%88%91%E4%BB%AC%E5%85%88%E7%9C%8B%E4%B8%80%E4%B8%8B%E6%95%88%E6%9E%9C%EF%BC%8C%E7%8E%B0%E5%9C%A8%E5%BE%88%E5%A4%9Aapp%E6%9C%89%E8%BF%99%E7%A7%8D%E4%BA%A4%E4%BA%92%EF%BC%8C%E6%99%AE%E9%80%9A%E7%9A%84%E4%B8%8B%E6%8B%89%E5%88%B7%E6%96%B0%E6%9C%89%E7%82%B9low%EF%BC%8C%E8%BF%99%E6%A0%B7%E6%84%9F%E8%A7%89%E9%85%B7%E7%82%AB%E4%B8%80%E7%82%B9"><span class="nav-number">1.</span> <span class="nav-text">我们先看一下效果，现在很多app有这种交互，普通的下拉刷新有点low，这样感觉酷炫一点</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B0%B4%E6%B3%A2%E5%8A%A8%E7%94%BB%E7%9A%84%E9%87%8D%E7%82%B9%E5%B0%B1%E6%98%AFsin%E3%80%81cos%E5%87%BD%E6%95%B0"><span class="nav-number">1.0.1.</span> <span class="nav-text">水波动画的重点就是sin、cos函数</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#po%E5%87%BA%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84%E5%B1%9E%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text">po出项目中的属性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%98%E5%88%B6%E6%9B%B2%E7%BA%BF"><span class="nav-number">2.1.</span> <span class="nav-text">绘制曲线</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%B1%E9%9D%99%E6%80%81%E5%88%B0%E5%8A%A8%E6%80%81"><span class="nav-number">2.2.</span> <span class="nav-text">由静态到动态</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B0%83%E6%95%B4%E4%B8%A4%E4%B8%AA%E6%B3%A2%E6%B5%AA%E7%9A%84%E5%81%8F%E7%A7%BB%E9%87%8F"><span class="nav-number">2.3.</span> <span class="nav-text">调整两个波浪的偏移量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%B7%E6%96%B0%E6%B3%A2%E5%B3%B0"><span class="nav-number">2.4.</span> <span class="nav-text">刷新波峰</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E7%9B%91%E5%90%AC"><span class="nav-number">2.5.</span> <span class="nav-text">添加监听</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E6%B3%A2%E6%B5%AA%E5%A4%84%E7%90%86%E9%83%A8%E5%88%86%E5%A4%A7%E8%87%B4%E5%B0%B1%E8%BF%99%E4%BA%9B%EF%BC%8C%E6%9E%84%E5%BB%BA%E6%97%B6%E4%BD%BF%E7%94%A8runtime%E6%9D%A5%E4%B8%BAscrollView%E5%8A%A8%E6%80%81%E5%A2%9E%E5%8A%A0%E5%B1%9E%E6%80%A7%EF%BC%8C%E5%85%B7%E4%BD%93%E8%AF%B7%E5%9C%A8%E5%85%B7%E4%BD%93%E9%A1%B9%E7%9B%AE%E4%B8%AD%E6%9F%A5%E7%9C%8B%EF%BC%8C%E6%96%87%E6%A1%A3%E8%A6%86%E7%9B%96%E7%8E%87%E6%AF%94%E8%BE%83%E9%AB%98"><span class="nav-number">2.5.1.</span> <span class="nav-text">主要波浪处理部分大致就这些，构建时使用runtime来为scrollView动态增加属性，具体请在具体项目中查看，文档覆盖率比较高</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E5%90%8E%EF%BC%8Cpo%E5%87%BA%E9%A1%B9%E7%9B%AE%E5%9C%B0%E5%9D%80%EF%BC%8C%E5%8F%AF%E4%BB%A5%E7%9B%B4%E6%8E%A5%E4%BD%BF%E7%94%A8WaveRefreshView"><span class="nav-number">2.6.</span> <span class="nav-text">最后，po出项目地址，可以直接使用WaveRefreshView</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B8%8C%E6%9C%9B%E5%8F%AF%E4%BB%A5%E5%B8%AE%E5%8A%A9%E5%88%B0%E5%A4%A7%E5%AE%B6%EF%BC%8C%E5%A6%82%E6%9E%9C%E6%9C%89%E6%9B%B4%E4%BC%98%E7%9A%84%E6%96%B9%E6%B3%95%E8%AF%B7%E7%95%99%E8%A8%80%E6%88%96%E7%A7%81%E4%BF%A1%E4%BA%A4%E6%B5%81"><span class="nav-number">2.7.</span> <span class="nav-text">希望可以帮助到大家，如果有更优的方法请留言或私信交流</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Wong"
+      src="/images/super-mary.PNG">
+  <p class="site-author-name" itemprop="name">Wong</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/uonlyliveonce" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;uonlyliveonce" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:u_only_live_once@outlook.com" title="E-Mail → mailto:u_only_live_once@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://theme-next.iissnan.com/" title="http:&#x2F;&#x2F;theme-next.iissnan.com&#x2F;" rel="noopener" target="_blank">NexT</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://hexo.io/" title="https:&#x2F;&#x2F;hexo.io&#x2F;" rel="noopener" target="_blank">hexo</a>
+        </li>
+    </ul>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://uonlyliveonce.com/2017/06/01/2017-06-01-Swift%E4%B8%8B%E6%8B%89%E6%B3%A2%E6%B5%AA%E5%8A%A8%E7%94%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/super-mary.PNG">
+      <meta itemprop="name" content="Wong">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Swift下拉波浪动画
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017-06-01 13:00:11" itemprop="dateCreated datePublished" datetime="2017-06-01T13:00:11+08:00">2017-06-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Mobile/" itemprop="url" rel="index"><span itemprop="name">Mobile</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="我们先看一下效果，现在很多app有这种交互，普通的下拉刷新有点low，这样感觉酷炫一点"><a href="#我们先看一下效果，现在很多app有这种交互，普通的下拉刷新有点low，这样感觉酷炫一点" class="headerlink" title="我们先看一下效果，现在很多app有这种交互，普通的下拉刷新有点low，这样感觉酷炫一点"></a>我们先看一下效果，现在很多app有这种交互，普通的下拉刷新有点low，这样感觉酷炫一点</h3><span id="more"></span>
+
+<p><img src="/images/Swift-Pull-Down-Of-Animation/1.gif" alt="1.gif"></p>
+<h5 id="水波动画的重点就是sin、cos函数"><a href="#水波动画的重点就是sin、cos函数" class="headerlink" title="水波动画的重点就是sin、cos函数"></a>水波动画的重点就是<code>sin</code>、<code>cos</code>函数</h5><p>我们来复习一下不知道是初中还是高中的知识</p>
+<p>正弦型函数解析式：y=Asin（ωx+φ）+h<br>φ（初相位）：决定波形与X轴位置关系或横向移动距离（左加右减）<br>ω：决定周期（最小正周期T=2π/|ω|）<br>A：决定峰值（即纵向拉伸压缩的倍数）<br>h：表示波形在Y轴的位置关系或纵向移动距离（上加下减）</p>
+<p><img src="/images/Swift-Pull-Down-Of-Animation/2.png" alt="2.png"></p>
+<h3 id="po出项目中的属性"><a href="#po出项目中的属性" class="headerlink" title="po出项目中的属性"></a>po出项目中的属性</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">private struct BingoWaveRefreshViewData&#123;</span><br><span class="line">        /// 最大波峰</span><br><span class="line">        static var maxVariable : CGFloat = 1.6</span><br><span class="line">        /// 最小波峰</span><br><span class="line">        static var minVariable : CGFloat = 1.0</span><br><span class="line">        /// 最小波峰增量</span><br><span class="line">        static var minStepLength : CGFloat = 0.01</span><br><span class="line">        /// 最大波峰增量</span><br><span class="line">        static var maxStepLength : CGFloat = 0.05</span><br><span class="line">        /// 键值</span><br><span class="line">        static var keyPathsContentOffset = &quot;contentOffset&quot;</span><br><span class="line">    &#125;</span><br><span class="line">    /// 刷新事件</span><br><span class="line">    var actionClosure : (()-&gt;())?</span><br><span class="line">    /// 顶部波浪颜色</span><br><span class="line">    var topWaveColor : UIColor? &#123;</span><br><span class="line">        willSet&#123;</span><br><span class="line">            firstWaveLayer.fillColor = newValue!.cgColor</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    /// 底部波浪颜色</span><br><span class="line">    var bottomWaveColor : UIColor? &#123;</span><br><span class="line">        willSet&#123;</span><br><span class="line">            secondWaveLayer.fillColor = newValue!.cgColor</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    /// 对应scrollView</span><br><span class="line">    fileprivate weak var scrollView : UIScrollView?&#123;</span><br><span class="line">        willSet&#123;</span><br><span class="line">            _cycle = CGFloat(2 * M_PI) / newValue!.frame.size.width;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    /// 定时器</span><br><span class="line">    fileprivate var displaylink : CADisplayLink!</span><br><span class="line">    /// 顶部波浪</span><br><span class="line">    fileprivate var firstWaveLayer : CAShapeLayer!</span><br><span class="line">    /// 底部波浪</span><br><span class="line">    fileprivate var secondWaveLayer : CAShapeLayer!</span><br><span class="line">    /// 状态</span><br><span class="line">    fileprivate var state : WaveRefreshViewState! = .stop</span><br><span class="line">    /// 根据scrollView偏移量得出的比例</span><br><span class="line">    fileprivate var _times : NSInteger = 0</span><br><span class="line">    /// 波峰值</span><br><span class="line">    fileprivate var _amplitude : CGFloat = 0</span><br><span class="line">    /// 波浪的周期值</span><br><span class="line">    fileprivate var _cycle : CGFloat = 0</span><br><span class="line">    /// 单位时间平移速率</span><br><span class="line">    fileprivate var _speed : CGFloat = 0</span><br><span class="line">    /// 波浪平移偏移量</span><br><span class="line">    fileprivate var _offsetX : CGFloat = 0</span><br><span class="line">    /// scrollView偏移量</span><br><span class="line">    fileprivate var _offsetY : CGFloat = 0</span><br><span class="line">    /// 计算波峰的比率</span><br><span class="line">    fileprivate var _variable : CGFloat = 0</span><br><span class="line">    /// 波峰至波谷的距离</span><br><span class="line">    fileprivate var _height : CGFloat = 0</span><br><span class="line">    /// 波峰是否增大</span><br><span class="line">    fileprivate var _increase  : Bool = false</span><br></pre></td></tr></table></figure>
+
+<h4 id="绘制曲线"><a href="#绘制曲线" class="headerlink" title="绘制曲线"></a>绘制曲线</h4><p>如果要根据函数绘制曲线，我们需要设置各个值<br>初相位设置为0<br>周期设置为2π<br>波峰设置为1<br>位移设置为0<br>然后根据y = sin(x)计算出点的坐标然后使用<code>CGMutablePath</code>对象的<code>addLine</code>方法连线得出最后路径</p>
+<h4 id="由静态到动态"><a href="#由静态到动态" class="headerlink" title="由静态到动态"></a>由静态到动态</h4><p>我们已经绘制了一条静态的曲线，我们通过什么方法来让它变成动态的呢？我们看上面各个值的定义，我们通过初相位来让曲线左右平移，我们需要通过定时器来让初相位根据时间进行线性的变化，我们设置单位时间的初相位的变化值为<code>π/2</code>,因为函数的周期为<code>2π</code>，4个单位时间为一个周期，我们可以通过改变这个变量来控制波浪平移的速度<br>顶部波浪的刷新方法,<code>firstWaveLayer </code>已创建好</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">func configFirstWaveLayerPath() -&gt; Void &#123;</span><br><span class="line">        guard let scrollView = scrollView else &#123;</span><br><span class="line">            return</span><br><span class="line">        &#125;</span><br><span class="line">        var y = _offsetY</span><br><span class="line">        let path : CGMutablePath = CGMutablePath()</span><br><span class="line">        path.move(to: CGPoint(x: 0, y: y))</span><br><span class="line">        let waveWidth : CGFloat = scrollView.frame.size.width</span><br><span class="line">        for x in 0...Int(waveWidth) &#123;</span><br><span class="line">            y = _amplitude * sin(_cycle * CGFloat(x) + _offsetX) + _offsetY</span><br><span class="line">            path.addLine(to: CGPoint(x: CGFloat(x), y: y))</span><br><span class="line">        &#125;</span><br><span class="line">        path.addLine(to: CGPoint(x: waveWidth, y: self.frame.size.height))</span><br><span class="line">        path.addLine(to: CGPoint(x: 0, y: self.frame.size.height))</span><br><span class="line">        path.closeSubpath()</span><br><span class="line">        firstWaveLayer.path = path</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>顶部波浪的刷新方法,<code>secondWaveLayer </code>已创建好</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">func configSecondWaveLayerPath() -&gt; Void &#123;</span><br><span class="line">    guard let scrollView = scrollView else &#123;</span><br><span class="line">        return</span><br><span class="line">    &#125;</span><br><span class="line">    var y = _offsetY</span><br><span class="line">    let path = CGMutablePath()</span><br><span class="line">    path.move(to: CGPoint(x: 0, y: y))</span><br><span class="line">    let forward = CGFloat(M_PI) / (_cycle * 4.0)</span><br><span class="line">    let waveWidth : CGFloat = scrollView.frame.size.width</span><br><span class="line">    for x in 0...Int(waveWidth) &#123;</span><br><span class="line">        y = _amplitude * cos(_cycle * CGFloat(x) + _offsetX  + forward) + _offsetY</span><br><span class="line">        path.addLine(to: CGPoint(x: CGFloat(x), y: y))</span><br><span class="line">    &#125;</span><br><span class="line">    path.addLine(to: CGPoint(x: waveWidth, y: self.frame.size.height))</span><br><span class="line">    path.addLine(to: CGPoint(x: 0, y: self.frame.size.height))</span><br><span class="line">    path.closeSubpath()</span><br><span class="line">    secondWaveLayer.path = path</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="调整两个波浪的偏移量"><a href="#调整两个波浪的偏移量" class="headerlink" title="调整两个波浪的偏移量"></a>调整两个波浪的偏移量</h4><p>我们其中一个是<code>sin</code>和<code>cos</code>函数，由上图可见两个曲线错位了1/8个周期，我们如果要让上下对称需要将<code>cos</code>函数加1/4的个周期</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">let forward = CGFloat(M_PI) / (_cycle * 4.0)</span><br></pre></td></tr></table></figure>
+
+<h4 id="刷新波峰"><a href="#刷新波峰" class="headerlink" title="刷新波峰"></a>刷新波峰</h4><p>通过_increase属性交替来改变波峰的值，增长到最大时候开始减小，减小到最小的开始增大</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">func configWaveAmplitude() -&gt; Void &#123;</span><br><span class="line">        if (_increase) &#123;</span><br><span class="line">            _variable += BingoWaveRefreshViewData.minStepLength</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            let minus : CGFloat = self.state == .animatingToStopped ? BingoWaveRefreshViewData.maxStepLength : BingoWaveRefreshViewData.minStepLength</span><br><span class="line">            _variable -= minus;</span><br><span class="line">            if (_variable &lt;= 0.00) &#123;</span><br><span class="line">                self.stopWave()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        if (_variable &lt;= BingoWaveRefreshViewData.minVariable) &#123;</span><br><span class="line">            _increase = !(self.state == .animatingToStopped)</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        if (_variable &gt;= BingoWaveRefreshViewData.maxVariable) &#123;</span><br><span class="line">            _increase = false</span><br><span class="line">        &#125;</span><br><span class="line">        // self.amplitude = self.variable*self.times;</span><br><span class="line">        if (_times &gt;= 7) &#123;</span><br><span class="line">            _times = 7;</span><br><span class="line">        &#125;</span><br><span class="line">        _amplitude = _variable * CGFloat( _times)</span><br><span class="line">        _height = BingoWaveRefreshViewData.maxVariable * CGFloat( _times)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="添加监听"><a href="#添加监听" class="headerlink" title="添加监听"></a>添加监听</h4><p>监听<code>scrollView.contentOffset</code>的变化</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) &#123;</span><br><span class="line">    if scrollView == nil &#123;</span><br><span class="line">        return</span><br><span class="line">    &#125;</span><br><span class="line">    if let keyPath = keyPath &#123;</span><br><span class="line">        switch keyPath &#123;</span><br><span class="line">        case BingoWaveRefreshViewData.keyPathsContentOffset:</span><br><span class="line">            didChangeContentOffset()</span><br><span class="line">        default:</span><br><span class="line">            return</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">func observe(scrollView : UIScrollView) -&gt; Void &#123;</span><br><span class="line">    self.scrollView = scrollView</span><br><span class="line">    self.scrollView?.addObserver(self, forKeyPath: BingoWaveRefreshViewData.keyPathsContentOffset, options: .new, context: nil)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="主要波浪处理部分大致就这些，构建时使用runtime来为scrollView动态增加属性，具体请在具体项目中查看，文档覆盖率比较高"><a href="#主要波浪处理部分大致就这些，构建时使用runtime来为scrollView动态增加属性，具体请在具体项目中查看，文档覆盖率比较高" class="headerlink" title="主要波浪处理部分大致就这些，构建时使用runtime来为scrollView动态增加属性，具体请在具体项目中查看，文档覆盖率比较高"></a>主要波浪处理部分大致就这些，构建时使用<code>runtime</code>来为<code>scrollView</code>动态增加属性，具体请在具体项目中查看，文档覆盖率比较高</h5><hr>
+<h4 id="最后，po出项目地址，可以直接使用WaveRefreshView"><a href="#最后，po出项目地址，可以直接使用WaveRefreshView" class="headerlink" title="最后，po出项目地址，可以直接使用WaveRefreshView"></a>最后，po出项目地址，可以直接使用<a target="_blank" rel="noopener" href="https://github.com/uonlyliveonce/WaveRefreshView">WaveRefreshView</a></h4><h4 id="希望可以帮助到大家，如果有更优的方法请留言或私信交流"><a href="#希望可以帮助到大家，如果有更优的方法请留言或私信交流" class="headerlink" title="希望可以帮助到大家，如果有更优的方法请留言或私信交流"></a>希望可以帮助到大家，如果有更优的方法请留言或私信交流</h4>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/Swift/" rel="tag"># Swift</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2017/05/19/2017-05-19-WKWebView-%E5%8A%A0%E8%BD%BDhtml%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%97%B6%E5%8F%96%E6%B6%88%E7%BC%A9%E6%94%BE/" rel="prev" title="WKWebView 加载html字符串时取消缩放">
+                  <i class="fa fa-chevron-left"></i> WKWebView 加载html字符串时取消缩放
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/08/01/2017-08-01-Swift-%E8%8E%B7%E5%8F%96device-token/" rel="next" title="Swift 获取device token">
+                  Swift 获取device token <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wong</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+  <script class="next-config" data-name="pdf" type="application/json">{"object_url":{"url":"https://cdn.jsdelivr.net/npm/pdfobject@2.2.7/pdfobject.min.js","integrity":"sha256-ph3Dk89VmuTVXG6x/RDzk53SU9LPdAh1tpv0UvnDZ2I="},"url":"/lib/pdf/web/viewer.html"}</script>
+  <script src="/js/third-party/tags/pdf.js"></script>
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
