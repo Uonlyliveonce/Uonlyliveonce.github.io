@@ -30,7 +30,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://uonlyliveonce.com/images/2021-06-05-a_thought_regarding_how_to_find_viewcontroller_which_less_use/1.svg">
 <meta property="article:published_time" content="2021-06-05T15:37:00.000Z">
-<meta property="article:modified_time" content="2021-12-19T07:03:31.099Z">
+<meta property="article:modified_time" content="2021-12-23T21:47:58.805Z">
 <meta property="article:author" content="Wong">
 <meta property="article:tag" content="Architecture">
 <meta name="twitter:card" content="summary">
@@ -256,6 +256,22 @@
 </ul>
 <h2 id="企划"><a href="#企划" class="headerlink" title="企划"></a>企划</h2><p>这是一个简单的流程，当然每个团队的基础设施实现各有特点，故不分享具体实现</p>
 <p><img src="/images/2021-06-05-a_thought_regarding_how_to_find_viewcontroller_which_less_use/1.svg" alt="1.svg"></p>
+<div style='display: none'>
+graph TD
+    A[开始扫描]
+    A --> C(确定扫描的最小PV阈值-Min_PV<br>通过统计工具找到 PV>0 的页面集合 Set_A<br>得到 PV<Min_PV 的页面集合 Set_B<br>以及白名单集合 Set_D)
+    C --> G>Set_D 白名单中为无法出现在线上环境的测试类等]
+    C --> D(找到对比的标尺,获取全量的页面交集 Set_C)
+    D --> E>Trunk Based Development 模式可以找到上个发布tag作为标尺,但是尽量选择一个月前的tag<br>Gitflow Workflow 可以使用上一个release作为标尺]
+    D --> F(筛除 Set_C 中白名单的页面)
+    F --> K(如果 Set_C 与 Set_D 交集不为空<br>证明开发环境下的类错误地发布到了生产环境<br>需要确认一下相关问题)
+    F --> H(Set_C - Set_A 得到为无曝光页面)
+    F --> I(B 得到为少曝光页面)
+    K --> Z[结束扫描]
+    I --> Z
+    H --> Z
+</div>
+
 <h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>需要各团队依据自身条件来实现，实施过程会涉及很多团队，尽量提前1-2个 PI Planning去提出计划。大致分几个步骤：</p>
 <ol>
 <li>与产品负责人达成目标的一致（很重要），如果在未达成目标一致的情况下贸然实施这个方案可能会加剧产品与研发的对立。</li>
@@ -329,8 +345,8 @@
 
 
 <div class="copyright">
-  &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
