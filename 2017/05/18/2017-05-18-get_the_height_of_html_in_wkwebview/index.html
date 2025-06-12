@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"uonlyliveonce.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="这篇文章算是个小记，可能只会暂时描述问题和解决问题方法，原理的方面之后具体写在Diary里面">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WKWebView加载HTML字符串 获取高度渲染高度">
+<meta property="og:url" content="https://uonlyliveonce.com/2017/05/18/2017-05-18-get_the_height_of_html_in_wkwebview/index.html">
+<meta property="og:site_name" content="Wong&#39;s Blog">
+<meta property="og:description" content="这篇文章算是个小记，可能只会暂时描述问题和解决问题方法，原理的方面之后具体写在Diary里面">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://uonlyliveonce.com/images/How-To-Get-The-High-Regarding-HTML-In-WKWebView/1.png">
+<meta property="og:image" content="https://uonlyliveonce.com/images/How-To-Get-The-High-Regarding-HTML-In-WKWebView/2.png">
+<meta property="article:published_time" content="2017-05-17T16:24:24.000Z">
+<meta property="article:modified_time" content="2025-05-23T08:11:19.668Z">
+<meta property="article:author" content="Wong">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="Swift">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://uonlyliveonce.com/images/How-To-Get-The-High-Regarding-HTML-In-WKWebView/1.png">
+
+<link rel="canonical" href="https://uonlyliveonce.com/2017/05/18/2017-05-18-get_the_height_of_html_in_wkwebview/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>WKWebView加载HTML字符串 获取高度渲染高度 | Wong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Wong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You only live once!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://uonlyliveonce.com/2017/05/18/2017-05-18-get_the_height_of_html_in_wkwebview/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Wong">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          WKWebView加载HTML字符串 获取高度渲染高度
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-05-18 00:24:24" itemprop="dateCreated datePublished" datetime="2017-05-18T00:24:24+08:00">2017-05-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mobile/" itemprop="url" rel="index"><span itemprop="name">Mobile</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="这篇文章算是个小记，可能只会暂时描述问题和解决问题方法，原理的方面之后具体写在Diary里面"><a href="#这篇文章算是个小记，可能只会暂时描述问题和解决问题方法，原理的方面之后具体写在Diary里面" class="headerlink" title="这篇文章算是个小记，可能只会暂时描述问题和解决问题方法，原理的方面之后具体写在Diary里面"></a>这篇文章算是个小记，可能只会暂时描述问题和解决问题方法，原理的方面之后具体写在Diary里面</h2><span id="more"></span>
+
+<h3 id="具体的需求是这样子的，简书APP文章详情页面。。。应设计师要求我就不po图了，可以打开看一下简书APP。。。"><a href="#具体的需求是这样子的，简书APP文章详情页面。。。应设计师要求我就不po图了，可以打开看一下简书APP。。。" class="headerlink" title="具体的需求是这样子的，简书APP文章详情页面。。。应设计师要求我就不po图了，可以打开看一下简书APP。。。"></a>具体的需求是这样子的，简书APP文章详情页面。。。应设计师要求我就不po图了，可以打开看一下简书APP。。。</h3><p>大致就是这样子有一个下拉可以放大上划<code>navigationBar</code>淡出的交互的头图，下面接着是一个需要加载html字符串的<code>WKWebView</code>(这里为什么用WK,大家都知道<code>UIWebView</code>的内存损耗简直爆炸，而且我们的项目是适配iOS8以上，所以当然是最佳之选)，下面还要有一个<code>UIT ableView</code>来展示专题的评论，很像简书有木有。。。</p>
+<p>我大致就是这样处理的，将<code>WKWebView.scrollView</code>的<code>contentInset</code>属性的<code>top</code>值设置为图片的高度，然后将图片视图加到<code>WKWebView.scrollView</code>上面，然后将整个一个<code>WkWebView</code>作为头视图加到<code>UITableView</code>上面，这样就不用处理因为多层<code>scrollView</code>嵌套而带来的手势冲突。</p>
+<hr>
+<h3 id="下面讲讲WKWebView的处理"><a href="#下面讲讲WKWebView的处理" class="headerlink" title="下面讲讲WKWebView的处理"></a>下面讲讲<code>WKWebView</code>的处理</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">p.p1 &#123;margin: 0.0px 0.0px 0.0px 0.0px; line-height: 19.0px; font: 13.0px &#x27;Helvetica Neue&#x27;&#125;p.p2 &#123;margin: 0.0px 0.0px 0.0px 0.0px; line-height: 19.0px; font: 14.0px &#x27;Helvetica Neue&#x27;&#125;span.s1 &#123;font: 13.0px &#x27;Helvetica Neue&#x27;&#125;span.s2 &#123;color: #00a2ff&#125;</span><br><span class="line"></span><br><span class="line">&lt;p&gt;</span><br><span class="line"> &lt;p class=&quot;MsoNormal&quot; align=&quot;center&quot; style=&quot;text-align:center;&quot;&gt;</span><br><span class="line">  &lt;br /&gt;</span><br><span class="line"> &lt;/p &gt;</span><br><span class="line"> &lt;p class=&quot;MsoNormal&quot; align=&quot;center&quot; style=&quot;text-align:center;&quot;&gt;</span><br><span class="line">  各位小伙伴们，大家都听说过创新工场这家机构吗？在创投圈，创新工场应该是耳熟能详的一个名字了。创新工场是一家早期投资机构投资机构。所谓投资机构，全称风险投资机构（VC），风险投资机构是风险投资最直接的参与者和实际操作者，同时也最直接地承受风险、分享收益。简单来说就是会为创业者提供融资的来源之一。</span><br><span class="line"> &lt;/p &gt;</span><br><span class="line"> &lt;p class=&quot;MsoNormal&quot; align=&quot;center&quot; style=&quot;text-align:center;&quot;&gt;</span><br><span class="line">  &lt; img width=&quot;1920&quot; height=&quot;480&quot; src=&quot;http://oli02rut3.bkt.clouddn.com/201702171256554KSruA0R.jpg&quot; alt=&quot;&quot; title=&quot;&quot; align=&quot;&quot; /&gt;</span><br><span class="line"> &lt;/p &gt;</span><br><span class="line"> &lt;p class=&quot;MsoNormal&quot;&gt;</span><br><span class="line">  &amp;nbsp;</span><br><span class="line"> &lt;/p &gt;</span><br><span class="line"> &lt;p class=&quot;MsoNormal&quot;&gt;</span><br><span class="line">  如果没听说过创新工场这个名字的话，那么李开复这个名字应该听说过吧，李开复就是创新工场的创始人了。如果你连李开复都没有听说过的话，那么你肯定用过知乎吧，就算你没用过，你也应该听说过知乎吧，知乎是创新工场投过的一个成功的投资案例了。</span><br><span class="line"> &lt;/p &gt;</span><br><span class="line">&lt;/p &gt;</span><br></pre></td></tr></table></figure>
+<p>以上就是后台传过来的数据，看到这个得我是这样的</p>
+<p><img src="/images/How-To-Get-The-High-Regarding-HTML-In-WKWebView/1.png" alt="1.png"></p>
+<p>让我加载个这东西？<br>果然，第一个出问题的是图片，这个图片让我想起了iPhone20</p>
+<p><img src="/images/How-To-Get-The-High-Regarding-HTML-In-WKWebView/2.png" alt="2.png"></p>
+<p>废话不多说，我将HTML代码处理的一下，结果是这样的</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">let html = &quot;&lt;div id = \&quot;content\&quot;&gt;&lt;style type=\&quot;text/css\&quot;&gt;img&#123;width : 100% ; height : auto; display: block;&#125;&lt;/style&gt;\(result)&lt;/div&gt;&quot;</span><br></pre></td></tr></table></figure>
+
+<p>首先先用一个<code>div</code>将其包起来，起一个自己比较喜欢的<code>id</code><br>里面写一个样式让图片自适应屏幕宽的100%(加载出来不是iPhone的屏宽，左右有一点留白)，高度根据原有的长宽比会自适应，高高兴兴的加载了出来发现图片正常了，但因为我们的html字符串加载不满一屏下面有一大片留白，如果运营M(zu)M(zong)那天不想写，直接一个图几句话我下面一大片空白就醉了，首先我们需要写一点js获取一下加载后的高度，直接上代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//需要设置代理处理webView加载完成之后的状态</span><br><span class="line">webView.navigationDelegate = self</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">extension SubjectDetailViewController : WKNavigationDelegate&#123;</span><br><span class="line">    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) &#123;</span><br><span class="line">        webView.evaluateJavaScript(&quot;document.getElementById(\&quot;content\&quot;).offsetHeight;&quot;) &#123; (result, error) in</span><br><span class="line">            if let webViewHeight = result as? CGFloat&#123;</span><br><span class="line">                var frame = webView.frame</span><br><span class="line">                let height = webViewHeight / 3 + UIScreen.screenWidth() * 38 / 75</span><br><span class="line">                frame.size.height = height</span><br><span class="line">                if height &gt; UIScreen.screenHeight() - 49&#123;</span><br><span class="line">                    webView.scrollView.isScrollEnabled = true</span><br><span class="line">                &#125;else&#123;</span><br><span class="line">                    webView.frame = frame</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先是这段<code>&quot;document.getElementById(\&quot;content\&quot;).offsetHeight;&quot;)</code>，获取的是<code>content</code>标签中代码加载后的滚动范围，在执行后返回的高度的单位不知道是什么，5s中半屏的区域返回了1000左右，可能是px，经过多次尝试之后发现返回的高度和苹果的pt是1:3的关系</p>
+<p>之后的判断是高度是否大于屏高减去tabbar的高度，也就是屏幕的最大显示范围，大于的时候开启<code>WKWebView.scrollView</code>的滑动功能，当小于的时候也就是不满一屏，直接重置webView的<code>frame.size.height</code>并关闭滑动手势，这样一来下面的留白就没有了，就像是简书APP的文章详情一样，但是在webView超过一屏的时候，从webView到评论列表会有一个手势转化上的卡顿，几乎没有对用户造成影响</p>
+<h2 id="这是我遇到这个问题处理的方法，如果有更好的方法希望可以互相交流一下，希望这个思路可以帮到大家"><a href="#这是我遇到这个问题处理的方法，如果有更好的方法希望可以互相交流一下，希望这个思路可以帮到大家" class="headerlink" title="这是我遇到这个问题处理的方法，如果有更好的方法希望可以互相交流一下，希望这个思路可以帮到大家"></a>这是我遇到这个问题处理的方法，如果有更好的方法希望可以互相交流一下，希望这个思路可以帮到大家</h2>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/Swift/" rel="tag"># Swift</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/05/15/2017-05-15-add_property_in_extension_use_runtime/" rel="prev" title="Swift 使用runtime给extension添加属性">
+      <i class="fa fa-chevron-left"></i> Swift 使用runtime给extension添加属性
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/05/19/2017-05-19-cancel_zoom_of_html_in_wkwebview/" rel="next" title="WKWebView 加载html字符串时取消缩放">
+      WKWebView 加载html字符串时取消缩放 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%99%E7%AF%87%E6%96%87%E7%AB%A0%E7%AE%97%E6%98%AF%E4%B8%AA%E5%B0%8F%E8%AE%B0%EF%BC%8C%E5%8F%AF%E8%83%BD%E5%8F%AA%E4%BC%9A%E6%9A%82%E6%97%B6%E6%8F%8F%E8%BF%B0%E9%97%AE%E9%A2%98%E5%92%8C%E8%A7%A3%E5%86%B3%E9%97%AE%E9%A2%98%E6%96%B9%E6%B3%95%EF%BC%8C%E5%8E%9F%E7%90%86%E7%9A%84%E6%96%B9%E9%9D%A2%E4%B9%8B%E5%90%8E%E5%85%B7%E4%BD%93%E5%86%99%E5%9C%A8Diary%E9%87%8C%E9%9D%A2"><span class="nav-number">1.</span> <span class="nav-text">这篇文章算是个小记，可能只会暂时描述问题和解决问题方法，原理的方面之后具体写在Diary里面</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E7%9A%84%E9%9C%80%E6%B1%82%E6%98%AF%E8%BF%99%E6%A0%B7%E5%AD%90%E7%9A%84%EF%BC%8C%E7%AE%80%E4%B9%A6APP%E6%96%87%E7%AB%A0%E8%AF%A6%E6%83%85%E9%A1%B5%E9%9D%A2%E3%80%82%E3%80%82%E3%80%82%E5%BA%94%E8%AE%BE%E8%AE%A1%E5%B8%88%E8%A6%81%E6%B1%82%E6%88%91%E5%B0%B1%E4%B8%8Dpo%E5%9B%BE%E4%BA%86%EF%BC%8C%E5%8F%AF%E4%BB%A5%E6%89%93%E5%BC%80%E7%9C%8B%E4%B8%80%E4%B8%8B%E7%AE%80%E4%B9%A6APP%E3%80%82%E3%80%82%E3%80%82"><span class="nav-number">1.1.</span> <span class="nav-text">具体的需求是这样子的，简书APP文章详情页面。。。应设计师要求我就不po图了，可以打开看一下简书APP。。。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E9%9D%A2%E8%AE%B2%E8%AE%B2WKWebView%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">1.2.</span> <span class="nav-text">下面讲讲WKWebView的处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%99%E6%98%AF%E6%88%91%E9%81%87%E5%88%B0%E8%BF%99%E4%B8%AA%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E7%9A%84%E6%96%B9%E6%B3%95%EF%BC%8C%E5%A6%82%E6%9E%9C%E6%9C%89%E6%9B%B4%E5%A5%BD%E7%9A%84%E6%96%B9%E6%B3%95%E5%B8%8C%E6%9C%9B%E5%8F%AF%E4%BB%A5%E4%BA%92%E7%9B%B8%E4%BA%A4%E6%B5%81%E4%B8%80%E4%B8%8B%EF%BC%8C%E5%B8%8C%E6%9C%9B%E8%BF%99%E4%B8%AA%E6%80%9D%E8%B7%AF%E5%8F%AF%E4%BB%A5%E5%B8%AE%E5%88%B0%E5%A4%A7%E5%AE%B6"><span class="nav-number">2.</span> <span class="nav-text">这是我遇到这个问题处理的方法，如果有更好的方法希望可以互相交流一下，希望这个思路可以帮到大家</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Wong</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/uonlyliveonce" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;uonlyliveonce" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:u_only_live_once@outlook.com" title="E-Mail → mailto:u_only_live_once@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wong</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

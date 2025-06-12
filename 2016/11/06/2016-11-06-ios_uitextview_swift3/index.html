@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"uonlyliveonce.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="iOS UITextView swift3.0">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS UITextView swift3.0">
+<meta property="og:url" content="https://uonlyliveonce.com/2016/11/06/2016-11-06-ios_uitextview_swift3/index.html">
+<meta property="og:site_name" content="Wong&#39;s Blog">
+<meta property="og:description" content="iOS UITextView swift3.0">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-11-06T01:49:00.000Z">
+<meta property="article:modified_time" content="2025-05-23T08:11:19.668Z">
+<meta property="article:author" content="Wong">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="Swift">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://uonlyliveonce.com/2016/11/06/2016-11-06-ios_uitextview_swift3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>iOS UITextView swift3.0 | Wong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Wong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You only live once!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://uonlyliveonce.com/2016/11/06/2016-11-06-ios_uitextview_swift3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Wong">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          iOS UITextView swift3.0
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-11-06 09:49:00" itemprop="dateCreated datePublished" datetime="2016-11-06T09:49:00+08:00">2016-11-06</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mobile/" itemprop="url" rel="index"><span itemprop="name">Mobile</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="iOS-UITextView-swift3-0"><a href="#iOS-UITextView-swift3-0" class="headerlink" title="iOS UITextView swift3.0"></a>iOS UITextView swift3.0</h3><span id="more"></span>
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br></pre></td><td class="code"><pre><span class="line"> //创建UITextView对象</span><br><span class="line"> textView = UITextView(frame:CGRect(x: 10.0, y: 120.0, width: 300.0, height: 200.0))</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> //为方便看到效果，设置背景颜色</span><br><span class="line"> textView.backgroundColor = UIColor.gray</span><br><span class="line"> </span><br><span class="line"> //添加到视图上</span><br><span class="line"> self.view.addSubview(textView)</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> //------------------ 常用属性</span><br><span class="line"> </span><br><span class="line"> //设置textview里面的字体颜色</span><br><span class="line"> textView.textColor = UIColor.green</span><br><span class="line"> </span><br><span class="line"> //设置文本字体</span><br><span class="line"> textView.font = UIFont.systemFont(ofSize: 18);//使用系统默认字体，指定18号字号</span><br><span class="line"> textView.font = UIFont(name: &quot;Helvetica-Bold&quot;, size: 18)//指定字体，指定字号</span><br><span class="line"> </span><br><span class="line"> //设置它的背景颜色</span><br><span class="line"> textView.backgroundColor = UIColor.gray</span><br><span class="line"> </span><br><span class="line"> //设置显示内容</span><br><span class="line"> textView.text = &quot;http://www.jianshu.com/notebooks/7139633/latest    \nhttp://www.jianshu.com/notebooks/7139633/latest   \nhttp://www.jianshu.com/notebooks/7139633/latest&quot;</span><br><span class="line"> </span><br><span class="line"> //文本对齐方式</span><br><span class="line"> textView.textAlignment = NSTextAlignment.left</span><br><span class="line"> </span><br><span class="line"> //文本视图设置圆角</span><br><span class="line"> textView.layer.cornerRadius = 20</span><br><span class="line"> </span><br><span class="line"> //是否允许点击链接和附件</span><br><span class="line"> textView.isSelectable = true</span><br><span class="line"> </span><br><span class="line"> //返回键的类型</span><br><span class="line"> textView.returnKeyType = UIReturnKeyType.done</span><br><span class="line"> </span><br><span class="line"> //键盘类型</span><br><span class="line"> textView.keyboardType = UIKeyboardType.default</span><br><span class="line"> </span><br><span class="line"> //是否可以滚动</span><br><span class="line"> textView.isScrollEnabled = true</span><br><span class="line"> </span><br><span class="line"> //自适应高度</span><br><span class="line"> textView.autoresizingMask = UIViewAutoresizing.flexibleHeight</span><br><span class="line"> </span><br><span class="line"> //设置富文本</span><br><span class="line"> let attributeString:NSMutableAttributedString=NSMutableAttributedString(string: &quot;http://www.jianshu.com/notebooks/7139633/latest    \nhttp://www.jianshu.com/notebooks/7139633/latest   \nhttp://www.jianshu.com/notebooks/7139633/latest&quot;)</span><br><span class="line"> </span><br><span class="line"> //设置字体颜色</span><br><span class="line"> attributeString.addAttribute(NSForegroundColorAttributeName, value: UIColor.green, range: NSMakeRange(0, attributeString.length))</span><br><span class="line"> </span><br><span class="line"> //文本所有字符字体HelveticaNeue-Bold，16号</span><br><span class="line"> attributeString.addAttribute(NSFontAttributeName, value: UIFont(name: &quot;HelveticaNeue-Bold&quot;, size: 16)!, range: NSMakeRange(0, attributeString.length))</span><br><span class="line"> </span><br><span class="line"> //文本0开始5个字符字体HelveticaNeue-Bold，26号</span><br><span class="line"> attributeString.addAttribute(NSFontAttributeName, value: UIFont(name: &quot;HelveticaNeue-Bold&quot;, size: 26)!, range: NSMakeRange(0, 5))</span><br><span class="line"> </span><br><span class="line"> //设置字体颜色</span><br><span class="line"> attributeString.addAttribute(NSForegroundColorAttributeName, value: UIColor.white, range: NSMakeRange(0, 3))</span><br><span class="line"> </span><br><span class="line"> //设置文字背景颜色</span><br><span class="line"> attributeString.addAttribute(NSBackgroundColorAttributeName, value: UIColor.orange, range: NSMakeRange(3, 3))</span><br><span class="line"> </span><br><span class="line"> //赋值富文本</span><br><span class="line">   textView.attributedText = attributeString</span><br><span class="line"> </span><br><span class="line"> //选中一段文本</span><br><span class="line">   textView.becomeFirstResponder()</span><br><span class="line">   textView.selectedRange = NSMakeRange(30, 10)</span><br><span class="line"> </span><br><span class="line"> //获取内容整体高度</span><br><span class="line"> var height:CGFloat = textView.contentSize.height;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> //为文本的视图中的电话和网址自动加链接</span><br><span class="line"> textView.dataDetectorTypes = .phoneNumber;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> /*</span><br><span class="line">  UIDataDetectorTypePhoneNumber                          电话有链接</span><br><span class="line">  UIDataDetectorTypeLink                                         网址有链接</span><br><span class="line">  UIDataDetectorTypeAddress                                   地址有链接</span><br><span class="line">  UIDataDetectorTypeCalendarEvent                        日历时间具有链接</span><br><span class="line">  </span><br><span class="line">  iOS10----</span><br><span class="line">  UIDataDetectorTypeShipmentTrackingNumber     货物订单号</span><br><span class="line">  UIDataDetectorTypeFlightNumber                         机票</span><br><span class="line">  UIDataDetectorTypeLookupSuggestion                 用户信息</span><br><span class="line">  ---</span><br><span class="line">  UIDataDetectorTypeNone</span><br><span class="line">  UIDataDetectorTypeAll</span><br><span class="line">  */</span><br></pre></td></tr></table></figure>
+<p> </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"> //-------------------------------------------自定义菜单</span><br><span class="line"> //定义2个菜单选择</span><br><span class="line"> let menuItem1:UIMenuItem = UIMenuItem(title: &quot;分享到微信&quot;, action: #selector(ViewController.shareWXMenu(_:)))</span><br><span class="line"> let menuItem2:UIMenuItem = UIMenuItem(title: &quot;分享到微博&quot;, action: #selector(ViewController.shareWBMenu(_:)))</span><br><span class="line"> </span><br><span class="line"> //获取菜单控制器</span><br><span class="line"> let menuController:UIMenuController = UIMenuController.shared</span><br><span class="line"> menuController.menuItems = [menuItem1,menuItem2]</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+<p> </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">//-------------------------------------------指定代理</span><br><span class="line">textView.delegate = self</span><br><span class="line"> </span><br><span class="line">//-------------------------------------------添加通知</span><br><span class="line">//文本框开始编辑时，触发</span><br><span class="line">NotificationCenter.default.addObserver(self, selector: #selector(ViewController.textDidBeginEditing), name: NSNotification.Name.UITextViewTextDidBeginEditing, object: nil)</span><br><span class="line"> </span><br><span class="line"> //文本框编辑结束时，触发</span><br><span class="line"> NotificationCenter.default.addObserver(self, selector: #selector(ViewController.textDidEndEditing), name: NSNotification.Name.UITextViewTextDidEndEditing, object: nil)</span><br><span class="line"> </span><br><span class="line"> //文本框内容改变时，触发</span><br><span class="line"> NotificationCenter.default.addObserver(self, selector: #selector(ViewController.textDidChange), name: NSNotification.Name.UITextViewTextDidChange, object: nil)</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"> //按钮显示方法</span><br><span class="line">    override func canPerformAction(_ action: Selector, withSender sender: Any?) -&gt; Bool &#123;</span><br><span class="line">        </span><br><span class="line">        //判断有没有选中文字，</span><br><span class="line">        //如果选择，输出选择的文本</span><br><span class="line">        let isSelect:Bool = textView.selectedRange.length &gt; 0</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">        if(action == #selector(ViewController.shareWXMenu(_:)) &amp;&amp; isSelect)//选择文本，并点击分享到微信菜单</span><br><span class="line">        &#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        else if(action == #selector(ViewController.shareWBMenu(_:)) &amp;&amp; isSelect)//选择文本，并点击分享到微博菜单</span><br><span class="line">        &#123;</span><br><span class="line">            </span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        return false; //不显示系统的菜单，改成true对比一下效果</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    //分享到微信</span><br><span class="line">    func shareWXMenu(_ sender: AnyObject?)</span><br><span class="line">    &#123;</span><br><span class="line">        if textView.selectedRange.length &gt; 0 &#123;</span><br><span class="line">            print((textView.text as NSString).substring(with: textView.selectedRange))</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        print(&quot;这里实现 分享到微信 功能&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    //分享到微博</span><br><span class="line">    func shareWBMenu(_ sender: AnyObject?)</span><br><span class="line">    &#123;</span><br><span class="line">        print(&quot;这里实现 分享到微博 功能&quot;)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">// MARK: - UITextViewDelegate</span><br><span class="line">func textViewShouldBeginEditing(_ textView: UITextView) -&gt; Bool</span><br><span class="line">&#123;</span><br><span class="line">    return true //如果返回false，文本视图不能编辑</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func textViewShouldEndEditing(_ textView: UITextView) -&gt; Bool</span><br><span class="line">&#123;</span><br><span class="line">    return true //如果返回false，表示编辑结束之后，文本视图不可再编辑</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func textViewDidBeginEditing(_ textView: UITextView)</span><br><span class="line">&#123;</span><br><span class="line">    //文本视图开始编辑，这个时候我们可以处理一些事情</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func textViewDidEndEditing(_ textView: UITextView)</span><br><span class="line">&#123;</span><br><span class="line">    //文本视图编辑结束，这个时候我们可以处理一些事情</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -&gt; Bool</span><br><span class="line">&#123;</span><br><span class="line">    //文本视图内容改变时，触发本方法，能得到改变的坐标和改变的内容</span><br><span class="line">    </span><br><span class="line">    //如果是回车符号，则textView释放第一响应值，返回false</span><br><span class="line">    if (text ==  &quot;\n&quot;) &#123;</span><br><span class="line">        textView.resignFirstResponder()</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line">    return true</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func textViewDidChange(_ textView: UITextView)</span><br><span class="line">&#123;</span><br><span class="line">    //文本视图改变后触发本代理方法</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func textViewDidChangeSelection(_ textView: UITextView)</span><br><span class="line">&#123;</span><br><span class="line">    //文本视图 改变选择内容，触发本代理方法</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//@availability(iOS, introduced=7.0)</span><br><span class="line">func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange) -&gt; Bool</span><br><span class="line">&#123;</span><br><span class="line">    //链接在文本中显示。当链接被点击的时候，会触发本代理方法</span><br><span class="line">    </span><br><span class="line">    return true</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//@availability(iOS, introduced=7.0)</span><br><span class="line">func textView(_ textView: UITextView, shouldInteractWith textAttachment: NSTextAttachment, in characterRange: NSRange) -&gt; Bool</span><br><span class="line">&#123;</span><br><span class="line">    //文本视图允许提供文本附件，文本附件点击时，会触发本代理方法</span><br><span class="line">    return true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码仅供参考，希望可以帮到你，如果您有补充请直接私信希望能互相学习互相进步！</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/uonlyliveonce/swift3.0-UI-base/tree/master/UI-Base-UITextView">GitHub下载地址</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/Swift/" rel="tag"># Swift</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/11/05/2016-11-05-ios-uisegmentedcontrol_swift3/" rel="prev" title="iOS UISegmentedControl swift3.0">
+      <i class="fa fa-chevron-left"></i> iOS UISegmentedControl swift3.0
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/11/06/2016-11-06-ios_uibutton_swift3/" rel="next" title="iOS UIButton swift3.0">
+      iOS UIButton swift3.0 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#iOS-UITextView-swift3-0"><span class="nav-number">1.</span> <span class="nav-text">iOS UITextView swift3.0</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Wong</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/uonlyliveonce" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;uonlyliveonce" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:u_only_live_once@outlook.com" title="E-Mail → mailto:u_only_live_once@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wong</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

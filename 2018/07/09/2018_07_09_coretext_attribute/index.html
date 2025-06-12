@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"uonlyliveonce.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="我们接着上一篇讲，上篇已经大概的讲了下单纯的绘制文字，但是一篇文章一般都会有几张图片的，而且是嵌入文字内的，不一定是将上下文字换行来处理的，我们今天就讲一下如果图片嵌入了文字该如何处理。  思路我们已经可以正常绘制富文本了，也可以通过CTLine和CTRun来分别对每行或者每行的绘制对象来进行干预来完成绘制。我们来简单捋一下图文混排的思路，一些准备操作和之前是一样的，只是在将富文本传递给CTFr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CoreText图文混排">
+<meta property="og:url" content="https://uonlyliveonce.com/2018/07/09/2018_07_09_coretext_attribute/index.html">
+<meta property="og:site_name" content="Wong&#39;s Blog">
+<meta property="og:description" content="我们接着上一篇讲，上篇已经大概的讲了下单纯的绘制文字，但是一篇文章一般都会有几张图片的，而且是嵌入文字内的，不一定是将上下文字换行来处理的，我们今天就讲一下如果图片嵌入了文字该如何处理。  思路我们已经可以正常绘制富文本了，也可以通过CTLine和CTRun来分别对每行或者每行的绘制对象来进行干预来完成绘制。我们来简单捋一下图文混排的思路，一些准备操作和之前是一样的，只是在将富文本传递给CTFr">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-07-09T01:52:24.000Z">
+<meta property="article:modified_time" content="2025-06-12T02:59:05.960Z">
+<meta property="article:author" content="Wong">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="OC">
+<meta property="article:tag" content="Core Text">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://uonlyliveonce.com/2018/07/09/2018_07_09_coretext_attribute/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>CoreText图文混排 | Wong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Wong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You only live once!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://uonlyliveonce.com/2018/07/09/2018_07_09_coretext_attribute/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Wong">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CoreText图文混排
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-07-09 09:52:24" itemprop="dateCreated datePublished" datetime="2018-07-09T09:52:24+08:00">2018-07-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mobile/" itemprop="url" rel="index"><span itemprop="name">Mobile</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>我们接着上一篇讲，上篇已经大概的讲了下单纯的绘制文字，但是一篇文章一般都会有几张图片的，而且是嵌入文字内的，不一定是将上下文字换行来处理的，我们今天就讲一下如果图片嵌入了文字该如何处理。</p>
+</blockquote>
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p><strong>我们已经可以正常绘制富文本了，也可以通过<code>CTLine</code>和<code>CTRun</code>来分别对每行或者每行的绘制对象来进行干预来完成绘制。</strong><br>我们来简单捋一下图文混排的思路，一些准备操作和之前是一样的，只是在将富文本传递给<code>CTFramesetterRef</code>工厂对象时候需要将图片插入富文本中，因为<code>Core Text</code>无法直接绘制图片，只能是将相关的代理传递给一个既定的富文本，之后遍历<code>CTRun</code>来识别再去使用<code>Core Graphics</code>对图片进行绘制在View上面，而属性字符串里面只能存一些高度距离相关的属性。</p>
+<span id="more"></span>
+
+<h2 id="图文混排"><a href="#图文混排" class="headerlink" title="图文混排"></a>图文混排</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)drawRect:(CGRect)rect &#123;</span><br><span class="line">    [super drawRect:rect];</span><br><span class="line"></span><br><span class="line">    <span class="comment">//1.</span></span><br><span class="line">    CGContextRef context = UIGraphicsGetCurrentContext();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//2.</span></span><br><span class="line">    CGMutablePathRef path = CGPathCreateMutable();</span><br><span class="line">    CGPathAddRect(path, <span class="literal">NULL</span>, self.bounds);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//3.</span></span><br><span class="line">    CGContextSetTextMatrix(context, CGAffineTransformIdentity);</span><br><span class="line">    CGContextTranslateCTM(context , <span class="number">0</span>, self.bounds.size.height);</span><br><span class="line">    CGContextScaleCTM(context, <span class="number">1.0</span>, <span class="number">-1.0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//4.1</span></span><br><span class="line">    NSMutableAttributedString *att = [self getAtt];</span><br><span class="line"></span><br><span class="line">    <span class="comment">//4.2</span></span><br><span class="line">    NSMutableAttributedString *attachment = [self getAttachment:(CGSizeMake(<span class="number">50</span>, <span class="number">50</span>)) imageName:@<span class="string">&quot;SuperMary&quot;</span>];</span><br><span class="line">    [att insertAttributedString:attachment atIndex:<span class="number">3</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">//5.</span></span><br><span class="line">    CTFramesetterRef frameSetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)att);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//6.</span></span><br><span class="line">    CTFrameRef frame = CTFramesetterCreateFrame(frameSetter, CFRangeMake(<span class="number">0</span>, [att length]), path, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//7.1</span></span><br><span class="line">    CFArrayRef lines = CTFrameGetLines(frame);</span><br><span class="line">    CFIndex lineNumber =  CFArrayGetCount(lines);</span><br><span class="line">    CGPoint lineOrigins[lineNumber];</span><br><span class="line">    CTFrameGetLineOrigins(frame, CFRangeMake(<span class="number">0</span>, <span class="number">0</span>), lineOrigins);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span> ; i &lt; CFArrayGetCount(lines); i++) &#123;</span><br><span class="line">        CGPoint point = lineOrigins[i];</span><br><span class="line">        CTLineRef line = CFArrayGetValueAtIndex(lines, i);</span><br><span class="line">        CGContextSetTextPosition(context, point.x, point.y);</span><br><span class="line">        CFArrayRef runs = CTLineGetGlyphRuns(line);</span><br><span class="line">        CFIndex runNumber = CFArrayGetCount(runs);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; runNumber; j++) &#123;</span><br><span class="line">            CTRunRef run = CFArrayGetValueAtIndex(runs, j);</span><br><span class="line">            <span class="comment">//7.2</span></span><br><span class="line">            <span class="keyword">if</span> ([self isImageAttachment:run]) &#123;</span><br><span class="line">                [self drawImage:frame line:line run:run point:point];</span><br><span class="line">            &#125;</span><br><span class="line">            CTRunDraw(run, context, CFRangeMake(<span class="number">0</span>, <span class="number">0</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//8.</span></span><br><span class="line">    CFRelease(path);</span><br><span class="line">    CFRelease(frameSetter);</span><br><span class="line">    CFRelease(frame);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- (NSMutableAttributedString *)getAtt&#123;</span><br><span class="line">    NSMutableAttributedString *att = [[NSMutableAttributedString alloc] initWithString:@<span class="string">&quot;Core Text, Core Text, Core Text, Core Text, Core Text, Core Text, &quot;</span>];</span><br><span class="line">    CTFontRef font = CTFontCreateWithName(CFSTR(<span class="string">&quot;PingFang SC&quot;</span>), <span class="number">24</span>, <span class="literal">NULL</span>);</span><br><span class="line">    [att addAttribute:(id)kCTFontAttributeName value:(__bridge id)font  range:NSMakeRange(<span class="number">0</span>, att.length)];</span><br><span class="line">    <span class="keyword">long</span> number = <span class="number">10</span>;</span><br><span class="line">    CFNumberRef num = CFNumberCreate(kCFAllocatorDefault,kCFNumberSInt8Type,&amp;number);</span><br><span class="line">    [att addAttribute:(id)kCTKernAttributeName value:(__bridge id)num range:NSMakeRange(<span class="number">10</span>, <span class="number">4</span>)];</span><br><span class="line">    <span class="keyword">return</span> att;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//1.</span></span><br><span class="line">- (NSMutableAttributedString *)getAttachment:(CGSize)size imageName:(NSString *)imageName&#123;</span><br><span class="line">    CTRunDelegateCallbacks callBacks;</span><br><span class="line">    callBacks.version = kCTRunDelegateVersion1;</span><br><span class="line">    callBacks.dealloc = DelegateDeallocCallback;</span><br><span class="line">    callBacks.getAscent = DelegateAscentCallBacks;</span><br><span class="line">    callBacks.getDescent = DelegateDescentCallBacks;</span><br><span class="line">    callBacks.getWidth = DelegateWidthCallBacks;</span><br><span class="line"></span><br><span class="line">    NSString *sizeStr = NSStringFromCGSize(size);</span><br><span class="line"></span><br><span class="line">    CTRunDelegateRef delegate = CTRunDelegateCreate(&amp;callBacks, (__bridge <span class="keyword">void</span> *)sizeStr);</span><br><span class="line"></span><br><span class="line">    unichar placeHolder = <span class="number">0xFFFC</span>;</span><br><span class="line">    NSString * placeHolderStr = [NSString stringWithCharacters:&amp;placeHolder length:<span class="number">1</span>];</span><br><span class="line">    NSMutableAttributedString * imageAttachment = [[NSMutableAttributedString alloc] initWithString:placeHolderStr];</span><br><span class="line">    [imageAttachment addAttribute:@<span class="string">&quot;imageName&quot;</span> value:imageName range:(NSMakeRange(<span class="number">0</span>, <span class="number">1</span>))];</span><br><span class="line">    CFAttributedStringSetAttribute((CFMutableAttributedStringRef)imageAttachment, CFRangeMake(<span class="number">0</span>, <span class="number">1</span>), kCTRunDelegateAttributeName, delegate);</span><br><span class="line">    CFRelease(delegate);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> imageAttachment;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">DelegateDeallocCallback</span> <span class="params">(<span class="keyword">void</span> *refCon)</span></span>&#123;</span><br><span class="line">    NSLog(@<span class="string">&quot;dealloc&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">CGFloat <span class="title">DelegateAscentCallBacks</span><span class="params">(<span class="keyword">void</span> * refCon)</span></span>&#123;</span><br><span class="line">    CGSize size = CGSizeFromString((__bridge NSString *)refCon);</span><br><span class="line">    <span class="keyword">return</span> size.height;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">CGFloat <span class="title">DelegateDescentCallBacks</span><span class="params">(<span class="keyword">void</span> * refCon)</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">CGFloat <span class="title">DelegateWidthCallBacks</span><span class="params">(<span class="keyword">void</span> * refCon)</span></span>&#123;</span><br><span class="line">    CGSize size = CGSizeFromString((__bridge NSString *)refCon);</span><br><span class="line">    <span class="keyword">return</span> size.width;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3.</span></span><br><span class="line">- (BOOL)isImageAttachment:(CTRunRef)run&#123;</span><br><span class="line">    NSDictionary * attributes = (NSDictionary *)CTRunGetAttributes(run);</span><br><span class="line">    CTRunDelegateRef delegate = (__bridge CTRunDelegateRef)[attributes valueForKey:(id)kCTRunDelegateAttributeName];</span><br><span class="line">    NSString *sizeStr = CTRunDelegateGetRefCon(delegate);</span><br><span class="line">    <span class="keyword">if</span> (delegate == nil || ![sizeStr isKindOfClass:[NSString class]]) &#123;</span><br><span class="line">        <span class="keyword">return</span> NO;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> YES;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//4.</span></span><br><span class="line">- (<span class="keyword">void</span>)drawImage:(CTFrameRef)frame line:(CTLineRef)line run:(CTRunRef)run point:(CGPoint)point&#123;</span><br><span class="line"></span><br><span class="line">    NSDictionary * attributes = (NSDictionary *)CTRunGetAttributes(run);</span><br><span class="line">    NSString *imageName = attributes[@<span class="string">&quot;imageName&quot;</span>];</span><br><span class="line">    <span class="keyword">if</span> (!imageName) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    CGFloat ascent;</span><br><span class="line">    CGFloat descent;</span><br><span class="line">    CGRect boundsRun;</span><br><span class="line">    boundsRun.size.width = CTRunGetTypographicBounds(run, CFRangeMake(<span class="number">0</span>, <span class="number">0</span>), &amp;ascent, &amp;descent, <span class="literal">NULL</span>);</span><br><span class="line">    boundsRun.size.height = ascent + descent;</span><br><span class="line">    CGFloat xOffset = CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location, <span class="literal">NULL</span>);</span><br><span class="line">    boundsRun.origin.x = point.x + xOffset;</span><br><span class="line">    boundsRun.origin.y = point.y - descent;</span><br><span class="line">    CGPathRef path = CTFrameGetPath(frame);</span><br><span class="line">    CGRect colRect = CGPathGetBoundingBox(path);</span><br><span class="line">    CGRect imageBounds = CGRectOffset(boundsRun, colRect.origin.x, colRect.origin.y);</span><br><span class="line"></span><br><span class="line">    [self drawWithImageName:imageName rect:imageBounds];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//5.</span></span><br><span class="line">- (<span class="keyword">void</span>)drawWithImageName:(NSString *)imageName rect:(CGRect)rect&#123;</span><br><span class="line">    CGContextRef context = UIGraphicsGetCurrentContext();</span><br><span class="line">    UIImage * image = [UIImage imageNamed:imageName];</span><br><span class="line">    CGContextDrawImage(context, rect, image.CGImage);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="代码详解"><a href="#代码详解" class="headerlink" title="代码详解"></a>代码详解</h2><p>首先我们可以看到上面一段代码和之前一篇的遍历CTRun的几乎没有区别，只有 <strong>4.2</strong> 和 <strong>7.2</strong> 的部分有增添，那么我们分别讲一下这两段</p>
+<h3 id="1"><a href="#1" class="headerlink" title="1"></a>1</h3><p>首先我们先看一下第二段的标号为 <strong>1</strong> 的代码中</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建一个CTRun代理回调的结构体</span></span><br><span class="line">CTRunDelegateCallbacks callBacks;</span><br><span class="line"><span class="comment">//设置回调版本，kCTRunDelegateVersion1为默认</span></span><br><span class="line">callBacks.version = kCTRunDelegateVersion1;</span><br><span class="line"><span class="comment">//设置当内存回收时候执行的回调</span></span><br><span class="line">callBacks.dealloc = DelegateDeallocCallback;</span><br><span class="line"><span class="comment">//设置图片距离顶部基线的距离执行的回调</span></span><br><span class="line">callBacks.getAscent = DelegateAscentCallBacks;</span><br><span class="line"><span class="comment">//设置图片距离底部基线的距离执行的回调</span></span><br><span class="line">callBacks.getDescent = DelegateDescentCallBacks;</span><br><span class="line"><span class="comment">//设置图片的宽度执行的回调</span></span><br><span class="line">callBacks.getWidth = DelegateWidthCallBacks;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建代理，将参数传到代理对象中</span></span><br><span class="line">CTRunDelegateRef delegate = CTRunDelegateCreate(&amp;callBacks, (__bridge <span class="keyword">void</span> *)sizeStr);</span><br><span class="line"></span><br><span class="line"><span class="comment">//创建占位富文本，注意，不要用单空格来进行占位，会导致绘制时候图片位置计算出现问题</span></span><br><span class="line">unichar placeHolder = <span class="number">0xFFFC</span>;</span><br><span class="line">NSString * placeHolderStr = [NSString stringWithCharacters:&amp;placeHolder length:<span class="number">1</span>];</span><br><span class="line">NSMutableAttributedString * imageAttachment = [[NSMutableAttributedString alloc] initWithString:placeHolderStr];</span><br><span class="line"><span class="comment">//@&quot;imageName&quot;为自定义的key，将imageName传递到富文本中，在绘制的时候可以直接取用</span></span><br><span class="line">[imageAttachment addAttribute:@<span class="string">&quot;imageName&quot;</span> value:imageName range:(NSMakeRange(<span class="number">0</span>, <span class="number">1</span>))];</span><br><span class="line"><span class="comment">//给制定范围内的富文本设置代理</span></span><br><span class="line">CFAttributedStringSetAttribute((CFMutableAttributedStringRef)imageAttachment, CFRangeMake(<span class="number">0</span>, <span class="number">1</span>), kCTRunDelegateAttributeName, delegate);</span><br><span class="line"><span class="comment">//释放代理对象</span></span><br><span class="line">CFRelease(delegate);</span><br></pre></td></tr></table></figure>
+
+<h3 id="2"><a href="#2" class="headerlink" title="2"></a>2</h3><p>这一段就是给代理回调结构体设置的各个回调，其中返回的形参为</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NSString *sizeStr = NSStringFromCGSize(size);</span><br><span class="line">CTRunDelegateRef delegate = CTRunDelegateCreate(&amp;callBacks, (__bridge <span class="keyword">void</span> *)sizeStr);</span><br></pre></td></tr></table></figure>
+
+<p>中初始化代理时候传入的实参，因为返回时候是个指针，所以所有类型的对象都可以，也可以自定义对象进行传递。</p>
+<h3 id="3"><a href="#3" class="headerlink" title="3"></a>3</h3><p>我们可以看到 <strong>7.2</strong> 部分调用了这个方法，这个方法的作用就是判断遍历出来的 <code>CTRun</code> 是否是自己要绘制的富文本，返回一个布尔值。</p>
+<h3 id="4"><a href="#4" class="headerlink" title="4"></a>4</h3><p>方法的前面的判断就是判断是否有imageName，我们也可以根据需求将一个默认图绘制上去，我们着重讲一下计算图片绝对布局的算法。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//距离顶部基线的距离</span></span><br><span class="line">CGFloat ascent;</span><br><span class="line"><span class="comment">//距离底部基线的距离</span></span><br><span class="line">CGFloat descent;</span><br><span class="line"><span class="comment">//进行计算的中间变量</span></span><br><span class="line">CGRect bounds;</span><br><span class="line"><span class="comment">//获取图片的宽和上下基线的距离</span></span><br><span class="line">bounds.size.width = CTRunGetTypographicBounds(run, CFRangeMake(<span class="number">0</span>, <span class="number">0</span>), &amp;ascent, &amp;descent, <span class="literal">NULL</span>);</span><br><span class="line">bounds.size.height = ascent + descent;</span><br><span class="line"><span class="comment">//获取距离行的第一个字的原点的水平距离</span></span><br><span class="line">CGFloat xOffset = CTLineGetOffsetForStringIndex(line, CTRunGetStringRange(run).location, <span class="literal">NULL</span>);</span><br><span class="line"><span class="comment">//计算图片原点的x坐标</span></span><br><span class="line">bounds.origin.x = point.x + xOffset;</span><br><span class="line"><span class="comment">//计算图片原点的y坐标</span></span><br><span class="line">bounds.origin.y = point.y - descent;</span><br><span class="line"><span class="comment">//获取绘制的区域</span></span><br><span class="line">CGPathRef path = CTFrameGetPath(frame);</span><br><span class="line"><span class="comment">//获取裁剪区域的区域</span></span><br><span class="line">CGRect cutRect = CGPathGetBoundingBox(path);</span><br><span class="line"><span class="comment">//获取图片的绝对布局</span></span><br><span class="line">CGRect drawBounds = CGRectOffset(bounds, cutRect.origin.x, cutRect.origin.y);</span><br></pre></td></tr></table></figure>
+
+<h3 id="5"><a href="#5" class="headerlink" title="5"></a>5</h3><p>两个形参分别是需要绘制的图片和图片的绝对布局，我们直接绘制既可。</p>
+<hr>
+<h4 id="我将图文混排增加的代码直接写成了各个方法，更灵活更易懂，这个地方我们可以自定义一个类来专门处理图文相关的代理等一系列的参数，YYText就是自定义了一个YYTextRunDelegate这个类来处理相关的，下一篇我们将继续写点击事件相关"><a href="#我将图文混排增加的代码直接写成了各个方法，更灵活更易懂，这个地方我们可以自定义一个类来专门处理图文相关的代理等一系列的参数，YYText就是自定义了一个YYTextRunDelegate这个类来处理相关的，下一篇我们将继续写点击事件相关" class="headerlink" title="我将图文混排增加的代码直接写成了各个方法，更灵活更易懂，这个地方我们可以自定义一个类来专门处理图文相关的代理等一系列的参数，YYText就是自定义了一个YYTextRunDelegate这个类来处理相关的，下一篇我们将继续写点击事件相关"></a>我将图文混排增加的代码直接写成了各个方法，更灵活更易懂，这个地方我们可以自定义一个类来专门处理图文相关的代理等一系列的参数，<code>YYText</code>就是自定义了一个<code>YYTextRunDelegate</code>这个类来处理相关的，下一篇我们将继续写点击事件相关</h4><p><a target="_blank" rel="noopener" href="https://github.com/uonlyliveonce/CoreTextDemo">Demo</a></p>
+<p>英文水平贼渣的我又看了好久英文文档和博客总结的，如果转载请附上链接<a target="_blank" rel="noopener" href="https://coderwong.com/2018/07/09/CoreTextFix/">https://coderwong.com/2018/07/09/CoreTextFix/</a>，万分感谢</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/OC/" rel="tag"># OC</a>
+              <a href="/tags/Core-Text/" rel="tag"># Core Text</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/07/05/2018_07_05_start_to_use_coretext/" rel="prev" title="CoreText跳坑">
+      <i class="fa fa-chevron-left"></i> CoreText跳坑
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/07/10/2018_07_10_coretext_touch/" rel="next" title="CoreText点击事件处理">
+      CoreText点击事件处理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF"><span class="nav-number">1.</span> <span class="nav-text">思路</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E6%96%87%E6%B7%B7%E6%8E%92"><span class="nav-number">1.1.</span> <span class="nav-text">图文混排</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.2.</span> <span class="nav-text">代码详解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1"><span class="nav-number">1.2.1.</span> <span class="nav-text">1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2"><span class="nav-number">1.2.2.</span> <span class="nav-text">2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3"><span class="nav-number">1.2.3.</span> <span class="nav-text">3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4"><span class="nav-number">1.2.4.</span> <span class="nav-text">4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5"><span class="nav-number">1.2.5.</span> <span class="nav-text">5</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%88%91%E5%B0%86%E5%9B%BE%E6%96%87%E6%B7%B7%E6%8E%92%E5%A2%9E%E5%8A%A0%E7%9A%84%E4%BB%A3%E7%A0%81%E7%9B%B4%E6%8E%A5%E5%86%99%E6%88%90%E4%BA%86%E5%90%84%E4%B8%AA%E6%96%B9%E6%B3%95%EF%BC%8C%E6%9B%B4%E7%81%B5%E6%B4%BB%E6%9B%B4%E6%98%93%E6%87%82%EF%BC%8C%E8%BF%99%E4%B8%AA%E5%9C%B0%E6%96%B9%E6%88%91%E4%BB%AC%E5%8F%AF%E4%BB%A5%E8%87%AA%E5%AE%9A%E4%B9%89%E4%B8%80%E4%B8%AA%E7%B1%BB%E6%9D%A5%E4%B8%93%E9%97%A8%E5%A4%84%E7%90%86%E5%9B%BE%E6%96%87%E7%9B%B8%E5%85%B3%E7%9A%84%E4%BB%A3%E7%90%86%E7%AD%89%E4%B8%80%E7%B3%BB%E5%88%97%E7%9A%84%E5%8F%82%E6%95%B0%EF%BC%8CYYText%E5%B0%B1%E6%98%AF%E8%87%AA%E5%AE%9A%E4%B9%89%E4%BA%86%E4%B8%80%E4%B8%AAYYTextRunDelegate%E8%BF%99%E4%B8%AA%E7%B1%BB%E6%9D%A5%E5%A4%84%E7%90%86%E7%9B%B8%E5%85%B3%E7%9A%84%EF%BC%8C%E4%B8%8B%E4%B8%80%E7%AF%87%E6%88%91%E4%BB%AC%E5%B0%86%E7%BB%A7%E7%BB%AD%E5%86%99%E7%82%B9%E5%87%BB%E4%BA%8B%E4%BB%B6%E7%9B%B8%E5%85%B3"><span class="nav-number">1.2.5.1.</span> <span class="nav-text">我将图文混排增加的代码直接写成了各个方法，更灵活更易懂，这个地方我们可以自定义一个类来专门处理图文相关的代理等一系列的参数，YYText就是自定义了一个YYTextRunDelegate这个类来处理相关的，下一篇我们将继续写点击事件相关</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Wong</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/uonlyliveonce" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;uonlyliveonce" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:u_only_live_once@outlook.com" title="E-Mail → mailto:u_only_live_once@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wong</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

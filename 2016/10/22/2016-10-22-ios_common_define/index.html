@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"uonlyliveonce.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="iOS 常用宏(OC)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS 常用宏(OC)">
+<meta property="og:url" content="https://uonlyliveonce.com/2016/10/22/2016-10-22-ios_common_define/index.html">
+<meta property="og:site_name" content="Wong&#39;s Blog">
+<meta property="og:description" content="iOS 常用宏(OC)">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-10-22T12:47:28.000Z">
+<meta property="article:modified_time" content="2025-05-23T08:11:19.667Z">
+<meta property="article:author" content="Wong">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="OC">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://uonlyliveonce.com/2016/10/22/2016-10-22-ios_common_define/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>iOS 常用宏(OC) | Wong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Wong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You only live once!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://uonlyliveonce.com/2016/10/22/2016-10-22-ios_common_define/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Wong">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          iOS 常用宏(OC)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-10-22 20:47:28" itemprop="dateCreated datePublished" datetime="2016-10-22T20:47:28+08:00">2016-10-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mobile/" itemprop="url" rel="index"><span itemprop="name">Mobile</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="iOS-常用宏-OC"><a href="#iOS-常用宏-OC" class="headerlink" title="iOS 常用宏(OC)"></a>iOS 常用宏(OC)</h3><span id="more"></span>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br></pre></td><td class="code"><pre><span class="line">//字符串是否为空</span><br><span class="line"></span><br><span class="line">#define kStringIsEmpty(str) ([str isKindOfClass:[NSNull class]] || str == nil || [str length] &lt;1? YES : NO )</span><br><span class="line"></span><br><span class="line">//数组是否为空</span><br><span class="line"></span><br><span class="line">#define kArrayIsEmpty(array) (array == nil || [array isKindOfClass:[NSNull class]] || array.count ==0)</span><br><span class="line"></span><br><span class="line">//字典是否为空</span><br><span class="line"></span><br><span class="line">#define kDictIsEmpty(dic) (dic == nil || [dic isKindOfClass:[NSNull class]] || dic.allKeys ==0)</span><br><span class="line"></span><br><span class="line">//是否是空对象</span><br><span class="line"></span><br><span class="line">#define kObjectIsEmpty(_object) (_object == nil \|| [_object isKindOfClass:[NSNull class]] \|| ([_object respondsToSelector:@selector(length)] &amp;&amp; [(NSData *)_object length] ==0) \|| ([_object respondsToSelector:@selector(count)] &amp;&amp; [(NSArray*)_object count] ==0))</span><br><span class="line"></span><br><span class="line">//获取屏幕宽度与高度</span><br><span class="line"></span><br><span class="line">#define kScreenWidth \([[UIScreen mainScreen] respondsToSelector:@selector(nativeBounds)] ? [UIScreen mainScreen].nativeBounds.size.width/[UIScreen mainScreen].nativeScale : [UIScreen mainScreen].bounds.size.width)</span><br><span class="line"></span><br><span class="line">#define kScreenHeight \([[UIScreen mainScreen] respondsToSelector:@selector(nativeBounds)] ? [UIScreen mainScreen].nativeBounds.size.height/[UIScreen mainScreen].nativeScale : [UIScreen mainScreen].bounds.size.height)</span><br><span class="line"></span><br><span class="line">#define kScreenSize \([[UIScreen mainScreen] respondsToSelector:@selector(nativeBounds)] ? CGSizeMake([UIScreen mainScreen].nativeBounds.size.width/[UIScreen mainScreen].nativeScale,[UIScreen mainScreen].nativeBounds.size.height/[UIScreen mainScreen].nativeScale) : [UIScreen mainScreen].bounds.size)</span><br><span class="line"></span><br><span class="line">//一些缩写</span><br><span class="line"></span><br><span class="line">#define kApplication[UIApplication sharedApplication]</span><br><span class="line"></span><br><span class="line">#define kKeyWindow[UIApplication sharedApplication].keyWindow</span><br><span class="line"></span><br><span class="line">#define kAppDelegate(AppDelegate *)[UIApplication sharedApplication].delegate</span><br><span class="line"></span><br><span class="line">#define kUserDefaults[NSUserDefaults standardUserDefaults]</span><br><span class="line"></span><br><span class="line">#define kNotificationCenter [NSNotificationCenter defaultCenter]</span><br><span class="line"></span><br><span class="line">#define kUserDefaultsObjectForKey(str) [[NSUserDefaults standardUserDefaults]objectForKey:str]</span><br><span class="line"></span><br><span class="line">//APP版本号</span><br><span class="line"></span><br><span class="line">#define kAppVersion [[[NSBundle mainBundle] infoDictionary] objectForKey:@&quot;CFBundleShortVersionString&quot;]</span><br><span class="line"></span><br><span class="line">//系统版本号</span><br><span class="line"></span><br><span class="line">#define kSystemVersion [[UIDevice currentDevice] systemVersion]</span><br><span class="line"></span><br><span class="line">//获取当前语言</span><br><span class="line"></span><br><span class="line">#define kCurrentLanguage ([[NSLocale preferredLanguages] objectAtIndex:0])</span><br><span class="line"></span><br><span class="line">//判断是否为iPhone</span><br><span class="line"></span><br><span class="line">#define kISiPhone (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)</span><br><span class="line"></span><br><span class="line">//判断是否为iPad</span><br><span class="line"></span><br><span class="line">#define kISiPad (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)</span><br><span class="line"></span><br><span class="line">//获取沙盒Document路径</span><br><span class="line"></span><br><span class="line">#define kDocumentPath [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject]</span><br><span class="line"></span><br><span class="line">//获取沙盒temp路径</span><br><span class="line"></span><br><span class="line">#define kTempPath NSTemporaryDirectory()</span><br><span class="line"></span><br><span class="line">//获取沙盒Cache路径</span><br><span class="line"></span><br><span class="line">#define kCachePath [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject]</span><br><span class="line"></span><br><span class="line">//判断是真机还是模拟器</span><br><span class="line"></span><br><span class="line">#if TARGET_OS_IPHONE</span><br><span class="line"></span><br><span class="line">//真机</span><br><span class="line"></span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">#if TARGET_IPHONE_SIMULATOR</span><br><span class="line"></span><br><span class="line">//模拟器</span><br><span class="line"></span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">//开发的时候打印，但是发布的时候不打印的NSLog</span><br><span class="line"></span><br><span class="line">#ifdef DEBUG </span><br><span class="line">#define NSLog(...) NSLog(@&quot;%s第%d行\n %@\n\n&quot;,__func__,__LINE__,[NSString stringWithFormat:__VA_ARGS__])</span><br><span class="line"></span><br><span class="line">#else</span><br><span class="line"></span><br><span class="line">#define NSLog(...)</span><br><span class="line"></span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">//颜色相关宏</span><br><span class="line"></span><br><span class="line">#define kRGBColor(r, g, b)[UIColor colorWithRed:(r)/255.0green:(g)/255.0blue:(b)/255.0alpha:1.0]</span><br><span class="line"></span><br><span class="line">#define kRGBAColor(r, g, b, a) [UIColor colorWithRed:(r)/255.0green:(r)/255.0blue:(r)/255.0alpha:a]</span><br><span class="line"></span><br><span class="line">#define kRandomColorKRGBColor(arc4random_uniform(256)/255.0,arc4random_uniform(256)/255.0,arc4random_uniform(256)/255.0)</span><br><span class="line"></span><br><span class="line">#define kColorWithHex(rgbValue) \[UIColor colorWithRed:((float)((rgbValue &amp;0xFF0000) &gt;&gt;16)) /255.0\green:((float)((rgbValue &amp;0xFF00) &gt;&gt;8)) /255.0\blue:((float)(rgbValue &amp;0xFF)) /255.0alpha:1.0]</span><br><span class="line"></span><br><span class="line">#define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue &amp;0xFF0000) &gt;&gt;16))/255.0green:((float)((rgbValue &amp;0xFF00) &gt;&gt;8))/255.0blue:((float)(rgbValue &amp;0xFF))/255.0alpha:1.0]</span><br><span class="line"></span><br><span class="line">//弱引用/强引用</span><br><span class="line"></span><br><span class="line">#define kWeakSelf(type)__weak typeof(type) weak##type = type;</span><br><span class="line"></span><br><span class="line">#define kStrongSelf(type) __strong typeof(type) type = weak##type;</span><br><span class="line"></span><br><span class="line">//由角度转换弧度</span><br><span class="line"></span><br><span class="line">#define kDegreesToRadian(x)(M_PI * (x) /180.0)</span><br><span class="line"></span><br><span class="line">//由弧度转换角度</span><br><span class="line"></span><br><span class="line">#define kRadianToDegrees(radian) (radian *180.0) / (M_PI)</span><br><span class="line"></span><br><span class="line">//获取一段时间间隔</span><br><span class="line"></span><br><span class="line">#define kStartTime CFAbsoluteTime start = CFAbsoluteTimeGetCurrent();</span><br><span class="line"></span><br><span class="line">#define kEndTimeNSLog(@&quot;Time: %f&quot;, CFAbsoluteTimeGetCurrent() - start)</span><br><span class="line"></span><br><span class="line">//标准系统状态栏高度</span><br><span class="line"></span><br><span class="line">#define SYS_STATUSBAR_HEIGHT20</span><br><span class="line"></span><br><span class="line">//热点栏高度</span><br><span class="line"></span><br><span class="line">#define HOTSPOT_STATUSBAR_HEIGHT20</span><br><span class="line"></span><br><span class="line">//导航栏（UINavigationController.UINavigationBar）高度</span><br><span class="line"></span><br><span class="line">#define NAVIGATIONBAR_HEIGHT44</span><br><span class="line"></span><br><span class="line">//工具栏（UINavigationController.UIToolbar）高度</span><br><span class="line"></span><br><span class="line">#define TOOLBAR_HEIGHT 44</span><br><span class="line"></span><br><span class="line">//标签栏（UITabBarController.UITabBar）高度</span><br><span class="line"></span><br><span class="line">#define TABBAR_HEIGHT 44</span><br><span class="line"></span><br><span class="line">// APP_STATUSBAR_HEIGHT=SYS_STATUSBAR_HEIGHT+[HOTSPOT_STATUSBAR_HEIGHT]</span><br><span class="line"></span><br><span class="line">#define APP_STATUSBAR_HEIGHT(CGRectGetHeight([UIApplication sharedApplication].statusBarFrame))</span><br><span class="line"></span><br><span class="line">//根据APP_STATUSBAR_HEIGHT判断是否存在热点栏</span><br><span class="line"></span><br><span class="line">#define IS_HOTSPOT_CONNECTED(APP_STATUSBAR_HEIGHT==(SYS_STATUSBAR_HEIGHT+HOTSPOT_STATUSBAR_HEIGHT)?YES:NO)</span><br><span class="line"></span><br><span class="line">//无热点栏时，标准系统状态栏高度+导航栏高度</span><br><span class="line"></span><br><span class="line">#define NORMAL_STATUS_AND_NAV_BAR_HEIGHT(SYS_STATUSBAR_HEIGHT+NAVIGATIONBAR_HEIGHT)</span><br><span class="line"></span><br><span class="line">//实时系统状态栏高度+导航栏高度，如有热点栏，其高度包含在APP_STATUSBAR_HEIGHT中。</span><br><span class="line"></span><br><span class="line">#define STATUS_AND_NAV_BAR_HEIGHT(APP_STATUSBAR_HEIGHT+NAVIGATIONBAR_HEIGHT)</span><br><span class="line"></span><br><span class="line">//读取本地图片</span><br><span class="line"></span><br><span class="line">#define LOADIMAGE(file,ext) [UIImage imageWithContentsOfFile:[[NSBundle mainBundle]pathForResource:file ofType:ext]]</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/OC/" rel="tag"># OC</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2016/10/23/2016-10-23-ios_get_device_info/" rel="next" title="iOS 获取设备信息(已经更新至iOS 11 iPhone X)">
+      iOS 获取设备信息(已经更新至iOS 11 iPhone X) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#iOS-%E5%B8%B8%E7%94%A8%E5%AE%8F-OC"><span class="nav-number">1.</span> <span class="nav-text">iOS 常用宏(OC)</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Wong</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/uonlyliveonce" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;uonlyliveonce" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:u_only_live_once@outlook.com" title="E-Mail → mailto:u_only_live_once@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wong</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

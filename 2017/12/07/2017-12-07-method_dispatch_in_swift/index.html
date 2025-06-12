@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"uonlyliveonce.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言 已经使用Swift这门新兴的OO语言已经有很久了，作为面向对象语言在没有特殊声明的时候系统会默认对属性和方法进行重载，虽说Swift不完全算一种动态语言，但是由于和OC依然藕断丝连Swift里面动态派发依然会损耗不小的性能，那么动态派发是什么，Swift的派发机制是什么？我们来深入了(zhuang)解(bi)一下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Method Dispatch in Swift">
+<meta property="og:url" content="https://uonlyliveonce.com/2017/12/07/2017-12-07-method_dispatch_in_swift/index.html">
+<meta property="og:site_name" content="Wong&#39;s Blog">
+<meta property="og:description" content="前言 已经使用Swift这门新兴的OO语言已经有很久了，作为面向对象语言在没有特殊声明的时候系统会默认对属性和方法进行重载，虽说Swift不完全算一种动态语言，但是由于和OC依然藕断丝连Swift里面动态派发依然会损耗不小的性能，那么动态派发是什么，Swift的派发机制是什么？我们来深入了(zhuang)解(bi)一下。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://uonlyliveonce.com/images/Method-Dispatch-in-Swift/1.gif">
+<meta property="og:image" content="https://uonlyliveonce.com/images/Method-Dispatch-in-Swift/2.png">
+<meta property="og:image" content="https://uonlyliveonce.com/images/Method-Dispatch-in-Swift/3.png">
+<meta property="og:image" content="https://uonlyliveonce.com/images/Method-Dispatch-in-Swift/4.png">
+<meta property="og:image" content="https://uonlyliveonce.com/images/Method-Dispatch-in-Swift/5.png">
+<meta property="og:image" content="https://uonlyliveonce.com/images/Method-Dispatch-in-Swift/6.png">
+<meta property="og:image" content="https://uonlyliveonce.com/images/Method-Dispatch-in-Swift/7.png">
+<meta property="og:image" content="https://uonlyliveonce.com/images/Method-Dispatch-in-Swift/8.gif">
+<meta property="article:published_time" content="2017-12-07T07:35:23.000Z">
+<meta property="article:modified_time" content="2025-05-23T08:11:19.669Z">
+<meta property="article:author" content="Wong">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="Swift">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://uonlyliveonce.com/images/Method-Dispatch-in-Swift/1.gif">
+
+<link rel="canonical" href="https://uonlyliveonce.com/2017/12/07/2017-12-07-method_dispatch_in_swift/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Method Dispatch in Swift | Wong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Wong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You only live once!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://uonlyliveonce.com/2017/12/07/2017-12-07-method_dispatch_in_swift/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Wong">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Method Dispatch in Swift
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-12-07 15:35:23" itemprop="dateCreated datePublished" datetime="2017-12-07T15:35:23+08:00">2017-12-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mobile/" itemprop="url" rel="index"><span itemprop="name">Mobile</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><hr>
+<h3 id="已经使用Swift这门新兴的OO语言已经有很久了，作为面向对象语言在没有特殊声明的时候系统会默认对属性和方法进行重载，虽说Swift不完全算一种动态语言，但是由于和OC依然藕断丝连Swift里面动态派发依然会损耗不小的性能，那么动态派发是什么，Swift的派发机制是什么？我们来深入了-zhuang-解-bi-一下。"><a href="#已经使用Swift这门新兴的OO语言已经有很久了，作为面向对象语言在没有特殊声明的时候系统会默认对属性和方法进行重载，虽说Swift不完全算一种动态语言，但是由于和OC依然藕断丝连Swift里面动态派发依然会损耗不小的性能，那么动态派发是什么，Swift的派发机制是什么？我们来深入了-zhuang-解-bi-一下。" class="headerlink" title="已经使用Swift这门新兴的OO语言已经有很久了，作为面向对象语言在没有特殊声明的时候系统会默认对属性和方法进行重载，虽说Swift不完全算一种动态语言，但是由于和OC依然藕断丝连Swift里面动态派发依然会损耗不小的性能，那么动态派发是什么，Swift的派发机制是什么？我们来深入了(zhuang)解(bi)一下。"></a>已经使用Swift这门新兴的OO语言已经有很久了，作为面向对象语言在没有特殊声明的时候系统会默认对属性和方法进行重载，虽说Swift不完全算一种动态语言，但是由于和OC依然藕断丝连Swift里面动态派发依然会损耗不小的性能，那么动态派发是什么，Swift的派发机制是什么？我们来深入了(zhuang)解(bi)一下。</h3><span id="more"></span>
+
+<p><strong>开始装逼</strong><br><img src="/images/Method-Dispatch-in-Swift/1.gif" alt="1.gif"></p>
+<h3 id="滑腻腻的分割线"><a href="#滑腻腻的分割线" class="headerlink" title="滑腻腻的分割线"></a>滑腻腻的分割线</h3><hr>
+<p><strong>不同的引用类型和修饰符对于函数派发的影响</strong><br><img src="/images/Method-Dispatch-in-Swift/2.png" alt="2.png"></p>
+<h5 id="函数派发就是当调用一个方法时候程序判断以何种调用方法去调用的机制。每次的函数调用都会触发这种机制，但是你又不会注意太多。在编码时候，了解函数的派发机制是至关重要，同时能解释其中的一些令人困惑的问题。"><a href="#函数派发就是当调用一个方法时候程序判断以何种调用方法去调用的机制。每次的函数调用都会触发这种机制，但是你又不会注意太多。在编码时候，了解函数的派发机制是至关重要，同时能解释其中的一些令人困惑的问题。" class="headerlink" title="函数派发就是当调用一个方法时候程序判断以何种调用方法去调用的机制。每次的函数调用都会触发这种机制，但是你又不会注意太多。在编码时候，了解函数的派发机制是至关重要，同时能解释其中的一些令人困惑的问题。"></a>函数派发就是当调用一个方法时候程序判断以何种调用方法去调用的机制。每次的函数调用都会触发这种机制，但是你又不会注意太多。在编码时候，了解函数的派发机制是至关重要，同时能解释其中的一些令人困惑的问题。</h5><p>编译型语言有三种主要的函数派发机制：**直接派发(Direct Dispatch)<strong>、</strong>函数表派发(Table  Dispatch)<strong>、</strong>消息机制派发(Message Dispatch)**，下面我会详细解释这几种机制。大多数语言支持一种或两种。Java默认使用的是函数表派发，但是可以通过 <code>final</code> 关键字来进行直接派发。C++默认使用的是直接派发，但是可以通过 <code>virtual </code> 关键字来进行函数表派发。Objective-C 只能使用消息机制派发, 但允许开发者使用 C 直接派发来获取性能的提高。WTF但是Swift都支持，这很好，同时这个也是大多数开发人员混淆的源头，并且是大多数开发人员遇到过的问题。</p>
+<h3 id="派发的方法-Types-of-Dispatch"><a href="#派发的方法-Types-of-Dispatch" class="headerlink" title="派发的方法(Types of Dispatch )"></a>派发的方法(Types of Dispatch )</h3><p>派发的目的是告诉CPU找到特定方法的可执行的代码搁哪呢。我们在深入了解之前先了解一下这三种派发方法，以及每种方式在动态性和性能之间的取舍。</p>
+<h3 id="直接派发-Direct-Dispatch"><a href="#直接派发-Direct-Dispatch" class="headerlink" title="直接派发 (Direct Dispatch)"></a>直接派发 (Direct Dispatch)</h3><p>直接派发是最快的一种函数派发方法。不但因为在汇编的层面调用的指令集最少，而且编译器还能够有很大的优化空间, 例如函数内联等, 但这不在这篇博客的讨论范围. 直接派发也有人称为静态调用。然而, 对于编程来说直接调用也是最大的局限, 而且因为缺乏动态性所以没办法支持继承。</p>
+<h3 id="函数表派发-Table-Dispatch"><a href="#函数表派发-Table-Dispatch" class="headerlink" title="函数表派发 (Table Dispatch )"></a>函数表派发 (Table Dispatch )</h3><p>函数表派发是编译型语言实现动态化最普遍的实现方式。 函数表派发机制使用了一个数组来存储类声明的每一个函数的指针。 大部分语言把这个称为 “virtual table”(虚函数表)，而在Swift 里称为 “witness table”。每一个子类都有函数表的副本，里面记录着父类所有的函数，重写之后的函数会替代父类对应的函数。 一个子类新添加的函数, 都会被插入到这个数组的最后。在运行时会去查表调用响应的函数。</p>
+<h4 id="举个🌰"><a href="#举个🌰" class="headerlink" title="举个🌰"></a>举个🌰</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">class ParentClass &#123;</span><br><span class="line">    func method1() &#123;&#125;</span><br><span class="line">    func method2() &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line">class ChildClass: ParentClass &#123;</span><br><span class="line">    override func method2() &#123;&#125;</span><br><span class="line">    func method3() &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这个情况下, 编译器会创建两个函数表, 一个是<code>ParentClass</code>的, 另一个是 <code>ChildClass</code>的：<br><img src="/images/Method-Dispatch-in-Swift/3.png" alt="3.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">let obj = ChildClass()</span><br><span class="line">obj.method2()</span><br></pre></td></tr></table></figure>
+<p>####当一个函数被调用时, 会经历下面的几个过程：</p>
+<ul>
+<li>读取函数表中地址为<code>0xB00</code>的对象。</li>
+<li>读取函数指针的索引。在例子里, method2 的索引是1(偏移量), 也就是 0xB00 + 1。</li>
+<li>跳转到<code>0x222</code></li>
+</ul>
+<p>表查找非常简单，易实现的，性能特征是可预知的。然而，与直接调度相比，这种调度方法仍然很慢。从<code>byte-code</code>的角度来看，有两个额外的读取和一个跳转，这同时增加了不少性能开销。另一个慢的原因在于编译器可能会由于函数内执行的任务导致无法优化。</p>
+<p>这种基于数组的实现, 缺陷在于函数表无法拓展。子类会在虚数函数表的最后插入新的函数，没有位置可以让 extension 安全地插入函数。这篇 <a target="_blank" rel="noopener" href="https://lists.swift.org/pipermail/swift-evolution/Week-of-Mon-20151207/001922.html">swift-evolution post</a> 很详细地描述了这么做的局限性。</p>
+<h3 id="消息派发-Message-Dispatch"><a href="#消息派发-Message-Dispatch" class="headerlink" title="消息派发 (Message Dispatch )"></a>消息派发 (Message Dispatch )</h3><p>消息派发是最广泛的动态调用函数的方法。也是<code>Cocoa</code>的中流砥柱，这种机制也为  <a target="_blank" rel="noopener" href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html">KVO</a>, <a target="_blank" rel="noopener" href="https://developer.apple.com/reference/uikit/uiappearance">UIAppearence</a> 和 <a target="_blank" rel="noopener" href="https://developer.apple.com/library/content///documentation/Cocoa/Conceptual/CoreData/index.html">CoreData</a> 打下了基础。这种机制的关键是允许开发者在运行时改变函数的实现。不仅可使用  <a target="_blank" rel="noopener" href="https://www.mikeash.com/pyblog/friday-qa-2010-01-29-method-replacement-for-fun-and-profit.html">swizzling</a> 来改变，还可以用 <a target="_blank" rel="noopener" href="http://stackoverflow.com/a/38878119/255489">isa-swizzling</a> 修改对象的继承关系，可以在面向对象的基础上实现自定义派发。</p>
+<h4 id="再举个🌰"><a href="#再举个🌰" class="headerlink" title="再举个🌰"></a>再举个🌰</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">class ParentClass &#123;</span><br><span class="line">    dynamic func method1() &#123;&#125;</span><br><span class="line">    dynamic func method2() &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line">class ChildClass: ParentClass &#123;</span><br><span class="line">    override func method2() &#123;&#125;</span><br><span class="line">    dynamic func method3() &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Swift 会用树来构建这种继承关系:<br><img src="/images/Method-Dispatch-in-Swift/4.png" alt="4.png"><br>当一个消息被转发, 运行时会顺着类的继承关系向上查找应该被调用的函数。如果你觉得这样做效率很低, 它确实很低。 然而, 只要缓存建立了起来。这个查找过程就会通过缓存来把性能提高到和函数表派发一样快。但这只是消息机制的原理, 这里有一篇文章<a target="_blank" rel="noopener" href="http://www.friday.com/bbum/2009/12/18/objc_msgsend-part-1-the-road-map/">一篇文章</a>很深入的讲解了具体的技术细节。</p>
+<h3 id="Swift-的派发机制"><a href="#Swift-的派发机制" class="headerlink" title="Swift 的派发机制"></a>Swift 的派发机制</h3><p>那么，Swift是啥派发机制的呢？没有一个固定的的机制，有几种环境因素来影响使用哪种派发机制：</p>
+<ul>
+<li>声明的位置</li>
+<li>引用的类型</li>
+<li>特定的行为</li>
+<li>可见的优化<br>在说明之前, 我有必要说清楚, Swift 没有在文档里具体写明什么时候使用函数表什么时候使用消息派发机制。唯一的承诺是使用 dynamic 修饰的时候会通过 Objective-C 的运行时进行消息机制派发。以下我写的所有东西，都只是我在 Swift 3.0 里测试出来的结果，并且很可能在之后的版本更新里进行修改。博主会在近期使用Swift 4.0进行测试。</li>
+</ul>
+<h3 id="声明的位置-Location-Matters"><a href="#声明的位置-Location-Matters" class="headerlink" title="声明的位置(Location Matters)"></a>声明的位置(Location Matters)</h3><p>Swift有两个地方可以声明一个方法：在类声明的作用域，在extension中。根据声明的类型，这将改变调度的执行方式。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">class MyClass &#123;</span><br><span class="line">    func mainMethod() &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line">extension MyClass &#123;</span><br><span class="line">    func extensionMethod() &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上面的例子中，<code>mainMethod </code>将会使用函数表派发，<code>extensionMethod </code>将使用静态派发。当我第一次发现时候，我很意外。我不能确认这些方法有什么不同。下面是我根据类型，声明位置总结出来的函数派发方式的表格：<br><img src="/images/Method-Dispatch-in-Swift/5.png" alt="5.png"><br>下面有几条需要注意的：</p>
+<ul>
+<li>值类型总是使用直接派发的。这很易懂！</li>
+<li>Protocol 和 Classes 的 Extensions 使用的是直接派发。</li>
+<li><code>NSObject </code>和<code>NSObject </code>子类的 Extensions 使用的消息派发。</li>
+<li><code>NSObject </code>和<code>NSObject </code>子类的声明作用域里面函数都会使用函数表派发。</li>
+<li>协议里的声明以及带有默认实现的函数会使用函数表派发机制。</li>
+</ul>
+<h3 id="引用类型-Reference-Type-Matters"><a href="#引用类型-Reference-Type-Matters" class="headerlink" title="引用类型 (Reference Type Matters)"></a>引用类型 (Reference Type Matters)</h3><p>引用的类型同时也决定了函数派发的机制。这显而易见，这是一个重要的差异。当一个协议扩展和类型扩展同时实现了同一个函数，这种情况让我们很疑惑。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">protocol MyProtocol &#123;</span><br><span class="line">&#125;</span><br><span class="line">struct MyStruct: MyProtocol &#123;</span><br><span class="line">&#125;</span><br><span class="line">extension MyStruct &#123;</span><br><span class="line">    func extensionMethod() &#123;</span><br><span class="line">        print(&quot;In Struct&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">extension MyProtocol &#123;</span><br><span class="line">    func extensionMethod() &#123;</span><br><span class="line">        print(&quot;In Protocol&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">let myStruct = MyStruct()</span><br><span class="line">let proto: MyProtocol = myStruct</span><br><span class="line"> </span><br><span class="line">myStruct.extensionMethod() // -&gt; “In Struct”</span><br><span class="line">proto.extensionMethod() // -&gt; “In Protocol”</span><br></pre></td></tr></table></figure>
+<p>大多数刚刚接触Swift的人会认为<code>proto.extensionMethod()</code>调用的是结构体里面的实现。然而，引用的类型决定了派发的方式, 协议拓展里的函数会使用直接调用。如果把 <code>extensionMethod</code> 的声明移动到协议的声明位置的话，则会使用函数表派发，最终就会调用结构体里的实现。<br>而且，如果两种声明都使用的是直接派发，基于直接派发的机制，我们不可能实现重写Protocol里面的实现。这让很多新的Swift开发者会措手不及，这与Objective-C的机制背道而驰。</p>
+<p>Swift JIRA(缺陷跟踪管理系统) 也发现了几个 <a target="_blank" rel="noopener" href="https://bugs.swift.org/browse/SR-1422">bugs</a>，Swfit-Evolution 邮件列表里有一大堆讨论，也有一大堆<a target="_blank" rel="noopener" href="https://nomothetis.svbtle.com/the-ghost-of-swift-bugs-future">博客</a>讨论过这个。但是，这好像是故意这么做的, 虽然官方文档没有提过这件事情😒😒</p>
+<h3 id="指定派发方式-Specifying-Dispatch-Behavior"><a href="#指定派发方式-Specifying-Dispatch-Behavior" class="headerlink" title="指定派发方式 (Specifying Dispatch Behavior)"></a>指定派发方式 (Specifying Dispatch Behavior)</h3><p>Swift有一些修饰符可以指定派发方法。</p>
+<p><strong>final</strong><br><code>final </code>允许类里面声明的函数使用直接派发。这个关键字会移除函数的动态性。任何函数都可以使用这个关键字，甚至是extension里面已经 使用的直接派发的函数。这会让 Objective-C 在运行时获取不到这个函数，同时不会生成函数的<code>selector </code>。</p>
+<p><strong>dynamic</strong><br><code>dynamic </code>可以让类里面的函数使用消息机制派发。使用 <code>dynamic</code>, 必须导入 Foundation 框架，里面包括了 NSObject 和 Objective-C 的运行时。<code>dynamic</code>可以让声明在 extension 里面的函数能够被override。<code>dynamic</code> 可以用在所有NSObject的子类和 Swift 的原生类。</p>
+<p><strong>@objc &amp; @nonobjc</strong><br><code>@objc</code> 和 <code>@nonobjc</code> 声明了一个函数是否能被 Objective-C 的运行时捕获到。 使用 <code>@objc</code> 的典型例子就是给 <code>selector</code> 一个命名空间 <code>@objc(abc_methodName)</code>，让这个函数可以被 Objective-C 的运行时调用。 <code>@nonobjc</code> 会改变派发的方式，可以用来禁止消息机制派发这个函数，不让这个函数注册到 Objective-C 的运行时里。 我不确定这跟 <code>final</code> 有什么区别， 因为从使用场景来说也几乎一样。我个人来说更喜欢 <code>final</code>，因为意图更加明显。个人感觉<code>@objc </code> <code> @nonobjc</code>这两个是为了与OC混编时候更加方便，而<code>final</code>是为Swift准备的原生关键字。</p>
+<p><strong>final @objc</strong><br>可以在标记为 <code>final</code> 的同时，也使用 <code>@objc</code> 来让函数可以使用消息机制派发。这么做的结果就是，调用函数的时候会使用直接派发，但也会在 Objective-C 的运行时里注册响应的 selector。函数可以响应 perform(selector:) 以及别的 Objective-C 特性，但在直接调用时又可以有直接派发的性能。</p>
+<p><strong>@inline</strong><br>Swift 也支持 <code>@inline</code>，告诉编译器可以使用直接派发。有趣的是<code>dynamic @inline(__always) func dynamicOrDirect() &#123;&#125;</code> 也可以通过编译！它仅仅是一个声明，开发者大会表示函数依然是使用消息派发。这就像一个未声明的行为，应该避免这样使用。</p>
+<h3 id="修饰符总结-Modifier-Overview"><a href="#修饰符总结-Modifier-Overview" class="headerlink" title="修饰符总结 (Modifier Overview)"></a>修饰符总结 (Modifier Overview)</h3><p><img src="/images/Method-Dispatch-in-Swift/6.png" alt="6.png"></p>
+<p>这张图总结这些关键字对于 Swift 派发方式的影响，想看范例的话可以看<a target="_blank" rel="noopener" href="https://gist.github.com/KingOfBrian/778dc93bffddf25b2c414360727c273b#file-message-swift">这里</a>。</p>
+<h3 id="显示优化-Visibility-Will-Optimize"><a href="#显示优化-Visibility-Will-Optimize" class="headerlink" title="显示优化 (Visibility Will Optimize)"></a>显示优化 (Visibility Will Optimize)</h3><p>Swift 将会尽力去优化函数派发的方式。例如，如果你有一个函数从来没有 override，Swift 就会检测并且在可能的情况下使用直接派发。这个优化大多数情况下都很好，但对于使用了 target / action 模式的 Cocoa 开发者就不怎么友好了。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">override func viewDidLoad() &#123;</span><br><span class="line">    super.viewDidLoad()</span><br><span class="line">    navigationItem.rightBarButtonItem = UIBarButtonItem(</span><br><span class="line">        title: &quot;Sign In&quot;, style: .plain, target: nil,</span><br><span class="line">        action: #selector(ViewController.signInAction)</span><br><span class="line">    )</span><br><span class="line">&#125;</span><br><span class="line">private func signInAction() &#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>编译会抛出一个错误: <code>Argument of &#39;#selector&#39; refers to a method that is not exposed to Objective-C</code>Objective-C 无法获取 #selector 指定的函数。你如果记得 Swift 会把这个函数优化为直接派发的话，就会理解了。 修复这里很简单：加上<code>@objc</code> 或者 <code>dynamic</code> 就可以保证 Objective-C 的运行时可以获取到函数。这种类型的错误也会发生在<code>UIAppearance</code> 上，依赖于 proxy 和 <code>NSInvocation</code>。</p>
+<p>另一点是, 如果你没有使用 <code>dynamic</code> 修饰的话， 这个优化会让 KVO 失效。如果一个属性绑定了 KVO 的话，而这个属性的 getter 和 setter 会被优化为直接派发，代码依旧可以通过编译，不过动态生成的 KVO 函数就不会被触发。</p>
+<p>Swift 的博客有一篇<a target="_blank" rel="noopener" href="https://developer.apple.com/swift/blog/?id=27">很赞的文章</a>描述了相关的细节，和这些优化背后的考虑。</p>
+<h3 id="派发总结-Dispatch-Summary"><a href="#派发总结-Dispatch-Summary" class="headerlink" title="派发总结 (Dispatch Summary)"></a>派发总结 (Dispatch Summary)</h3><p>这里有很多需要记住的规则，所以我整理了一个表格：</p>
+<p><img src="/images/Method-Dispatch-in-Swift/7.png" alt="7.png"></p>
+<h3 id="NSObject-以及动态性的损失-NSObject-and-the-Loss-of-Dynamic-Behavior"><a href="#NSObject-以及动态性的损失-NSObject-and-the-Loss-of-Dynamic-Behavior" class="headerlink" title="NSObject 以及动态性的损失 (NSObject and the Loss of Dynamic Behavior)"></a>NSObject 以及动态性的损失 (NSObject and the Loss of Dynamic Behavior)</h3><p>之前还有一些 Cocoa 开发者<a target="_blank" rel="noopener" href="http://mjtsai.com/blog/2016/05/21/dynamic-swift-2/">讨论动态行为带来的问题</a>。 这段讨论很有趣，提了一大堆不同的观点。我希望可以在这里继续探讨一下，有几个 Swift 的派发方式我觉得损害了动态性，顺便说一下我的解决方案。</p>
+<h3 id="NSObject-的函数表派发-Table-Dispatch-in-NSObject"><a href="#NSObject-的函数表派发-Table-Dispatch-in-NSObject" class="headerlink" title="NSObject 的函数表派发 (Table Dispatch in NSObject)"></a>NSObject 的函数表派发 (Table Dispatch in NSObject)</h3><p>之前，我说明了一个<code>NSObject</code> 子类作用域里面定义的函数会使用函数表派发。但我觉得很迷惑，很难解释清楚，并且由于下面几个原因，这也只带来了一点点性能的提升：</p>
+<ul>
+<li>大部分 <code>NSObject</code> 的子类都是在 <code>obj_msgSend</code> 的基础上构建的. 我很怀疑这些派发方式的优化，实际到底会给 Cocoa 的子类带来多大的提升.</li>
+<li>大多数 Swift 的 <code>NSObject</code> 子类都会使用 extension 进行拓展, 都没办法使用这种优化。<br>最后, 有一些小细节会让派发方式变得很复杂。</li>
+</ul>
+<h3 id="NSObject-作为一个选择-NSObject-as-a-Choice"><a href="#NSObject-作为一个选择-NSObject-as-a-Choice" class="headerlink" title="NSObject 作为一个选择 (NSObject as a Choice)"></a>NSObject 作为一个选择 (NSObject as a Choice)</h3><p>使用静态派发的话结构体是不错的选择，而使用消息机制派发的话则可以考虑 <code>NSObject</code>。 现在，如果你想跟一个刚学 Swift 的开发者解释为什么某个东西是一个 <code>NSObject</code> 的子类，你不得不去介绍 Objective-C。现在没有任何理由去继承 <code>NSObject</code> 构建类，除非你需要使用 Objective-C 构建的框架。</p>
+<p>目前来说，<code>NSObject</code> 在 Swift 里的派发方式，一个字总结就是TM复杂，跟理想还是有差距。我比较想看到这个修改：当你继承 <code>NSObject</code> 的时候，这是一个你想要完全使用动态消息机制的表现。</p>
+<h3 id="显式动态性声明-Implicit-Dynamic-Modification"><a href="#显式动态性声明-Implicit-Dynamic-Modification" class="headerlink" title="显式动态性声明 (Implicit Dynamic Modification)"></a>显式动态性声明 (Implicit Dynamic Modification)</h3><p>另一个 Swift 可以改进的地方就是函数动态性的检测。我感觉检测到一个函数被 <code>#selector</code> 和 <code>#keypath</code> 引用时要自动把这些函数标记为 <code>dynamic</code>，这样的话就会解决大部分 <code>UIAppearance</code> 的动态问题, 但也许有别的编译时的处理方式可以标记这些函数。</p>
+<h3 id="Error-以及-Bug-Errors-and-Bugs"><a href="#Error-以及-Bug-Errors-and-Bugs" class="headerlink" title="Error 以及 Bug (Errors and Bugs)"></a>Error 以及 Bug (Errors and Bugs)</h3><p>为了让我们对 Swift 的派发方式有更多了解，让我们来看一下 Swift 开发者遇到过的 error。</p>
+<h4 id="SR-584"><a href="#SR-584" class="headerlink" title="SR-584"></a>SR-584</h4><p>这个 <a target="_blank" rel="noopener" href="https://bugs.swift.org/browse/SR-584">Swift bug</a> 是 Swift 函数派发的一个功能。存在于 NSObject 子类声明的函数(函数表派发)，以及声明在 extension 的函数(消息机制派发)中. 为了更好地描述这个情况, 我们先来创建一个类：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">class Person: NSObject &#123;</span><br><span class="line">    func sayHi() &#123;</span><br><span class="line">        print(&quot;Hello&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">func greetings(person: Person) &#123;</span><br><span class="line">    person.sayHi()</span><br><span class="line">&#125;</span><br><span class="line">greetings(person: Person()) // prints &#x27;Hello&#x27;</span><br></pre></td></tr></table></figure>
+<p><code>reetings(person:)</code> 函数使用函数表派发来调用 <code>sayHi()</code>。 就像我们期望的, “Hello” 会被打印。没什么好讲的地方, 那现在让我们继承 <code>Person</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class MisunderstoodPerson: Person &#123;&#125;</span><br><span class="line">extension MisunderstoodPerson &#123;</span><br><span class="line">    override func sayHi() &#123;</span><br><span class="line">        print(&quot;No one gets me.&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">greetings(person: MisunderstoodPerson()) // prints &#x27;Hello&#x27;</span><br></pre></td></tr></table></figure>
+<p>可以看到去<code>sayHi()</code> 函数是在 extension 里声明的, 会使用消息机制进行调用. 当<code>greetings(person:)</code> 被触发时, <code>sayHi()</code> 会通过函数表被派发到 <code>Person</code> 对象，而<code>misunderstoodPerson</code> 重写之后会使用消息机制，而 <code>MisunderstoodPerson</code> 的函数表依旧保留了 <code>Person</code> 的实现，紧接着歧义就产生了。</p>
+<p>在这里的解决方法是保证函数使用相同的消息派发机制。你可以给函数加上 <code>dynamic</code> 修饰符，或者是把函数的实现从 extension 移动到类最初声明的作用域里。</p>
+<p>理解了 Swift 的派发方式，就能够理解这个行为产生的原因了，虽然 Swift 不应该让我们遇到这问题。<br>####SR-103<br>这个 <a target="_blank" rel="noopener" href="https://bugs.swift.org/browse/SR-103">Swift bug</a> 触发了定义在协议拓展的默认实现，即使是子类已经实现这个函数的情况下。为了说明这个问题，我们先定义一个协议，并且给里面的函数一个默认实现。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">protocol Greetable &#123;</span><br><span class="line">    func sayHi()</span><br><span class="line">&#125;</span><br><span class="line">extension Greetable &#123;</span><br><span class="line">    func sayHi() &#123;</span><br><span class="line">        print(&quot;Hello&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">func greetings(greeter: Greetable) &#123;</span><br><span class="line">    greeter.sayHi()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在, 让我们定义一个遵守了这个协议的类。先定义一个 <code>Person</code> 类, 遵守 <code>Greetable</code> 协议，然后定义一个子类 <code>LoudPerson</code>，重写<code>sayHi()</code> 方法。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class Person: Greetable &#123;</span><br><span class="line">&#125;</span><br><span class="line">class LoudPerson: Person &#123;</span><br><span class="line">    func sayHi() &#123;</span><br><span class="line">        print(&quot;HELLO&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>你们发现 <code>LoudPerson</code> 实现的函数前面没有 <code>override</code> 修饰，这是一个提示，也许代码不会像我们设想的那样运行。在这个例子里，<code>LoudPerson</code> 没有在 <code>Greetable</code> 的协议记录表里成功注册，当 <code>sayHi() </code>通过 <code>Greetable</code> 协议派发时，默认的实现就会被调用。</p>
+<p>解决的方法就是，在类声明的作用域里就要提供所有协议里定义的函数，即使已经有默认实现。或者，你可以在类的前面加上一个<code>final</code> 修饰符，保证这个类不会被继承。</p>
+<p>Doug Gregor 在 <a target="_blank" rel="noopener" href="https://lists.swift.org/pipermail/swift-evolution/Week-of-Mon-20151207/000928.html">Swift-Evolution 邮件列表</a>里提到，通过显式地重新把函数声明为类的函数，就可以解决这个问题，并且不会偏离我们的设想。</p>
+<h4 id="因吹斯汀-Error-Interesting-Error"><a href="#因吹斯汀-Error-Interesting-Error" class="headerlink" title="因吹斯汀 Error (Interesting Error)"></a>因吹斯汀 Error (Interesting Error)</h4><p>有一个很好玩的编译错误, 可以窥见到 Swift 的计划. 就像之前说的, 类拓展使用直接派发, 所以你试图 override 一个声明在 extension 里的函数的时候会发生什么?</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">class MyClass &#123;</span><br><span class="line">&#125;</span><br><span class="line">extension MyClass &#123;</span><br><span class="line">    func extensionMethod() &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line">class SubClass: MyClass &#123;</span><br><span class="line">    override func extensionMethod() &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的代码会触发一个编译错误 <code>Declarations in extensions can not be overridden yet</code>(声明在 extension 里的方法不可以被重写)。这可能是 Swift 团队打算加强函数表派发的一个征兆。又或者这只是我过度解读，觉得这门语言可以优化的地方。</p>
+<p><img src="/images/Method-Dispatch-in-Swift/8.gif" alt="8.gif"></p>
+<h3 id="致谢-Thanks"><a href="#致谢-Thanks" class="headerlink" title="致谢 Thanks"></a>致谢 Thanks</h3><p>我希望了解函数派发机制的过程中你感受到了乐趣，并且可以帮助你更好的理解 Swift。虽然我抱怨了 <code>NSObject</code> 相关的一些东西，但我还是觉得 Swift 提供了高性能的可能性，我只是希望可以有足够简单的方式，让这篇博客没有存在的必要。<br>原文:</p>
+<ul>
+<li>原文： <a target="_blank" rel="noopener" href="https://www.raizlabs.com/dev/2016/12/swift-method-dispatch/?utm_campaign=This+Week+in+Swift&utm_medium=email&utm_source=This_Week_in_Swift_114">Method Dispatch in Swift</a></li>
+<li>作者： <a target="_blank" rel="noopener" href="https://www.raizlabs.com/dev/author/brian-kingraizlabs-com/">Brain King</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/Swift/" rel="tag"># Swift</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/10/14/2017-10-14-local_package_in_rn/" rel="prev" title="RN 原生混编中的本地离线打包">
+      <i class="fa fa-chevron-left"></i> RN 原生混编中的本地离线打包
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/12/18/2017-12-18-add_statistics_use_leancloud_in_hexo/" rel="next" title="使用LeanCloud对Hexo构建的博客配置统计功能">
+      使用LeanCloud对Hexo构建的博客配置统计功能 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%B2%E7%BB%8F%E4%BD%BF%E7%94%A8Swift%E8%BF%99%E9%97%A8%E6%96%B0%E5%85%B4%E7%9A%84OO%E8%AF%AD%E8%A8%80%E5%B7%B2%E7%BB%8F%E6%9C%89%E5%BE%88%E4%B9%85%E4%BA%86%EF%BC%8C%E4%BD%9C%E4%B8%BA%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E8%AF%AD%E8%A8%80%E5%9C%A8%E6%B2%A1%E6%9C%89%E7%89%B9%E6%AE%8A%E5%A3%B0%E6%98%8E%E7%9A%84%E6%97%B6%E5%80%99%E7%B3%BB%E7%BB%9F%E4%BC%9A%E9%BB%98%E8%AE%A4%E5%AF%B9%E5%B1%9E%E6%80%A7%E5%92%8C%E6%96%B9%E6%B3%95%E8%BF%9B%E8%A1%8C%E9%87%8D%E8%BD%BD%EF%BC%8C%E8%99%BD%E8%AF%B4Swift%E4%B8%8D%E5%AE%8C%E5%85%A8%E7%AE%97%E4%B8%80%E7%A7%8D%E5%8A%A8%E6%80%81%E8%AF%AD%E8%A8%80%EF%BC%8C%E4%BD%86%E6%98%AF%E7%94%B1%E4%BA%8E%E5%92%8COC%E4%BE%9D%E7%84%B6%E8%97%95%E6%96%AD%E4%B8%9D%E8%BF%9ESwift%E9%87%8C%E9%9D%A2%E5%8A%A8%E6%80%81%E6%B4%BE%E5%8F%91%E4%BE%9D%E7%84%B6%E4%BC%9A%E6%8D%9F%E8%80%97%E4%B8%8D%E5%B0%8F%E7%9A%84%E6%80%A7%E8%83%BD%EF%BC%8C%E9%82%A3%E4%B9%88%E5%8A%A8%E6%80%81%E6%B4%BE%E5%8F%91%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%8CSwift%E7%9A%84%E6%B4%BE%E5%8F%91%E6%9C%BA%E5%88%B6%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F%E6%88%91%E4%BB%AC%E6%9D%A5%E6%B7%B1%E5%85%A5%E4%BA%86-zhuang-%E8%A7%A3-bi-%E4%B8%80%E4%B8%8B%E3%80%82"><span class="nav-number">1.1.</span> <span class="nav-text">已经使用Swift这门新兴的OO语言已经有很久了，作为面向对象语言在没有特殊声明的时候系统会默认对属性和方法进行重载，虽说Swift不完全算一种动态语言，但是由于和OC依然藕断丝连Swift里面动态派发依然会损耗不小的性能，那么动态派发是什么，Swift的派发机制是什么？我们来深入了(zhuang)解(bi)一下。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BB%91%E8%85%BB%E8%85%BB%E7%9A%84%E5%88%86%E5%89%B2%E7%BA%BF"><span class="nav-number">1.2.</span> <span class="nav-text">滑腻腻的分割线</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E6%B4%BE%E5%8F%91%E5%B0%B1%E6%98%AF%E5%BD%93%E8%B0%83%E7%94%A8%E4%B8%80%E4%B8%AA%E6%96%B9%E6%B3%95%E6%97%B6%E5%80%99%E7%A8%8B%E5%BA%8F%E5%88%A4%E6%96%AD%E4%BB%A5%E4%BD%95%E7%A7%8D%E8%B0%83%E7%94%A8%E6%96%B9%E6%B3%95%E5%8E%BB%E8%B0%83%E7%94%A8%E7%9A%84%E6%9C%BA%E5%88%B6%E3%80%82%E6%AF%8F%E6%AC%A1%E7%9A%84%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E9%83%BD%E4%BC%9A%E8%A7%A6%E5%8F%91%E8%BF%99%E7%A7%8D%E6%9C%BA%E5%88%B6%EF%BC%8C%E4%BD%86%E6%98%AF%E4%BD%A0%E5%8F%88%E4%B8%8D%E4%BC%9A%E6%B3%A8%E6%84%8F%E5%A4%AA%E5%A4%9A%E3%80%82%E5%9C%A8%E7%BC%96%E7%A0%81%E6%97%B6%E5%80%99%EF%BC%8C%E4%BA%86%E8%A7%A3%E5%87%BD%E6%95%B0%E7%9A%84%E6%B4%BE%E5%8F%91%E6%9C%BA%E5%88%B6%E6%98%AF%E8%87%B3%E5%85%B3%E9%87%8D%E8%A6%81%EF%BC%8C%E5%90%8C%E6%97%B6%E8%83%BD%E8%A7%A3%E9%87%8A%E5%85%B6%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BB%A4%E4%BA%BA%E5%9B%B0%E6%83%91%E7%9A%84%E9%97%AE%E9%A2%98%E3%80%82"><span class="nav-number">1.2.0.1.</span> <span class="nav-text">函数派发就是当调用一个方法时候程序判断以何种调用方法去调用的机制。每次的函数调用都会触发这种机制，但是你又不会注意太多。在编码时候，了解函数的派发机制是至关重要，同时能解释其中的一些令人困惑的问题。</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B4%BE%E5%8F%91%E7%9A%84%E6%96%B9%E6%B3%95-Types-of-Dispatch"><span class="nav-number">1.3.</span> <span class="nav-text">派发的方法(Types of Dispatch )</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E6%B4%BE%E5%8F%91-Direct-Dispatch"><span class="nav-number">1.4.</span> <span class="nav-text">直接派发 (Direct Dispatch)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E8%A1%A8%E6%B4%BE%E5%8F%91-Table-Dispatch"><span class="nav-number">1.5.</span> <span class="nav-text">函数表派发 (Table Dispatch )</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BE%E4%B8%AA%F0%9F%8C%B0"><span class="nav-number">1.5.1.</span> <span class="nav-text">举个🌰</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E6%B4%BE%E5%8F%91-Message-Dispatch"><span class="nav-number">1.6.</span> <span class="nav-text">消息派发 (Message Dispatch )</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%8D%E4%B8%BE%E4%B8%AA%F0%9F%8C%B0"><span class="nav-number">1.6.1.</span> <span class="nav-text">再举个🌰</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Swift-%E7%9A%84%E6%B4%BE%E5%8F%91%E6%9C%BA%E5%88%B6"><span class="nav-number">1.7.</span> <span class="nav-text">Swift 的派发机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A3%B0%E6%98%8E%E7%9A%84%E4%BD%8D%E7%BD%AE-Location-Matters"><span class="nav-number">1.8.</span> <span class="nav-text">声明的位置(Location Matters)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B-Reference-Type-Matters"><span class="nav-number">1.9.</span> <span class="nav-text">引用类型 (Reference Type Matters)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E5%AE%9A%E6%B4%BE%E5%8F%91%E6%96%B9%E5%BC%8F-Specifying-Dispatch-Behavior"><span class="nav-number">1.10.</span> <span class="nav-text">指定派发方式 (Specifying Dispatch Behavior)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E9%A5%B0%E7%AC%A6%E6%80%BB%E7%BB%93-Modifier-Overview"><span class="nav-number">1.11.</span> <span class="nav-text">修饰符总结 (Modifier Overview)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%98%BE%E7%A4%BA%E4%BC%98%E5%8C%96-Visibility-Will-Optimize"><span class="nav-number">1.12.</span> <span class="nav-text">显示优化 (Visibility Will Optimize)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B4%BE%E5%8F%91%E6%80%BB%E7%BB%93-Dispatch-Summary"><span class="nav-number">1.13.</span> <span class="nav-text">派发总结 (Dispatch Summary)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NSObject-%E4%BB%A5%E5%8F%8A%E5%8A%A8%E6%80%81%E6%80%A7%E7%9A%84%E6%8D%9F%E5%A4%B1-NSObject-and-the-Loss-of-Dynamic-Behavior"><span class="nav-number">1.14.</span> <span class="nav-text">NSObject 以及动态性的损失 (NSObject and the Loss of Dynamic Behavior)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NSObject-%E7%9A%84%E5%87%BD%E6%95%B0%E8%A1%A8%E6%B4%BE%E5%8F%91-Table-Dispatch-in-NSObject"><span class="nav-number">1.15.</span> <span class="nav-text">NSObject 的函数表派发 (Table Dispatch in NSObject)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NSObject-%E4%BD%9C%E4%B8%BA%E4%B8%80%E4%B8%AA%E9%80%89%E6%8B%A9-NSObject-as-a-Choice"><span class="nav-number">1.16.</span> <span class="nav-text">NSObject 作为一个选择 (NSObject as a Choice)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%98%BE%E5%BC%8F%E5%8A%A8%E6%80%81%E6%80%A7%E5%A3%B0%E6%98%8E-Implicit-Dynamic-Modification"><span class="nav-number">1.17.</span> <span class="nav-text">显式动态性声明 (Implicit Dynamic Modification)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Error-%E4%BB%A5%E5%8F%8A-Bug-Errors-and-Bugs"><span class="nav-number">1.18.</span> <span class="nav-text">Error 以及 Bug (Errors and Bugs)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SR-584"><span class="nav-number">1.18.1.</span> <span class="nav-text">SR-584</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%A0%E5%90%B9%E6%96%AF%E6%B1%80-Error-Interesting-Error"><span class="nav-number">1.18.2.</span> <span class="nav-text">因吹斯汀 Error (Interesting Error)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%B4%E8%B0%A2-Thanks"><span class="nav-number">1.19.</span> <span class="nav-text">致谢 Thanks</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Wong</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/uonlyliveonce" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;uonlyliveonce" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:u_only_live_once@outlook.com" title="E-Mail → mailto:u_only_live_once@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wong</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

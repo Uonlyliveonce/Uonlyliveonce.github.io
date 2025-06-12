@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"uonlyliveonce.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Category的原理回顾OC对象的本质，每个OC对象都含有一个isa指针，arm64 之前，isa仅仅是一个指针，保存着对象或类对象内存地址，在 arm64 架构之后，apple对isa进行了优化，变成了一个共用体 union 结构，同时使用位域来存储更多的信息。OC对象的isa指针斌不是直接指向类对象或者是元类对象的，而是需要 &amp;ISA_MASK 通过位运算才能取到相应的地址，但是为什">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Category的原理">
+<meta property="og:url" content="https://uonlyliveonce.com/category">
+<meta property="og:site_name" content="Wong&#39;s Blog">
+<meta property="og:description" content="Category的原理回顾OC对象的本质，每个OC对象都含有一个isa指针，arm64 之前，isa仅仅是一个指针，保存着对象或类对象内存地址，在 arm64 架构之后，apple对isa进行了优化，变成了一个共用体 union 结构，同时使用位域来存储更多的信息。OC对象的isa指针斌不是直接指向类对象或者是元类对象的，而是需要 &amp;ISA_MASK 通过位运算才能取到相应的地址，但是为什">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-08-12T06:30:57.000Z">
+<meta property="article:modified_time" content="2025-05-23T08:11:19.670Z">
+<meta property="article:author" content="Wong">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="Runtime">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://uonlyliveonce.com/category">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Category的原理 | Wong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Wong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You only live once!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://uonlyliveonce.com/category">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Wong">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Category的原理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-12 14:30:57" itemprop="dateCreated datePublished" datetime="2018-08-12T14:30:57+08:00">2018-08-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mobile/" itemprop="url" rel="index"><span itemprop="name">Mobile</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Category的原理"><a href="#Category的原理" class="headerlink" title="Category的原理"></a>Category的原理</h1><p>回顾OC对象的本质，每个OC对象都含有一个isa指针，<code>arm64</code> 之前，isa仅仅是一个指针，保存着对象或类对象内存地址，在 <code>arm64</code> 架构之后，apple对isa进行了优化，变成了一个<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E8%81%94%E5%90%88%E4%BD%93">共用体</a> <code>union</code> 结构，同时使用位域来存储更多的信息。OC对象的isa指针斌不是直接指向类对象或者是元类对象的，而是需要 <code>&amp;ISA_MASK</code> 通过位运算才能取到相应的地址，但是为什么要这样做。</p>
+<span id="more"></span>
+
+<h2 id="Category"><a href="#Category" class="headerlink" title="Category"></a>Category</h2><p>我们先写一段代码，之后的分析都基于这段代码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">@interface People : NSObject</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)run;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation People &#123;</span><br><span class="line">    <span class="keyword">int</span> _age;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)run &#123;</span><br><span class="line">    NSLog(@<span class="string">&quot;People - run&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@<span class="function">interface <span class="title">People</span> <span class="params">(Test)</span> &lt;NSCopying&gt;</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">@<span class="title">property</span> <span class="params">(assign, nonatomic)</span> <span class="keyword">int</span> age</span>;</span><br><span class="line">- (<span class="keyword">void</span>)test;</span><br><span class="line">+ (<span class="keyword">void</span>)abc;</span><br><span class="line">- (<span class="keyword">void</span>)setAge:(<span class="keyword">int</span>)age;</span><br><span class="line">- (<span class="keyword">int</span>)age;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@<span class="function">implementation <span class="title">People</span> <span class="params">(Test)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">- <span class="params">(<span class="keyword">void</span>)</span>test </span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">void</span>)abc &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setAge:(<span class="keyword">int</span>)age &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">- (<span class="keyword">int</span>)age &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">25</span>;</span><br><span class="line">&#125;</span><br><span class="line">- (nonnull id)copyWithZone:(nullable NSZone *)zone &#123;</span><br><span class="line">    <span class="keyword">return</span> nil;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@<span class="function">interface <span class="title">People</span> <span class="params">(Test2)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">@end</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">@implementation <span class="title">People</span> <span class="params">(Test2)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">- <span class="params">(<span class="keyword">void</span>)</span>run </span>&#123;</span><br><span class="line">    NSLog(@<span class="string">&quot;People (Test2) - run&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+
+<p>之前讲到过实例对象的 <code>isa</code> 指向类对象，类对象的 <code>isa</code> 指向元类对象，当 <code>people</code> 实例对象调用 <code>run</code> 方法时，类对象的 <code>isa</code> 找到类对象的 <code>isa</code>，然后在类对象中查找对象方法，如果没有找到，就通过类对象的 <code>superclass</code> 找到父类对象，接着去寻找 <code>run</code> 方法。<br>分类中的对象方法依然是存储在类对象中的，同对象方法在同一个地方，那么调用步骤也同调用对象方法一样。如果是类方法的话，也同样是存储在元类对象中。</p>
+<h2 id="Category的结构"><a href="#Category的结构" class="headerlink" title="Category的结构"></a>Category的结构</h2><p>在 <code>objc-runtime-new.h</code> 中我们可以找到分类的定义</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">category_t</span> &#123;</span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *name;</span><br><span class="line">    <span class="keyword">classref_t</span> cls;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">method_list_t</span> *<span class="title">instanceMethods</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">method_list_t</span> *<span class="title">classMethods</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">protocol_list_t</span> *<span class="title">protocols</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">property_list_t</span> *<span class="title">instanceProperties</span>;</span></span><br><span class="line">    <span class="comment">// Fields below this point are not always present on disk.</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">property_list_t</span> *_<span class="title">classProperties</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">method_list_t</span> *<span class="title">methodsForMeta</span><span class="params">(<span class="keyword">bool</span> isMeta)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (isMeta) <span class="keyword">return</span> classMethods;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">return</span> instanceMethods;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">property_list_t</span> *<span class="title">propertiesForMeta</span><span class="params">(<span class="keyword">bool</span> isMeta, struct header_info *hi)</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>从源码可以找到我们平时使用的categroy、对象方法、类方法、协议和属性对应的存储方式。并且分类结构体中是不存在成员变量的，因此分类中是不允许添加成员变量的。分类中添加的属性并不会帮助我们自动生成成员变量，只会生成 <code>get</code> <code>set</code> 方法的声明，需要我们自己去实现。  </p>
+<p>我们通过命令行将 <code>People+Test.m</code> 文件转化为c++文件 <code>People+Test.cpp</code>，查看其中的编译过程。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xcrun -sdk iphoneos clang -arch arm64 -rewrite-objc People+Test.m</span><br></pre></td></tr></table></figure>
+
+<h3 id="category-t"><a href="#category-t" class="headerlink" title="_category_t"></a>_category_t</h3><p>在 <code>People+Test.cpp</code> 中可以看出 <code>_category_t</code> 结构体中，存放着类名、对象方法列表、类方法列表、协议列表以及属性列表。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">category_t</span> &#123;</span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *name;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> _<span class="title">class_t</span> *<span class="title">cls</span>;</span></span><br><span class="line">    <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> _<span class="title">method_list_t</span> *<span class="title">instance_methods</span>;</span></span><br><span class="line">    <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> _<span class="title">method_list_t</span> *<span class="title">class_methods</span>;</span></span><br><span class="line">    <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> _<span class="title">protocol_list_t</span> *<span class="title">protocols</span>;</span></span><br><span class="line">    <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> _<span class="title">prop_list_t</span> *<span class="title">properties</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="对象方法列表"><a href="#对象方法列表" class="headerlink" title="对象方法列表"></a>对象方法列表</h3><p>我们也可以看到 <code>_method_list_t</code> 类型的结构体</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">struct</span> /*_<span class="title">method_list_t</span>*/ &#123;</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> entsize;  <span class="comment">// sizeof(struct _objc_method)</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> method_count;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> _<span class="title">objc_method</span> <span class="title">method_list</span>[3];</span></span><br><span class="line">&#125; _OBJC_$_CATEGORY_INSTANCE_METHODS_People_$_Test __attribute__ ((used, <span class="built_in">section</span> (<span class="string">&quot;__DATA,__objc_const&quot;</span>))) = &#123;</span><br><span class="line">    <span class="built_in"><span class="keyword">sizeof</span></span>(_objc_method),</span><br><span class="line">    <span class="number">3</span>,</span><br><span class="line">    &#123;&#123;(struct objc_selector *)<span class="string">&quot;test&quot;</span>, <span class="string">&quot;v16@0:8&quot;</span>, (<span class="keyword">void</span> *)_I_People_Test_test&#125;,</span><br><span class="line">    &#123;(struct objc_selector *)<span class="string">&quot;setAge:&quot;</span>, <span class="string">&quot;v20@0:8i16&quot;</span>, (<span class="keyword">void</span> *)_I_People_Test_setAge_&#125;,</span><br><span class="line">    &#123;(struct objc_selector *)<span class="string">&quot;age&quot;</span>, <span class="string">&quot;i16@0:8&quot;</span>, (<span class="keyword">void</span> *)_I_People_Test_age&#125;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>我们发现这个结构体 <code>_OBJC_$_CATEGORY_INSTANCE_METHODS_Preson_$_Test</code> 从名称可以看出是 <code>INSTANCE_METHODS</code> 对象方法，并且一一对应为上面结构体内赋值。我们可以看到结构体中存储了方法占用的内存，方法数量，以及方法列表。并且从上图中找到分类中我们实现对应的对象方法，<code>test</code>、<code>setAge</code>、<code>age</code>三个方法</p>
+<h3 id="类方法列表"><a href="#类方法列表" class="headerlink" title="类方法列表"></a>类方法列表</h3><p>接下来我们发现同样为 <code>_method_list_t</code> 类型的类方法结构体</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">struct</span> /*_<span class="title">method_list_t</span>*/ &#123;</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> entsize;  <span class="comment">// sizeof(struct _objc_method)</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> method_count;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> _<span class="title">objc_method</span> <span class="title">method_list</span>[1];</span></span><br><span class="line">&#125; _OBJC_$_CATEGORY_CLASS_METHODS_People_$_Test __attribute__ ((used, <span class="built_in">section</span> (<span class="string">&quot;__DATA,__objc_const&quot;</span>))) = &#123;</span><br><span class="line">    <span class="built_in"><span class="keyword">sizeof</span></span>(_objc_method),</span><br><span class="line">    <span class="number">1</span>,</span><br><span class="line">    &#123;&#123;(struct objc_selector *)<span class="string">&quot;classMethod&quot;</span>, <span class="string">&quot;v16@0:8&quot;</span>, (<span class="keyword">void</span> *)_C_People_Test_abc&#125;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>同上面对象方法列表一样，这个我们可以看出是类方法列表结构体 <code>_OBJC_$_CATEGORY_CLASS_METHODS_People_$_Test</code>，同对象方法结构体相同，同样可以看到我们实现的类方法 <code>classMethod</code>。</p>
+<h3 id="协议方法列表"><a href="#协议方法列表" class="headerlink" title="协议方法列表"></a>协议方法列表</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">char</span> *_OBJC_PROTOCOL_METHOD_TYPES_NSCopying [] __attribute__ ((used, <span class="built_in">section</span> (<span class="string">&quot;__DATA,__objc_const&quot;</span>))) =</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;@24@0:8^&#123;_NSZone=&#125;16&quot;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">struct</span> /*_<span class="title">method_list_t</span>*/ &#123;</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> entsize;  <span class="comment">// sizeof(struct _objc_method)</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> method_count;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> _<span class="title">objc_method</span> <span class="title">method_list</span>[1];</span></span><br><span class="line">&#125; _OBJC_PROTOCOL_INSTANCE_METHODS_NSCopying __attribute__ ((used, <span class="built_in">section</span> (<span class="string">&quot;__DATA,__objc_const&quot;</span>))) = &#123;</span><br><span class="line">    <span class="built_in"><span class="keyword">sizeof</span></span>(_objc_method),</span><br><span class="line">    <span class="number">1</span>,</span><br><span class="line">    &#123;&#123;(struct objc_selector *)<span class="string">&quot;copyWithZone:&quot;</span>, <span class="string">&quot;@24@0:8^&#123;_NSZone=&#125;16&quot;</span>, <span class="number">0</span>&#125;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">protocol_t</span> _<span class="title">OBJC_PROTOCOL_NSCopying</span> __<span class="title">attribute__</span> ((<span class="title">used</span>)) =</span> &#123;</span><br><span class="line">    <span class="number">0</span>,</span><br><span class="line">    <span class="string">&quot;NSCopying&quot;</span>,</span><br><span class="line">    <span class="number">0</span>,</span><br><span class="line">    (<span class="keyword">const</span> struct <span class="keyword">method_list_t</span> *)&amp;_OBJC_PROTOCOL_INSTANCE_METHODS_NSCopying,</span><br><span class="line">    <span class="number">0</span>,</span><br><span class="line">    <span class="number">0</span>,</span><br><span class="line">    <span class="number">0</span>,</span><br><span class="line">    <span class="number">0</span>,</span><br><span class="line">    <span class="built_in"><span class="keyword">sizeof</span></span>(<span class="keyword">_protocol_t</span>),</span><br><span class="line">    <span class="number">0</span>,</span><br><span class="line">    (<span class="keyword">const</span> <span class="keyword">char</span> **)&amp;_OBJC_PROTOCOL_METHOD_TYPES_NSCopying</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">protocol_t</span> *_<span class="title">OBJC_LABEL_PROTOCOL_</span>$_<span class="title">NSCopying</span> =</span> &amp;_OBJC_PROTOCOL_NSCopying;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">struct</span> /*_<span class="title">protocol_list_t</span>*/ &#123;</span></span><br><span class="line">    <span class="keyword">long</span> protocol_count;  <span class="comment">// Note, this is 32/64 bit</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> _<span class="title">protocol_t</span> *<span class="title">super_protocols</span>[1];</span></span><br><span class="line">&#125; _OBJC_CATEGORY_PROTOCOLS_$_People_$_Test __attribute__ ((used, <span class="built_in">section</span> (<span class="string">&quot;__DATA,__objc_const&quot;</span>))) = &#123;</span><br><span class="line">    <span class="number">1</span>,</span><br><span class="line">    &amp;_OBJC_PROTOCOL_NSCopying</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>通过上述源码可以看到先将协议方法通过 <code>_method_list_t</code> 结构体存储，之后通过 <code>_protocol_t</code> 结构体存储在 <code>_OBJC_CATEGORY_PROTOCOLS_$_People_$_Test</code> 中同 <code>_protocol_list_t</code> 结构体一一对应，分别为 <code>protocol_count</code> 协议数量以及存储了协议方法的 <code>_protocol_t</code> 结构体。</p>
+<h3 id="属性列表"><a href="#属性列表" class="headerlink" title="属性列表"></a>属性列表</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">struct</span> /*_<span class="title">prop_list_t</span>*/ &#123;</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> entsize;  <span class="comment">// sizeof(struct _prop_t)</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> count_of_properties;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> _<span class="title">prop_t</span> <span class="title">prop_list</span>[1];</span></span><br><span class="line">&#125; _OBJC_$_PROP_LIST_People_$_Test __attribute__ ((used, <span class="built_in">section</span> (<span class="string">&quot;__DATA,__objc_const&quot;</span>))) = &#123;</span><br><span class="line">    <span class="built_in"><span class="keyword">sizeof</span></span>(<span class="keyword">_prop_t</span>),</span><br><span class="line">    <span class="number">1</span>,</span><br><span class="line">    &#123;&#123;<span class="string">&quot;age&quot;</span>,<span class="string">&quot;Ti,N&quot;</span>&#125;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>属性列表结构体 <code>_OBJC_$_PROP_LIST_People_$_Test</code> 同 <code>_prop_list_t</code> 结构体对应，存储属性的占用空间、属性属性数量以及属性列表，从上图中可以看到我们自己写的age属性。</p>
+<h3 id="OBJC-CATEGORY-People-Test"><a href="#OBJC-CATEGORY-People-Test" class="headerlink" title="OBJC$CATEGORY_People$_Test"></a><em>OBJC</em>$<em>CATEGORY_People</em>$_Test</h3><p>对比一下 <code>_category_t</code> 结构体的实现</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">category_t</span> &#123;</span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *name;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> _<span class="title">class_t</span> *<span class="title">cls</span>;</span></span><br><span class="line">    <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> _<span class="title">method_list_t</span> *<span class="title">instance_methods</span>;</span></span><br><span class="line">    <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> _<span class="title">method_list_t</span> *<span class="title">class_methods</span>;</span></span><br><span class="line">    <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> _<span class="title">protocol_list_t</span> *<span class="title">protocols</span>;</span></span><br><span class="line">    <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> _<span class="title">prop_list_t</span> *<span class="title">properties</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> __declspec(dllimport) <span class="class"><span class="keyword">struct</span> _<span class="title">class_t</span> <span class="title">OBJC_CLASS_</span>$_<span class="title">People</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">struct</span> _<span class="title">category_t</span> _<span class="title">OBJC_</span>$_<span class="title">CATEGORY_People_</span>$_<span class="title">Test</span> __<span class="title">attribute__</span> ((<span class="title">used</span>, <span class="title">section</span> (&quot;__<span class="title">DATA</span>,__<span class="title">objc_const</span>&quot;))) =</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;People&quot;</span>,</span><br><span class="line">    <span class="number">0</span>, <span class="comment">// &amp;OBJC_CLASS_$_People,</span></span><br><span class="line">    (<span class="keyword">const</span> struct <span class="keyword">_method_list_t</span> *)&amp;_OBJC_$_CATEGORY_INSTANCE_METHODS_People_$_Test,</span><br><span class="line">    (<span class="keyword">const</span> struct <span class="keyword">_method_list_t</span> *)&amp;_OBJC_$_CATEGORY_CLASS_METHODS_People_$_Test,</span><br><span class="line">    (<span class="keyword">const</span> struct <span class="keyword">_protocol_list_t</span> *)&amp;_OBJC_CATEGORY_PROTOCOLS_$_People_$_Test,</span><br><span class="line">    (<span class="keyword">const</span> struct <span class="keyword">_prop_list_t</span> *)&amp;_OBJC_$_PROP_LIST_People_$_Test,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> OBJC_CATEGORY_SETUP_$_People_$_Test(<span class="keyword">void</span> ) &#123;</span><br><span class="line">    _OBJC_$_CATEGORY_People_$_Test.cls = &amp;OBJC_CLASS_$_People;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上下一一对应，并且我们看到定义 <code>_class_t</code> 类型的 <code>OBJC_CLASS_$_People</code> 结构体，最后将 <code>_OBJC_$_CATEGORY_People_$_Test</code> 的 <code>cls</code> 指针指向 <code>OBJC_CLASS_$_People</code> 结构体地址，<code>cls</code> 指针指向的应该是分类的主类类对象的地址。</p>
+<h2 id="分类在运行时的操作"><a href="#分类在运行时的操作" class="headerlink" title="分类在运行时的操作"></a>分类在运行时的操作</h2><p>通过分析我们发现分类源码中是将我们定义的对象方法、类方法、属性等都存放在 <code>catagory_t</code> 结构体中。接下来我们在回到 <code>runtime</code> 源码查看方法、类方法、属性等是如何存储在类对象中的。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/***********************************************************************</span></span><br><span class="line"><span class="comment">* _objc_init</span></span><br><span class="line"><span class="comment">* Bootstrap initialization. Registers our image notifier with dyld.</span></span><br><span class="line"><span class="comment">* Called by libSystem BEFORE library initialization time</span></span><br><span class="line"><span class="comment">**********************************************************************/</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> _objc_init(<span class="keyword">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">bool</span> initialized = <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">if</span> (initialized) <span class="keyword">return</span>;</span><br><span class="line">    initialized = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// fixme defer initialization until an objc-using image is found?</span></span><br><span class="line">    <span class="built_in">environ_init</span>();</span><br><span class="line">    <span class="built_in">tls_init</span>();</span><br><span class="line">    <span class="built_in">static_init</span>();</span><br><span class="line">    <span class="built_in">lock_init</span>();</span><br><span class="line">    <span class="built_in">exception_init</span>();</span><br><span class="line"></span><br><span class="line">    _dyld_objc_notify_register(&amp;map_images, load_images, unmap_image);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们找到 <code>_read_images</code> 函数，找到加载分类相关的代码</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Discover categories.</span></span><br><span class="line"><span class="keyword">for</span> (EACH_HEADER) &#123;</span><br><span class="line">    <span class="keyword">category_t</span> **catlist =</span><br><span class="line">        _getObjc2CategoryList(hi, &amp;count);</span><br><span class="line">    <span class="keyword">bool</span> hasClassProperties = hi-&gt;<span class="built_in">info</span>()-&gt;<span class="built_in">hasCategoryClassProperties</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line">        <span class="keyword">category_t</span> *cat = catlist[i];</span><br><span class="line">        Class cls = <span class="built_in">remapClass</span>(cat-&gt;cls);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!cls) &#123;</span><br><span class="line">            <span class="comment">// Category&#x27;s target class is missing (probably weak-linked).</span></span><br><span class="line">            <span class="comment">// Disavow any knowledge of this category.</span></span><br><span class="line">            catlist[i] = nil;</span><br><span class="line">            <span class="keyword">if</span> (PrintConnecting) &#123;</span><br><span class="line">                _objc_inform(<span class="string">&quot;CLASS: IGNORING category \?\?\?(%s) %p with &quot;</span></span><br><span class="line">                                <span class="string">&quot;missing weak-linked target class&quot;</span>,</span><br><span class="line">                                cat-&gt;name, cat);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Process this category.</span></span><br><span class="line">        <span class="comment">// First, register the category with its target class.</span></span><br><span class="line">        <span class="comment">// Then, rebuild the class&#x27;s method lists (etc) if</span></span><br><span class="line">        <span class="comment">// the class is realized.</span></span><br><span class="line">        <span class="keyword">bool</span> classExists = NO;</span><br><span class="line">        <span class="keyword">if</span> (cat-&gt;instanceMethods ||  cat-&gt;protocols  </span><br><span class="line">            ||  cat-&gt;instanceProperties)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">addUnattachedCategoryForClass</span>(cat, cls, hi);</span><br><span class="line">            <span class="keyword">if</span> (cls-&gt;<span class="built_in">isRealized</span>()) &#123;</span><br><span class="line">                <span class="built_in">remethodizeClass</span>(cls);</span><br><span class="line">                classExists = YES;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (PrintConnecting) &#123;</span><br><span class="line">                _objc_inform(<span class="string">&quot;CLASS: found category -%s(%s) %s&quot;</span>,</span><br><span class="line">                                cls-&gt;<span class="built_in">nameForLogging</span>(), cat-&gt;name,</span><br><span class="line">                                classExists ? <span class="string">&quot;on existing class&quot;</span> : <span class="string">&quot;&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (cat-&gt;classMethods  ||  cat-&gt;protocols  </span><br><span class="line">            ||  (hasClassProperties &amp;&amp; cat-&gt;_classProperties))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">addUnattachedCategoryForClass</span>(cat, cls-&gt;<span class="built_in">ISA</span>(), hi);</span><br><span class="line">            <span class="keyword">if</span> (cls-&gt;<span class="built_in">ISA</span>()-&gt;<span class="built_in">isRealized</span>()) &#123;</span><br><span class="line">                <span class="built_in">remethodizeClass</span>(cls-&gt;<span class="built_in">ISA</span>());</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (PrintConnecting) &#123;</span><br><span class="line">                _objc_inform(<span class="string">&quot;CLASS: found category +%s(%s)&quot;</span>,</span><br><span class="line">                                cls-&gt;<span class="built_in">nameForLogging</span>(), cat-&gt;name);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码是用来查找是否有分类的。通过 <code>_getObjc2CategoryList</code> 函数获取到分类列表之后，进行遍历，获取其中的方法、协议、属性等。可以看到最终都调用了 <code>remethodizeClass(cls)</code> 函数，我们来到 <code>remethodizeClass(cls)</code>函数内部查看。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/***********************************************************************</span></span><br><span class="line"><span class="comment">* remethodizeClass</span></span><br><span class="line"><span class="comment">* Attach outstanding categories to an existing class.</span></span><br><span class="line"><span class="comment">* Fixes up cls&#x27;s method list, protocol list, and property list.</span></span><br><span class="line"><span class="comment">* Updates method caches for cls and its subclasses.</span></span><br><span class="line"><span class="comment">* Locking: runtimeLock must be held by the caller</span></span><br><span class="line"><span class="comment">**********************************************************************/</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">remethodizeClass</span><span class="params">(Class cls)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    category_list *cats;</span><br><span class="line">    <span class="keyword">bool</span> isMeta;</span><br><span class="line"></span><br><span class="line">    runtimeLock.<span class="built_in">assertLocked</span>();</span><br><span class="line"></span><br><span class="line">    isMeta = cls-&gt;<span class="built_in">isMetaClass</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Re-methodizing: check for more categories</span></span><br><span class="line">    <span class="keyword">if</span> ((cats = <span class="built_in">unattachedCategoriesForClass</span>(cls, <span class="literal">false</span><span class="comment">/*not realizing*/</span>))) &#123;</span><br><span class="line">        <span class="keyword">if</span> (PrintConnecting) &#123;</span><br><span class="line">            _objc_inform(<span class="string">&quot;CLASS: attaching categories to class &#x27;%s&#x27; %s&quot;</span>,</span><br><span class="line">                         cls-&gt;<span class="built_in">nameForLogging</span>(), isMeta ? <span class="string">&quot;(meta)&quot;</span> : <span class="string">&quot;&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">attachCategories</span>(cls, cats, <span class="literal">true</span> <span class="comment">/*flush caches*/</span>);</span><br><span class="line">        <span class="built_in">free</span>(cats);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过代码我们发现 <code>attachCategories</code> 函数接收了类对象 <code>cls</code> 和分类数组 <code>cats</code>，如我们一开始写的代码所示，一个类可以有多个分类。之前我们说到分类信息存储在 <code>category_t</code> 结构体中，那么多个分类则保存在 <code>category_list</code> 中。</p>
+<p>我们再看 <code>attachCategories</code> 函数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Attach method lists and properties and protocols from categories to a class.</span></span><br><span class="line"><span class="comment">// Assumes the categories in cats are all loaded and sorted by load order,</span></span><br><span class="line"><span class="comment">// oldest categories first.</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span></span></span><br><span class="line"><span class="function"><span class="title">attachCategories</span><span class="params">(Class cls, category_list *cats, <span class="keyword">bool</span> flush_caches)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!cats) <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">if</span> (PrintReplacedMethods) <span class="built_in">printReplacements</span>(cls, cats);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">bool</span> isMeta = cls-&gt;<span class="built_in">isMetaClass</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// fixme rearrange to remove these intermediate allocations</span></span><br><span class="line">    <span class="keyword">method_list_t</span> **mlists = (<span class="keyword">method_list_t</span> **)</span><br><span class="line">        <span class="built_in">malloc</span>(cats-&gt;count * <span class="built_in"><span class="keyword">sizeof</span></span>(*mlists)); <span class="comment">// 根据方法列表分配内存</span></span><br><span class="line">    <span class="keyword">property_list_t</span> **proplists = (<span class="keyword">property_list_t</span> **)</span><br><span class="line">        <span class="built_in">malloc</span>(cats-&gt;count * <span class="built_in"><span class="keyword">sizeof</span></span>(*proplists)); <span class="comment">// 根据属性列表分配内存</span></span><br><span class="line">    <span class="keyword">protocol_list_t</span> **protolists = (<span class="keyword">protocol_list_t</span> **)</span><br><span class="line">        <span class="built_in">malloc</span>(cats-&gt;count * <span class="built_in"><span class="keyword">sizeof</span></span>(*protolists)); <span class="comment">// 根据协议列表分配内存</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Count backwards through cats to get newest categories first</span></span><br><span class="line">    <span class="keyword">int</span> mcount = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> propcount = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> protocount = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> i = cats-&gt;count;</span><br><span class="line">    <span class="keyword">bool</span> fromBundle = NO;</span><br><span class="line">    <span class="keyword">while</span> (i--) &#123;</span><br><span class="line">        <span class="keyword">auto</span>&amp; entry = cats-&gt;list[i]; <span class="comment">// 遍历每个分类</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">method_list_t</span> *mlist = entry.cat-&gt;<span class="built_in">methodsForMeta</span>(isMeta);</span><br><span class="line">        <span class="keyword">if</span> (mlist) &#123; <span class="comment">// 将所有分类中的所有方法存入mlists</span></span><br><span class="line">            mlists[mcount++] = mlist;</span><br><span class="line">            fromBundle |= entry.hi-&gt;<span class="built_in">isBundle</span>();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">property_list_t</span> *proplist =</span><br><span class="line">            entry.cat-&gt;<span class="built_in">propertiesForMeta</span>(isMeta, entry.hi);</span><br><span class="line">        <span class="keyword">if</span> (proplist) &#123; <span class="comment">// 将所有分类中的所有属性存入proplist</span></span><br><span class="line">            proplists[propcount++] = proplist;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">protocol_list_t</span> *protolist = entry.cat-&gt;protocols;</span><br><span class="line">        <span class="keyword">if</span> (protolist) &#123; <span class="comment">// 将所有分类中的所有协议存入protolist</span></span><br><span class="line">            protolists[protocount++] = protolist;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// rw : class_rw_t 结构体，class结构体中用来存储对象方法、属性、协议的结构体</span></span><br><span class="line">    <span class="keyword">auto</span> rw = cls-&gt;<span class="built_in">data</span>();</span><br><span class="line"></span><br><span class="line">    <span class="built_in">prepareMethodLists</span>(cls, mlists, mcount, NO, fromBundle);</span><br><span class="line">    rw-&gt;methods.<span class="built_in">attachLists</span>(mlists, mcount); <span class="comment">// 将mlists传入rw-&gt;methods的attachLists函数，之后释放</span></span><br><span class="line">    <span class="built_in">free</span>(mlists);</span><br><span class="line">    <span class="keyword">if</span> (flush_caches  &amp;&amp;  mcount &gt; <span class="number">0</span>) <span class="built_in">flushCaches</span>(cls);</span><br><span class="line"></span><br><span class="line">    rw-&gt;properties.<span class="built_in">attachLists</span>(proplists, propcount); <span class="comment">// 将properties传入rw-&gt;properties的attachLists函数，之后释放</span></span><br><span class="line">    <span class="built_in">free</span>(proplists);</span><br><span class="line"></span><br><span class="line">    rw-&gt;protocols.<span class="built_in">attachLists</span>(protolists, protocount); <span class="comment">// 将protocols传入rw-&gt;protocols的attachLists函数，之后释放</span></span><br><span class="line">    <span class="built_in">free</span>(protolists);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">attachLists</span><span class="params">(List* <span class="keyword">const</span> * addedLists, <span class="keyword">uint32_t</span> addedCount)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (addedCount == <span class="number">0</span>) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">hasArray</span>()) &#123;</span><br><span class="line">            <span class="comment">// many lists -&gt; many lists</span></span><br><span class="line">            <span class="keyword">uint32_t</span> oldCount = <span class="built_in">array</span>()-&gt;count;</span><br><span class="line">            <span class="keyword">uint32_t</span> newCount = oldCount + addedCount;</span><br><span class="line">            <span class="built_in">setArray</span>((<span class="keyword">array_t</span> *)<span class="built_in">realloc</span>(<span class="built_in">array</span>(), <span class="keyword">array_t</span>::<span class="built_in">byteSize</span>(newCount)));</span><br><span class="line">            <span class="built_in">array</span>()-&gt;count = newCount;</span><br><span class="line">            <span class="comment">// array()-&gt;lists : 原来的列表数组</span></span><br><span class="line">            <span class="comment">// addedCount : 分类的列表数组</span></span><br><span class="line">            <span class="built_in">memmove</span>(<span class="built_in">array</span>()-&gt;lists + addedCount, <span class="built_in">array</span>()-&gt;lists,</span><br><span class="line">                    oldCount * <span class="built_in"><span class="keyword">sizeof</span></span>(<span class="built_in">array</span>()-&gt;lists[<span class="number">0</span>])); <span class="comment">// memmove : 内存移动，将array()-&gt;lists的内存移动oldCount * sizeof(array()-&gt;lists[0])个内存到array()-&gt;lists + addedCount中</span></span><br><span class="line">            <span class="built_in">memcpy</span>(<span class="built_in">array</span>()-&gt;lists, addedLists,</span><br><span class="line">                   addedCount * <span class="built_in"><span class="keyword">sizeof</span></span>(<span class="built_in">array</span>()-&gt;lists[<span class="number">0</span>])); <span class="comment">// memcpy : 内存复制，将addedCount复制addedCount * sizeof(array()-&gt;lists[0])个内存到array()-&gt;lists中</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (!list  &amp;&amp;  addedCount == <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="comment">// 0 lists -&gt; 1 list</span></span><br><span class="line">            list = addedLists[<span class="number">0</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 1 list -&gt; many lists</span></span><br><span class="line">            List* oldList = list;</span><br><span class="line">            <span class="keyword">uint32_t</span> oldCount = oldList ? <span class="number">1</span> : <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">uint32_t</span> newCount = oldCount + addedCount;</span><br><span class="line">            <span class="built_in">setArray</span>((<span class="keyword">array_t</span> *)<span class="built_in">malloc</span>(<span class="keyword">array_t</span>::<span class="built_in">byteSize</span>(newCount)));</span><br><span class="line">            <span class="built_in">array</span>()-&gt;count = newCount;</span><br><span class="line">            <span class="keyword">if</span> (oldList) <span class="built_in">array</span>()-&gt;lists[addedCount] = oldList;</span><br><span class="line">            <span class="built_in">memcpy</span>(<span class="built_in">array</span>()-&gt;lists, addedLists,</span><br><span class="line">                   addedCount * <span class="built_in"><span class="keyword">sizeof</span></span>(<span class="built_in">array</span>()-&gt;lists[<span class="number">0</span>]));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>attachLists</code> 函数中最重要的两个方法为 <code>memmove</code> 内存移动和 <code>memcpy</code> 内存拷贝</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// memmove ：内存移动。</span></span><br><span class="line"><span class="comment">/*  __dst : 移动内存的目的地</span></span><br><span class="line"><span class="comment">*   __src : 被移动的内存首地址</span></span><br><span class="line"><span class="comment">*   __len : 被移动的内存长度</span></span><br><span class="line"><span class="comment">*   将__src的内存移动__len块内存到__dst中</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">memmove</span><span class="params">(<span class="keyword">void</span> *__dst, <span class="keyword">const</span> <span class="keyword">void</span> *__src, <span class="keyword">size_t</span> __len)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// memcpy ：内存拷贝。</span></span><br><span class="line"><span class="comment">/*  __dst : 拷贝内存的拷贝目的地</span></span><br><span class="line"><span class="comment">*   __src : 被拷贝的内存首地址</span></span><br><span class="line"><span class="comment">*   __n : 被移动的内存长度</span></span><br><span class="line"><span class="comment">*   将__src的内存拷贝__n块内存到__dst中</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">memcpy</span><span class="params">(<span class="keyword">void</span> *__dst, <span class="keyword">const</span> <span class="keyword">void</span> *__src, <span class="keyword">size_t</span> __n)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// array()-&gt;lists 原来方法、属性、协议列表数组</span></span><br><span class="line"><span class="comment">// addedCount 分类数组长度</span></span><br><span class="line"><span class="comment">// oldCount * sizeof(array()-&gt;lists[0]) 原来数组占据的空间</span></span><br><span class="line"><span class="built_in">memmove</span>(<span class="built_in">array</span>()-&gt;lists + addedCount, <span class="built_in">array</span>()-&gt;lists,</span><br><span class="line">                  oldCount * <span class="built_in"><span class="keyword">sizeof</span></span>(<span class="built_in">array</span>()-&gt;lists[<span class="number">0</span>]));</span><br></pre></td></tr></table></figure>
+
+<p>经过memmove方法之后，我们发现，虽然本类的方法，属性，协议列表会分别后移，但是本类的对应数组的指针依然指向原始位置。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// array()-&gt;lists 原来方法、属性、协议列表数组</span></span><br><span class="line"><span class="comment">// addedLists 分类方法、属性、协议列表数组</span></span><br><span class="line"><span class="comment">// addedCount * sizeof(array()-&gt;lists[0]) 原来数组占据的空间</span></span><br><span class="line"><span class="built_in">memcpy</span>(<span class="built_in">array</span>()-&gt;lists, addedLists,</span><br><span class="line">               addedCount * <span class="built_in"><span class="keyword">sizeof</span></span>(<span class="built_in">array</span>()-&gt;lists[<span class="number">0</span>]));</span><br></pre></td></tr></table></figure>
+
+<p>我们发现原来指针并没有改变，至始至终指向开头的位置。并且经过 <code>memmove</code> 和 <code>memcpy</code> 方法之后，分类的方法，属性，协议列表被放在了类对象中原本存储的方法，属性，协议列表前面。这样做的目的是为了保证分类方法优先调用，我们知道当分类重写本类的方法时，会覆盖本类的方法。其实经过上面的分析我们知道本质上并不是覆盖，而是优先调用。本类的方法依然在内存中的。我们可以通过打印所有类的所有方法名来查看</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)printMethodNamesOfClass:(Class)cls &#123;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> count;</span><br><span class="line">    <span class="comment">// 获得方法数组</span></span><br><span class="line">    Method *methodList = class_copyMethodList(cls, &amp;count);</span><br><span class="line">    <span class="comment">// 存储方法名</span></span><br><span class="line">    NSMutableString *methodNames = [NSMutableString <span class="built_in">string</span>];</span><br><span class="line">    <span class="comment">// 遍历所有的方法</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line">        <span class="comment">// 获得方法</span></span><br><span class="line">        Method method = methodList[i];</span><br><span class="line">        <span class="comment">// 获得方法名</span></span><br><span class="line">        NSString *methodName = NSStringFromSelector(method_getName(method));</span><br><span class="line">        <span class="comment">// 拼接方法名</span></span><br><span class="line">        [methodNames appendString:methodName];</span><br><span class="line">        [methodNames appendString:@<span class="string">&quot;, &quot;</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 释放</span></span><br><span class="line">    <span class="built_in">free</span>(methodList);</span><br><span class="line">    <span class="comment">// 打印方法名</span></span><br><span class="line">    NSLog(@<span class="string">&quot;%@ - %@&quot;</span>, cls, methodNames);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">    [super viewDidLoad];</span><br><span class="line">    People *p = [[People alloc] init];</span><br><span class="line">    [p run];</span><br><span class="line">    [self printMethodNamesOfClass:[People <span class="class"><span class="keyword">class</span>]];</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>经过以上代码我们会发现输出了两次 <code>run</code> 方法</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>分类的实现原理是将 <code>category</code> 中的方法、属性、协议数据放在 <code>category_t</code> 结构体中，然后将结构体内的方法列表拷贝到类对象的方法列表中。<code>category</code> 可以添加属性，但是并不会自动生成成员变量及 <code>set/get</code> 方法。因为 <code>category_t</code> 结构体中并不存在成员变量。通过之前对对象的分析我们知道成员变量是存放在实例对象中的，并且编译的那一刻就已经布局完成。而分类是在运行时才去加载的。那么我们就无法再程序运行时将分类的成员变量中添加到实例对象的结构体中。因此分类中不可以添加成员变量。</p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ul>
+<li><a target="_blank" rel="noopener" href="http://blog.sunnyxx.com/2014/03/05/objc_category_secret/">objc category的秘密</a></li>
+<li><a target="_blank" rel="noopener" href="https://tech.meituan.com/2015/03/03/diveintocategory.html">深入理解Objective-C：Category</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/a263e53bf4ef">Category深度解析</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/Runtime/" rel="tag"># Runtime</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/08/10/2018_08_10_objective-c_initialize_load/" rel="prev" title="Objective-C 中 initialize load">
+      <i class="fa fa-chevron-left"></i> Objective-C 中 initialize load
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/08/15/2018_08_15_associated_object/" rel="next" title="关联对象实现原理">
+      关联对象实现原理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Category%E7%9A%84%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">Category的原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Category"><span class="nav-number">1.1.</span> <span class="nav-text">Category</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Category%E7%9A%84%E7%BB%93%E6%9E%84"><span class="nav-number">1.2.</span> <span class="nav-text">Category的结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#category-t"><span class="nav-number">1.2.1.</span> <span class="nav-text">_category_t</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E6%96%B9%E6%B3%95%E5%88%97%E8%A1%A8"><span class="nav-number">1.2.2.</span> <span class="nav-text">对象方法列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E6%96%B9%E6%B3%95%E5%88%97%E8%A1%A8"><span class="nav-number">1.2.3.</span> <span class="nav-text">类方法列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%8F%E8%AE%AE%E6%96%B9%E6%B3%95%E5%88%97%E8%A1%A8"><span class="nav-number">1.2.4.</span> <span class="nav-text">协议方法列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B1%9E%E6%80%A7%E5%88%97%E8%A1%A8"><span class="nav-number">1.2.5.</span> <span class="nav-text">属性列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OBJC-CATEGORY-People-Test"><span class="nav-number">1.2.6.</span> <span class="nav-text">OBJC$CATEGORY_People$_Test</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E7%B1%BB%E5%9C%A8%E8%BF%90%E8%A1%8C%E6%97%B6%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">分类在运行时的操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">1.4.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">2.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Wong</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/uonlyliveonce" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;uonlyliveonce" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:u_only_live_once@outlook.com" title="E-Mail → mailto:u_only_live_once@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wong</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

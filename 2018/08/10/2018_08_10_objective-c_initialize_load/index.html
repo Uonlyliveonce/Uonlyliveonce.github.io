@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"uonlyliveonce.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="我们接着上篇 Class-Model 继续围绕着 Runtime 来更深入的了解一个继承与 NSObject 类的初始化的过程。load我们先来了解下 load 方法，当一个类或者分类添加到运行时时候会被调用，通常的用法是在类中实现这个方法然后我们去做 Method Swizzling 操作，实质上就是可以在运行时干预类的加载。通过简单的Demo我们可以发现，一个类和她的子类都会执行 load 方">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Objective-C 中 initialize load">
+<meta property="og:url" content="https://uonlyliveonce.com/2018/08/10/2018_08_10_objective-c_initialize_load/index.html">
+<meta property="og:site_name" content="Wong&#39;s Blog">
+<meta property="og:description" content="我们接着上篇 Class-Model 继续围绕着 Runtime 来更深入的了解一个继承与 NSObject 类的初始化的过程。load我们先来了解下 load 方法，当一个类或者分类添加到运行时时候会被调用，通常的用法是在类中实现这个方法然后我们去做 Method Swizzling 操作，实质上就是可以在运行时干预类的加载。通过简单的Demo我们可以发现，一个类和她的子类都会执行 load 方">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-08-10T11:48:42.000Z">
+<meta property="article:modified_time" content="2025-05-23T08:11:19.670Z">
+<meta property="article:author" content="Wong">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="Runtime">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://uonlyliveonce.com/2018/08/10/2018_08_10_objective-c_initialize_load/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Objective-C 中 initialize load | Wong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Wong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You only live once!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://uonlyliveonce.com/2018/08/10/2018_08_10_objective-c_initialize_load/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Wong">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Objective-C 中 initialize load
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-10 19:48:42" itemprop="dateCreated datePublished" datetime="2018-08-10T19:48:42+08:00">2018-08-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mobile/" itemprop="url" rel="index"><span itemprop="name">Mobile</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="我们接着上篇-Class-Model-继续围绕着-Runtime-来更深入的了解一个继承与-NSObject-类的初始化的过程。"><a href="#我们接着上篇-Class-Model-继续围绕着-Runtime-来更深入的了解一个继承与-NSObject-类的初始化的过程。" class="headerlink" title="我们接着上篇 Class-Model 继续围绕着 Runtime 来更深入的了解一个继承与 NSObject 类的初始化的过程。"></a>我们接着上篇 <a target="_blank" rel="noopener" href="https://coderwong.com/2018/08/01/Class-Model/">Class-Model</a> 继续围绕着 <a target="_blank" rel="noopener" href="https://opensource.apple.com/tarballs/objc4/objc4-750.tar.gz">Runtime</a> 来更深入的了解一个继承与 <code>NSObject</code> 类的初始化的过程。</h1><h2 id="load"><a href="#load" class="headerlink" title="load"></a>load</h2><p>我们先来了解下 <code>load</code> 方法，当一个类或者分类添加到运行时时候会被调用，通常的用法是在类中实现这个方法然后我们去做 <strong>Method Swizzling</strong> 操作，实质上就是可以在运行时干预类的加载。通过简单的Demo我们可以发现，一个类和她的子类都会执行 <code>load</code> 方法，而且子类会后置执行 <code>load</code> 方法。同时，分类中的 <code>load</code> 方法会先于主类中的。</p>
+<h3 id="prepare-load-methods"><a href="#prepare-load-methods" class="headerlink" title="prepare_load_methods"></a>prepare_load_methods</h3><p>我们可以找到 <code>objc-runtime-new.mm</code> 中的 <code>prepare_load_methods</code> 方法</p>
+<span id="more"></span>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">prepare_load_methods</span><span class="params">(<span class="keyword">const</span> headerType *mhdr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">size_t</span> count, i;</span><br><span class="line"></span><br><span class="line">    runtimeLock.assertLocked();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">classref_t</span> *classlist = _getObjc2NonlazyClassList(mhdr, &amp;count);</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line">        schedule_class_load(remapClass(classlist[i]));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">category_t</span> **categorylist = _getObjc2NonlazyCategoryList(mhdr, &amp;count);</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line">        <span class="keyword">category_t</span> *cat = categorylist[i];</span><br><span class="line">        Class cls = remapClass(cat-&gt;cls);</span><br><span class="line">        <span class="keyword">if</span> (!cls) <span class="keyword">continue</span>;  <span class="comment">// category for ignored weak-linked class</span></span><br><span class="line">        realizeClass(cls);</span><br><span class="line">        assert(cls-&gt;ISA()-&gt;isRealized());</span><br><span class="line">        add_category_to_loadable_list(cat);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>prepare_load_methods</code> 方法中，分为两个步骤：</p>
+<ul>
+<li>获取了所有类后，遍历列表，将其中有 <code>load</code> 方法的类加入 <code>loadable_class</code>；</li>
+<li>获取所有的分类，遍历列表，将其中有 <code>load</code> 方法的类加入 <code>loadable_categories</code>。</li>
+</ul>
+<p>其主要的目的就是提前准备好满足 <code>load</code> 方法调用条件的类和分类，以供下一步使用。</p>
+<h3 id="schedule-class-load"><a href="#schedule-class-load" class="headerlink" title="schedule_class_load"></a>schedule_class_load</h3><p>我们再来看下预加载方法中会首先通过 <code>schedule_class_load(cls-&gt;superclass)</code> 的递归调用确保有父类中的 <code>load</code> 方法被加入 <code>loadable_class</code>，从而保证父类的 <code>load</code> 方法总是在子类之前调用。因此，在覆写+load方法时，不需要调用super方法。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">schedule_class_load</span><span class="params">(Class cls)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!cls) <span class="keyword">return</span>;</span><br><span class="line">    assert(cls-&gt;isRealized());  <span class="comment">// _read_images should realize</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (cls-&gt;data()-&gt;flags &amp; RW_LOADED) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Ensure superclass-first ordering</span></span><br><span class="line">    schedule_class_load(cls-&gt;superclass);</span><br><span class="line"></span><br><span class="line">    add_class_to_loadable_list(cls);</span><br><span class="line">    cls-&gt;setInfo(RW_LOADED);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="call-load-methods"><a href="#call-load-methods" class="headerlink" title="call_load_methods"></a>call_load_methods</h3><p>下面就是对 <code>load</code> 方法的调用了，打开<code>objc-loadmethod.mm</code>，找到 <code>call_load_methods</code> 方法</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">call_load_methods</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">bool</span> loading = NO;</span><br><span class="line">    <span class="keyword">bool</span> more_categories;</span><br><span class="line"></span><br><span class="line">    loadMethodLock.assertLocked();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Re-entrant calls do nothing; the outermost call will finish the job.</span></span><br><span class="line">    <span class="keyword">if</span> (loading) <span class="keyword">return</span>;</span><br><span class="line">    loading = YES;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">void</span> *pool = objc_autoreleasePoolPush();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        <span class="comment">// 1. Repeatedly call class +loads until there aren&#x27;t any more</span></span><br><span class="line">        <span class="keyword">while</span> (loadable_classes_used &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            call_class_loads();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2. Call category +loads ONCE</span></span><br><span class="line">        more_categories = call_category_loads();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 3. Run more +loads if there are classes OR more untried categories</span></span><br><span class="line">    &#125; <span class="keyword">while</span> (loadable_classes_used &gt; <span class="number">0</span>  ||  more_categories);</span><br><span class="line"></span><br><span class="line">    objc_autoreleasePoolPop(pool);</span><br><span class="line"></span><br><span class="line">    loading = NO;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用类的 <code>load</code> 方法，在 <code>call_class_loads</code> 方法中通过在第一步读取 <code>prepare_load_methods</code> 步骤里的 <code>loadable_classes</code> ，遍历列表并调用 <code>load</code> 方法，然后遍历的调用分类的 <code>load</code> 方法。</p>
+<h3 id="call-class-loads"><a href="#call-class-loads" class="headerlink" title="call_class_loads"></a>call_class_loads</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">call_class_loads</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Detach current loadable list.</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">loadable_class</span> *<span class="title">classes</span> =</span> loadable_classes;</span><br><span class="line">    <span class="keyword">int</span> used = loadable_classes_used;</span><br><span class="line">    loadable_classes = nil;</span><br><span class="line">    loadable_classes_allocated = <span class="number">0</span>;</span><br><span class="line">    loadable_classes_used = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Call all +loads for the detached list.</span></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; used; i++) &#123;</span><br><span class="line">        Class cls = classes[i].cls;</span><br><span class="line">        <span class="keyword">load_method_t</span> load_method = (<span class="keyword">load_method_t</span>)classes[i].method;</span><br><span class="line">        <span class="keyword">if</span> (!cls) <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (PrintLoading) &#123;</span><br><span class="line">            _objc_inform(<span class="string">&quot;LOAD: +[%s load]\n&quot;</span>, cls-&gt;nameForLogging());</span><br><span class="line">        &#125;</span><br><span class="line">        (*load_method)(cls, SEL_load);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Destroy the detached list.</span></span><br><span class="line">    <span class="keyword">if</span> (classes) <span class="built_in">free</span>(classes);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个函数负责调用类的 <code>load</code> 方法，它从全局变量 <code>loadable_classes</code> 中取出可供调用的类之后进行重置操作。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">loadable_classes = nil;</span><br><span class="line">loadable_classes_allocated = <span class="number">0</span>;</span><br><span class="line">loadable_classes_used = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>loadable_classes</code> 指向用于保存类信息的内存的首地址，<code>loadable_classes_allocated</code> 标识已分配的内存空间大小，<code>loadable_classes_used</code> 标识已使用的内存空间大小。</p>
+<p>循环调用所有类的 <code>load</code> 方法，这里是直接使用函数内存地址的方式 <code>(*load_method)(cls, SEL_load);</code> 对 <code>load</code> 方法进行调用的，而不是使用发送消息 <code>objc_msgSend</code> 的方式。</p>
+<p>真是因为这种调用方法，所以父类、子类和分类中的 <code>load</code> 方法才会有之前提到的逻辑，子类没实现  <code>load</code> 方法的话在 runtime 时期也不会去调用父类的 <code>load</code> 方法，如果都实现则都会调用。</p>
+<h2 id="initialize"><a href="#initialize" class="headerlink" title="initialize"></a>initialize</h2><p><code>initialize</code> 方法是在类和子类在第一次收到实例方法和类方法的调用消息时候调用，因此这个方法是懒加载形式调用的，如果程序一直没有给一个类发送消息那么 <code>initialize</code> 则永远不会被调用。</p>
+<h3 id="lookUpImpOrForward"><a href="#lookUpImpOrForward" class="headerlink" title="lookUpImpOrForward"></a>lookUpImpOrForward</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">IMP <span class="title">lookUpImpOrForward</span><span class="params">(Class cls, SEL sel, id inst, </span></span></span><br><span class="line"><span class="params"><span class="function">                       <span class="keyword">bool</span> initialize, <span class="keyword">bool</span> cache, <span class="keyword">bool</span> resolver)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (initialize  &amp;&amp;  !cls-&gt;isInitialized()) &#123;</span><br><span class="line">        runtimeLock.unlock();</span><br><span class="line">        _class_initialize (_class_getNonMetaClass(cls, inst));</span><br><span class="line">        runtimeLock.lock();</span><br><span class="line">        <span class="comment">// If sel == initialize, _class_initialize will send +initialize and</span></span><br><span class="line">        <span class="comment">// then the messenger will send +initialize again after this</span></span><br><span class="line">        <span class="comment">// procedure finishes. Of course, if this is not being called</span></span><br><span class="line">        <span class="comment">// from the messenger then it won&#x27;t happen. 2778172</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当我们给一个类发送消息的时候会调用这个函数查找对应方法的实现，我们可以看到这个方法会判断类是否初始化，如果未初始化会调用 <code>_class_initialize</code> 进行初始化。</p>
+<h3 id="class-initialize"><a href="#class-initialize" class="headerlink" title="_class_initialize"></a>_class_initialize</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> _class_initialize(Class cls)</span><br><span class="line">&#123;</span><br><span class="line">    assert(!cls-&gt;isMetaClass());</span><br><span class="line"></span><br><span class="line">    Class supercls;</span><br><span class="line">    <span class="keyword">bool</span> reallyInitialize = NO;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Make sure super is done initializing BEFORE beginning to initialize cls.</span></span><br><span class="line">    <span class="comment">// See note about deadlock above.</span></span><br><span class="line">    supercls = cls-&gt;superclass;</span><br><span class="line">    <span class="keyword">if</span> (supercls  &amp;&amp;  !supercls-&gt;isInitialized()) &#123;</span><br><span class="line">        _class_initialize(supercls);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Try to atomically set CLS_INITIALIZING.</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">monitor_locker_t</span> <span class="title">lock</span><span class="params">(classInitLock)</span></span>;</span><br><span class="line">        <span class="keyword">if</span> (!cls-&gt;isInitialized() &amp;&amp; !cls-&gt;isInitializing()) &#123;</span><br><span class="line">            cls-&gt;setInitializing();</span><br><span class="line">            reallyInitialize = YES;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (reallyInitialize) &#123;</span><br><span class="line">        <span class="comment">// We successfully set the CLS_INITIALIZING bit. Initialize the class.</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// Record that we&#x27;re initializing this class so we can message it.</span></span><br><span class="line">        _setThisThreadIsInitializingClass(cls);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (MultithreadedForkChild) &#123;</span><br><span class="line">            <span class="comment">// LOL JK we don&#x27;t really call +initialize methods after fork().</span></span><br><span class="line">            performForkChildInitialize(cls, supercls);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Send the +initialize message.</span></span><br><span class="line">        <span class="comment">// Note that +initialize is sent to the superclass (again) if </span></span><br><span class="line">        <span class="comment">// this class doesn&#x27;t implement +initialize. 2157218</span></span><br><span class="line">        <span class="keyword">if</span> (PrintInitializing) &#123;</span><br><span class="line">            _objc_inform(<span class="string">&quot;INITIALIZE: thread %p: calling +[%s initialize]&quot;</span>,</span><br><span class="line">                         pthread_self(), cls-&gt;nameForLogging());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Exceptions: A +initialize call that throws an exception </span></span><br><span class="line">        <span class="comment">// is deemed to be a complete and successful +initialize.</span></span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">        <span class="comment">// Only __OBJC2__ adds these handlers. !__OBJC2__ has a</span></span><br><span class="line">        <span class="comment">// bootstrapping problem of this versus CF&#x27;s call to</span></span><br><span class="line">        <span class="comment">// objc_exception_set_functions().</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> __OBJC2__</span></span><br><span class="line">        @<span class="keyword">try</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">        &#123;</span><br><span class="line">            callInitialize(cls);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (PrintInitializing) &#123;</span><br><span class="line">                _objc_inform(<span class="string">&quot;INITIALIZE: thread %p: finished +[%s initialize]&quot;</span>,</span><br><span class="line">                             pthread_self(), cls-&gt;nameForLogging());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> __OBJC2__</span></span><br><span class="line">        @<span class="keyword">catch</span> (...) &#123;</span><br><span class="line">            <span class="keyword">if</span> (PrintInitializing) &#123;</span><br><span class="line">                _objc_inform(<span class="string">&quot;INITIALIZE: thread %p: +[%s initialize] &quot;</span></span><br><span class="line">                             <span class="string">&quot;threw an exception&quot;</span>,</span><br><span class="line">                             pthread_self(), cls-&gt;nameForLogging());</span><br><span class="line">            &#125;</span><br><span class="line">            @<span class="keyword">throw</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        @finally</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// Done initializing.</span></span><br><span class="line">            lockAndFinishInitializing(cls, supercls);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (cls-&gt;isInitializing()) &#123;</span><br><span class="line">        <span class="comment">// We couldn&#x27;t set INITIALIZING because INITIALIZING was already set.</span></span><br><span class="line">        <span class="comment">// If this thread set it earlier, continue normally.</span></span><br><span class="line">        <span class="comment">// If some other thread set it, block until initialize is done.</span></span><br><span class="line">        <span class="comment">// It&#x27;s ok if INITIALIZING changes to INITIALIZED while we&#x27;re here,</span></span><br><span class="line">        <span class="comment">//   because we safely check for INITIALIZED inside the lock</span></span><br><span class="line">        <span class="comment">//   before blocking.</span></span><br><span class="line">        <span class="keyword">if</span> (_thisThreadIsInitializingClass(cls)) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!MultithreadedForkChild) &#123;</span><br><span class="line">            waitForInitializeToComplete(cls);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// We&#x27;re on the child side of fork(), facing a class that</span></span><br><span class="line">            <span class="comment">// was initializing by some other thread when fork() was called.</span></span><br><span class="line">            _setThisThreadIsInitializingClass(cls);</span><br><span class="line">            performForkChildInitialize(cls, supercls);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (cls-&gt;isInitialized()) &#123;</span><br><span class="line">        <span class="comment">// Set CLS_INITIALIZING failed because someone else already</span></span><br><span class="line">        <span class="comment">//   initialized the class. Continue normally.</span></span><br><span class="line">        <span class="comment">// NOTE this check must come AFTER the ISINITIALIZING case.</span></span><br><span class="line">        <span class="comment">// Otherwise: Another thread is initializing this class. ISINITIALIZED</span></span><br><span class="line">        <span class="comment">//   is false. Skip this clause. Then the other thread finishes</span></span><br><span class="line">        <span class="comment">//   initialization and sets INITIALIZING=no and INITIALIZED=yes.</span></span><br><span class="line">        <span class="comment">//   Skip the ISINITIALIZING clause. Die horribly.</span></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// We shouldn&#x27;t be here.</span></span><br><span class="line">        _objc_fatal(<span class="string">&quot;thread-safe class init in objc runtime is buggy!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>_class_initialize</code> 方法实现看起来比较长，但其实关键步骤也就只有两步：</p>
+<ul>
+<li>11-13行使用了递归确保父类先于子类初始化。</li>
+<li>通过判断此类的初始化状态进行相应处理。</li>
+</ul>
+<h3 id="初始化状态处理"><a href="#初始化状态处理" class="headerlink" title="初始化状态处理"></a>初始化状态处理</h3><h4 id="未初始化"><a href="#未初始化" class="headerlink" title="未初始化"></a>未初始化</h4><ol>
+<li>如果当前类未初始化，则会向它发送一个 <code>setInitializing</code> 消息，将该类的元类的信息更改为 <code>CLS_INITIALIZING</code>，并通过<code>reallyInitialize</code> 标识来与 <code>Initializing</code> 区分。</li>
+<li>设置成功 <code>CLS_INITIALIZING</code> 后，<code>_setThisThreadIsInitializingClass</code> 记录当前线程正在初始化当前类，当前线程可以向该类发送消息，而其他线程则需要等待。</li>
+<li>通过 <code>callInitialize</code> 调用 <code>initialize</code> 方法，也就是说与 <code>load</code> 不同该方法是通过 <code>objc_msgSend</code> 发送消息实现的，因此也拥有 <code>objc_msgSend</code> 带来的特性，也就是说子类会继承父类的方法实现，而分类的实现也会覆盖元类。</li>
+<li><code>initialize</code> 完成后，更新当前类的状态。如果父类已经完成初始化，则 <code>_finishInitializing</code> 立马更新，否则通过<code>_finishInitializingAfter</code> 等父类完成后再更新。</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> _finishInitializingAfter(Class cls, Class supercls)</span><br><span class="line">&#123;</span><br><span class="line">    PendingInitialize *pending;</span><br><span class="line"></span><br><span class="line">    classInitLock.assertLocked();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (PrintInitializing) &#123;</span><br><span class="line">        _objc_inform(<span class="string">&quot;INITIALIZE: thread %p: class %s will be marked as fully &quot;</span></span><br><span class="line">                     <span class="string">&quot;+initialized after superclass +[%s initialize] completes&quot;</span>,</span><br><span class="line">                     pthread_self(), cls-&gt;nameForLogging(),</span><br><span class="line">                     supercls-&gt;nameForLogging());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!pendingInitializeMap) &#123;</span><br><span class="line">        pendingInitializeMap = NXCreateMapTable(NXPtrValueMapPrototype, <span class="number">10</span>);</span><br><span class="line">        <span class="comment">// fixme pre-size this table for CF/NSObject +initialize</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    pending = (PendingInitialize *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(*pending));</span><br><span class="line">    pending-&gt;subclass = cls;</span><br><span class="line">    pending-&gt;next = (PendingInitialize *)</span><br><span class="line">        NXMapGet(pendingInitializeMap, supercls);</span><br><span class="line">    NXMapInsert(pendingInitializeMap, supercls, pending);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在该方法中，通过声明一个 <code>PendingInitialize</code> 类型的结构体 <code>pending</code> 来存储当前类与父类信息，并以父类 <code>supercls</code> 为key值，以 <code>pending</code> 为value存储在 <code>pendingInitializeMap</code> 链表中。</p>
+<ol start="5">
+<li>如果完成初始化则调用 <code>_finishInitializing</code>，在该方法中会首先将当前类标记为已完成初始化状态 <code>Initialized</code>，然后去读取 <code>pendingInitializeMap</code>，如果查找到该类对应的待处理子类，则将对应的消息移除并通过递归的方法将因当前类而被阻塞的子类标记为已完成初始化。</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> _finishInitializing(Class cls, Class supercls)</span><br><span class="line">&#123;</span><br><span class="line">    PendingInitialize *pending;</span><br><span class="line"></span><br><span class="line">    classInitLock.assertLocked();</span><br><span class="line">    assert(!supercls  ||  supercls-&gt;isInitialized());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (PrintInitializing) &#123;</span><br><span class="line">        _objc_inform(<span class="string">&quot;INITIALIZE: thread %p: %s is fully +initialized&quot;</span>,</span><br><span class="line">                     pthread_self(), cls-&gt;nameForLogging());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// mark this class as fully +initialized</span></span><br><span class="line">    cls-&gt;setInitialized();</span><br><span class="line">    classInitLock.notifyAll();</span><br><span class="line">    _setThisThreadIsNotInitializingClass(cls);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// mark any subclasses that were merely waiting for this class</span></span><br><span class="line">    <span class="keyword">if</span> (!pendingInitializeMap) <span class="keyword">return</span>;</span><br><span class="line">    pending = (PendingInitialize *)NXMapGet(pendingInitializeMap, cls);</span><br><span class="line">    <span class="keyword">if</span> (!pending) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    NXMapRemove(pendingInitializeMap, cls);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Destroy the pending table if it&#x27;s now empty, to save memory.</span></span><br><span class="line">    <span class="keyword">if</span> (NXCountMapTable(pendingInitializeMap) == <span class="number">0</span>) &#123;</span><br><span class="line">        NXFreeMapTable(pendingInitializeMap);</span><br><span class="line">        pendingInitializeMap = nil;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (pending) &#123;</span><br><span class="line">        PendingInitialize *next = pending-&gt;next;</span><br><span class="line">        <span class="keyword">if</span> (pending-&gt;subclass) _finishInitializing(pending-&gt;subclass, cls);</span><br><span class="line">        <span class="built_in">free</span>(pending);</span><br><span class="line">        pending = next;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="正在初始化"><a href="#正在初始化" class="headerlink" title="正在初始化"></a>正在初始化</h4><p>如果是当前线程在进行初始化,则不做处理。<br>如果是其他线程在进行初始化,则等其他线程完成后再返回,以保证线程安全。</p>
+<h4 id="已初始化"><a href="#已初始化" class="headerlink" title="已初始化"></a>已初始化</h4><p>如果已经完成初始化,则不做处理。</p>
+<h4 id="不知道什么状态"><a href="#不知道什么状态" class="headerlink" title="不知道什么状态"></a>不知道什么状态</h4><p>还没有遇到过，但是一点控制流走到这一步会抛出一个错误，提示线程安全类在运行时的初始化有问题。</p>
+<h3 id="initialize-总结"><a href="#initialize-总结" class="headerlink" title="initialize 总结"></a>initialize 总结</h3><ol>
+<li><code>initialize</code> 方法是在main函数之后调用的；</li>
+<li><code>initialize</code> 方法遵从懒加载方式，只有在类或它的子类收到第一条消息之前被调用的；</li>
+<li>子类中不需要调用 <code>super</code> 方法，会自动调用父类的方法实现；</li>
+<li><code>initialize</code> 只调用一次，init可多次调用。</li>
+</ol>
+<h2 id="initialize与load对比"><a href="#initialize与load对比" class="headerlink" title="initialize与load对比"></a>initialize与load对比</h2><table>
+<thead>
+<tr>
+<th></th>
+<th>load</th>
+<th>initialize</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>调用时机</td>
+<td>main之前，runtime初始化时</td>
+<td>main之后，当前类或子类收到第一条消息前</td>
+</tr>
+<tr>
+<td>调用方式</td>
+<td>函数内存地址</td>
+<td>objc_msgSend</td>
+</tr>
+<tr>
+<td>继承父类实现</td>
+<td>否</td>
+<td>是</td>
+</tr>
+<tr>
+<td>分类实现</td>
+<td>类和分类都执行</td>
+<td>覆盖父类实现</td>
+</tr>
+<tr>
+<td>调用顺序</td>
+<td>父类-子类-分类</td>
+<td>父类-子类</td>
+</tr>
+<tr>
+<td>调用次数</td>
+<td>1次</td>
+<td>1次或不调用</td>
+</tr>
+</tbody></table>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://nshipster.com/method-swizzling/">Method Swizzling</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.iderzheng.com/objective-c-load-vs-initialize/">Objective C类方法load和initialize的区别</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html?language=objc">Objective-C Runtime Programming Guide</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/Runtime/" rel="tag"># Runtime</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/08/04/2018_08_04_isa_in_arm64/" rel="prev" title="isa">
+      <i class="fa fa-chevron-left"></i> isa
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/category" rel="next" title="Category的原理">
+      Category的原理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%88%91%E4%BB%AC%E6%8E%A5%E7%9D%80%E4%B8%8A%E7%AF%87-Class-Model-%E7%BB%A7%E7%BB%AD%E5%9B%B4%E7%BB%95%E7%9D%80-Runtime-%E6%9D%A5%E6%9B%B4%E6%B7%B1%E5%85%A5%E7%9A%84%E4%BA%86%E8%A7%A3%E4%B8%80%E4%B8%AA%E7%BB%A7%E6%89%BF%E4%B8%8E-NSObject-%E7%B1%BB%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96%E7%9A%84%E8%BF%87%E7%A8%8B%E3%80%82"><span class="nav-number">1.</span> <span class="nav-text">我们接着上篇 Class-Model 继续围绕着 Runtime 来更深入的了解一个继承与 NSObject 类的初始化的过程。</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#load"><span class="nav-number">1.1.</span> <span class="nav-text">load</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#prepare-load-methods"><span class="nav-number">1.1.1.</span> <span class="nav-text">prepare_load_methods</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#schedule-class-load"><span class="nav-number">1.1.2.</span> <span class="nav-text">schedule_class_load</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#call-load-methods"><span class="nav-number">1.1.3.</span> <span class="nav-text">call_load_methods</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#call-class-loads"><span class="nav-number">1.1.4.</span> <span class="nav-text">call_class_loads</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#initialize"><span class="nav-number">1.2.</span> <span class="nav-text">initialize</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#lookUpImpOrForward"><span class="nav-number">1.2.1.</span> <span class="nav-text">lookUpImpOrForward</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#class-initialize"><span class="nav-number">1.2.2.</span> <span class="nav-text">_class_initialize</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E7%8A%B6%E6%80%81%E5%A4%84%E7%90%86"><span class="nav-number">1.2.3.</span> <span class="nav-text">初始化状态处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%AA%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">未初始化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AD%A3%E5%9C%A8%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">正在初始化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%B2%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">1.2.3.3.</span> <span class="nav-text">已初始化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8D%E7%9F%A5%E9%81%93%E4%BB%80%E4%B9%88%E7%8A%B6%E6%80%81"><span class="nav-number">1.2.3.4.</span> <span class="nav-text">不知道什么状态</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#initialize-%E6%80%BB%E7%BB%93"><span class="nav-number">1.2.4.</span> <span class="nav-text">initialize 总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#initialize%E4%B8%8Eload%E5%AF%B9%E6%AF%94"><span class="nav-number">1.3.</span> <span class="nav-text">initialize与load对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">1.4.</span> <span class="nav-text">参考链接</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Wong</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/uonlyliveonce" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;uonlyliveonce" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:u_only_live_once@outlook.com" title="E-Mail → mailto:u_only_live_once@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wong</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

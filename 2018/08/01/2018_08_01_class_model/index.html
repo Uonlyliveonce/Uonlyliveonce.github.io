@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"uonlyliveonce.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="最近感觉应该重新看下开源的 Runtime，希望能有更深层的理解，下面几篇都会围绕着runtime来写对象 OC 中，每一个对象都是一个类的实例，且这个对象的 isa 指针指向它所属的类。 PS:这里留下个坑，因为isa在现有的64位CPU下已经不是一个单纯的指针了，包含了引用计数和weak指向等等信息 随后的一篇我会着重讲写下 isa 相关的东西，飞机票">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Class-Model">
+<meta property="og:url" content="https://uonlyliveonce.com/2018/08/01/2018_08_01_class_model/index.html">
+<meta property="og:site_name" content="Wong&#39;s Blog">
+<meta property="og:description" content="最近感觉应该重新看下开源的 Runtime，希望能有更深层的理解，下面几篇都会围绕着runtime来写对象 OC 中，每一个对象都是一个类的实例，且这个对象的 isa 指针指向它所属的类。 PS:这里留下个坑，因为isa在现有的64位CPU下已经不是一个单纯的指针了，包含了引用计数和weak指向等等信息 随后的一篇我会着重讲写下 isa 相关的东西，飞机票">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://uonlyliveonce.com/images/Class-Model/1.png">
+<meta property="og:image" content="https://uonlyliveonce.com/images/Class-Model/2.png">
+<meta property="og:image" content="https://uonlyliveonce.com/images/Class-Model/3.png">
+<meta property="og:image" content="https://uonlyliveonce.com/images/Class-Model/4.png">
+<meta property="article:published_time" content="2018-08-01T14:01:22.000Z">
+<meta property="article:modified_time" content="2025-05-23T08:11:19.670Z">
+<meta property="article:author" content="Wong">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="Runtime">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://uonlyliveonce.com/images/Class-Model/1.png">
+
+<link rel="canonical" href="https://uonlyliveonce.com/2018/08/01/2018_08_01_class_model/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Class-Model | Wong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Wong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You only live once!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://uonlyliveonce.com/2018/08/01/2018_08_01_class_model/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Wong">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Class-Model
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-01 22:01:22" itemprop="dateCreated datePublished" datetime="2018-08-01T22:01:22+08:00">2018-08-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mobile/" itemprop="url" rel="index"><span itemprop="name">Mobile</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="最近感觉应该重新看下开源的-Runtime，希望能有更深层的理解，下面几篇都会围绕着runtime来写"><a href="#最近感觉应该重新看下开源的-Runtime，希望能有更深层的理解，下面几篇都会围绕着runtime来写" class="headerlink" title="最近感觉应该重新看下开源的 Runtime，希望能有更深层的理解，下面几篇都会围绕着runtime来写"></a>最近感觉应该重新看下开源的 <a target="_blank" rel="noopener" href="https://opensource.apple.com/tarballs/objc4/objc4-750.tar.gz">Runtime</a>，希望能有更深层的理解，下面几篇都会围绕着runtime来写</h1><h2 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h2><p><img src="/images/Class-Model/1.png" alt="1.png"></p>
+<p>OC 中，每一个对象都是一个类的实例，且这个对象的 <code>isa</code> 指针指向它所属的类。</p>
+<p>PS:这里留下个<a target="_blank" rel="noopener" href="https://opensource.apple.com/tarballs/objc4/objc4-750.tar.gz">坑</a>，因为isa在现有的64位CPU下已经不是一个单纯的指针了，包含了引用计数和weak指向等等信息</p>
+<p>随后的一篇我会着重讲写下 <code>isa</code> 相关的东西，<a target="_blank" rel="noopener" href="https://coderwong.com/2018/08/04/isa-in-arm64/">飞机票</a></p>
+<span id="more"></span>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">objc_class</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">objc_object</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">objc_class</span> *<span class="title">Class</span>;</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">objc_object</span> *<span class="title">id</span>;</span></span><br></pre></td></tr></table></figure>
+
+<p>我们也可以看到49行开始的定义，定义了 <code>Class</code> 和 <code>id</code> 两类型，分别是 <code>objc_class</code> 和 <code>objc_object</code> 类型的指针</p>
+<h2 id="类"><a href="#类" class="headerlink" title="类"></a>类</h2><p><img src="/images/Class-Model/2.png" alt="2.png"></p>
+<p>打开此文件，我们可以找到 OC 中的类的定义 <code>struct objc_class</code> 。 OC 中类也是一个结构体对象，继承了 <code>struct objc_object</code>ss 。</p>
+<p>对象的类:</p>
+<ul>
+<li>指向的父类对象</li>
+<li>对象的占用大小</li>
+<li>成员变量的类型及布局</li>
+<li>对象可以相应的消息</li>
+<li>对象实例方法的实现</li>
+</ul>
+<p>当我们向对象发送消息时候，这个对象会通过 <code>isa</code> 指针来找到其所属的类是否可以相应消息。</p>
+<p><img src="/images/Class-Model/3.png" alt="3.png"></p>
+<p>我们可以看一下 OC 中大部分类都继承的 <code>NSObject</code> 这个类， 同样他有个 <code>isa</code> 指针成员变量，也就是说继承它的都会有这个成员变量。</p>
+<h2 id="元类"><a href="#元类" class="headerlink" title="元类"></a>元类</h2><p><img src="/images/Class-Model/4.png" alt="4.png"></p>
+<p>其实每个类也是一个对象，它也是一个类的实例，这个类就是元类。类对象能否响应这个消息也要通过 <code>isa</code> 找到类对象所属的类（元类）才能知道。所以实例方法保存在类中，而类方法保存在元类中。</p>
+<p>同时元类也是一个对象，也就是元类对象，元类对象的元类也就是根元类。不过，有一点比较特殊，那就是所有的元类所属的类都是同一个根元类。根元类指的就是根类的元类，具体来说就是根类 <code>NSObject</code> 对应的元类。理论上我们也可以给元类发送消息，但是 OC 倾向于隐藏元类，不想让大家知道元类的存在。元类是为了保持 OC 对象模型在设计上的完整性而引入的，比如用来保存类方法等，它主要是用来给编译器使用的。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a target="_blank" rel="noopener" href="http://blog.devtang.com/2013/10/15/objective-c-object-model/">Objective-C对象模型及应用</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html?language=objc">Objective-C Runtime Programming Guide</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/Runtime/" rel="tag"># Runtime</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/07/10/2018_07_10_coretext_touch/" rel="prev" title="CoreText点击事件处理">
+      <i class="fa fa-chevron-left"></i> CoreText点击事件处理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/08/04/2018_08_04_isa_in_arm64/" rel="next" title="isa">
+      isa <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%80%E8%BF%91%E6%84%9F%E8%A7%89%E5%BA%94%E8%AF%A5%E9%87%8D%E6%96%B0%E7%9C%8B%E4%B8%8B%E5%BC%80%E6%BA%90%E7%9A%84-Runtime%EF%BC%8C%E5%B8%8C%E6%9C%9B%E8%83%BD%E6%9C%89%E6%9B%B4%E6%B7%B1%E5%B1%82%E7%9A%84%E7%90%86%E8%A7%A3%EF%BC%8C%E4%B8%8B%E9%9D%A2%E5%87%A0%E7%AF%87%E9%83%BD%E4%BC%9A%E5%9B%B4%E7%BB%95%E7%9D%80runtime%E6%9D%A5%E5%86%99"><span class="nav-number">1.</span> <span class="nav-text">最近感觉应该重新看下开源的 Runtime，希望能有更深层的理解，下面几篇都会围绕着runtime来写</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1"><span class="nav-number">1.1.</span> <span class="nav-text">对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B1%BB"><span class="nav-number">1.2.</span> <span class="nav-text">类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%83%E7%B1%BB"><span class="nav-number">1.3.</span> <span class="nav-text">元类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">1.4.</span> <span class="nav-text">参考链接</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Wong</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/uonlyliveonce" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;uonlyliveonce" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:u_only_live_once@outlook.com" title="E-Mail → mailto:u_only_live_once@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wong</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

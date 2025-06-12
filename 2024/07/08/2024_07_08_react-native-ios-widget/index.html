@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"uonlyliveonce.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在 React Native 项目中添加 iOS WidgetKit 小组件（iOS 17+）✅ 支持 React Native 0.74+、Xcode 15.3+、iOS 17 SDK✅ 可读写共享数据，通过 App Group 和原生桥接与 JS 通信✅ 支持静态展示和互动式（AppIntents）小组件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在 React Native 项目中添加 iOS WidgetKit 小组件（iOS 17+）">
+<meta property="og:url" content="https://uonlyliveonce.com/2024/07/08/2024_07_08_react-native-ios-widget/index.html">
+<meta property="og:site_name" content="Wong&#39;s Blog">
+<meta property="og:description" content="在 React Native 项目中添加 iOS WidgetKit 小组件（iOS 17+）✅ 支持 React Native 0.74+、Xcode 15.3+、iOS 17 SDK✅ 可读写共享数据，通过 App Group 和原生桥接与 JS 通信✅ 支持静态展示和互动式（AppIntents）小组件">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-07-08T11:49:11.000Z">
+<meta property="article:modified_time" content="2025-06-12T04:07:30.077Z">
+<meta property="article:author" content="Wong">
+<meta property="article:tag" content="hexo">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://uonlyliveonce.com/2024/07/08/2024_07_08_react-native-ios-widget/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>在 React Native 项目中添加 iOS WidgetKit 小组件（iOS 17+） | Wong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Wong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You only live once!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://uonlyliveonce.com/2024/07/08/2024_07_08_react-native-ios-widget/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Wong">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在 React Native 项目中添加 iOS WidgetKit 小组件（iOS 17+）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-07-08 19:49:11" itemprop="dateCreated datePublished" datetime="2024-07-08T19:49:11+08:00">2024-07-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Front-End/" itemprop="url" rel="index"><span itemprop="name">Front-End</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Front-End/Mobile/" itemprop="url" rel="index"><span itemprop="name">Mobile</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="在-React-Native-项目中添加-iOS-WidgetKit-小组件（iOS-17-）"><a href="#在-React-Native-项目中添加-iOS-WidgetKit-小组件（iOS-17-）" class="headerlink" title="在 React Native 项目中添加 iOS WidgetKit 小组件（iOS 17+）"></a>在 React Native 项目中添加 iOS WidgetKit 小组件（iOS 17+）</h1><p>✅ 支持 React Native 0.74+、Xcode 15.3+、iOS 17 SDK<br>✅ 可读写共享数据，通过 App Group 和原生桥接与 JS 通信<br>✅ 支持静态展示和互动式（AppIntents）小组件  </p>
+<span id="more"></span>
+
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><table>
+<thead>
+<tr>
+<th>组件</th>
+<th>版本要求</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Xcode</td>
+<td>≥ 15.3</td>
+<td>含 iOS 17 SDK，支持 AppIntents</td>
+</tr>
+<tr>
+<td>React Native</td>
+<td>≥ 0.74</td>
+<td>默认启用 Hermes、支持架构升级</td>
+</tr>
+<tr>
+<td>Expo（可选）</td>
+<td>≥ SDK 50</td>
+<td>自动管理原生配置</td>
+</tr>
+<tr>
+<td>macOS</td>
+<td>≥ Sonoma</td>
+<td>Widget 预览更稳定</td>
+</tr>
+</tbody></table>
+<h2 id="步骤一：在-Xcode-中添加-Widget-Extension"><a href="#步骤一：在-Xcode-中添加-Widget-Extension" class="headerlink" title="步骤一：在 Xcode 中添加 Widget Extension"></a>步骤一：在 Xcode 中添加 Widget Extension</h2><ol>
+<li><code>cd ios &amp;&amp; pod install</code> 后，用 <code>.xcworkspace</code> 打开项目。</li>
+<li>新建 Target → 选择 Widget Extension（SwiftUI）。</li>
+<li>勾选 Include Configuration Intent（如需参数配置）。</li>
+<li>命名为 MyAppWidget，生成后包含以下结构：</li>
+</ol>
+<ul>
+<li><code>MyAppWidget.swift</code> - 注册 Widget 条目</li>
+<li><code>MyAppWidgetEntry.swift</code> - TimelineEntry 模型</li>
+<li><code>MyAppWidgetView.swift</code> - SwiftUI UI 组件</li>
+</ul>
+<h2 id="步骤二：配置-App-Group-和桥接-JS-⇄-Widget-数据"><a href="#步骤二：配置-App-Group-和桥接-JS-⇄-Widget-数据" class="headerlink" title="步骤二：配置 App Group 和桥接 JS ⇄ Widget 数据"></a>步骤二：配置 App Group 和桥接 JS ⇄ Widget 数据</h2><h3 id="2-1-开启-App-Group"><a href="#2-1-开启-App-Group" class="headerlink" title="2.1 开启 App Group"></a>2.1 开启 App Group</h3><ul>
+<li>在主 App Target → Signing &amp; Capabilities 添加 App Group。</li>
+<li>创建如 <code>group.com.example.myapp.shared</code>，Widget Target 也加上它。</li>
+</ul>
+<h3 id="2-2-创建-Swift-原生桥接"><a href="#2-2-创建-Swift-原生桥接" class="headerlink" title="2.2 创建 Swift 原生桥接"></a>2.2 创建 Swift 原生桥接</h3><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// WidgetBridge.swift</span></span><br><span class="line"><span class="keyword">import</span> Foundation</span><br><span class="line"><span class="keyword">import</span> WidgetKit</span><br><span class="line"></span><br><span class="line"><span class="keyword">@objc(WidgetBridge)</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WidgetBridge</span>: <span class="title">NSObject</span> </span>&#123;</span><br><span class="line">  <span class="keyword">@objc</span> <span class="keyword">static</span> <span class="function"><span class="keyword">func</span> <span class="title">requiresMainQueueSetup</span>()</span> -&gt; <span class="type">Bool</span> &#123; <span class="literal">false</span> &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">@objc</span> <span class="function"><span class="keyword">func</span> <span class="title">update</span>(<span class="keyword">_</span> <span class="params">dict</span>: <span class="type">NSDictionary</span>)</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> defaults <span class="operator">=</span> <span class="type">UserDefaults</span>(suiteName: <span class="string">&quot;group.com.example.myapp.shared&quot;</span>)<span class="operator">!</span></span><br><span class="line">    defaults.set(dict[<span class="string">&quot;count&quot;</span>], forKey: <span class="string">&quot;count&quot;</span>)</span><br><span class="line">    <span class="type">WidgetCenter</span>.shared.reloadAllTimelines()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-暴露给-React-Native"><a href="#2-3-暴露给-React-Native" class="headerlink" title="2.3 暴露给 React Native"></a>2.3 暴露给 React Native</h3><p>在 <code>.m</code> 文件或 Bridging Header 中注册为 Native Module：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// WidgetBridge.ts</span></span><br><span class="line"><span class="keyword">import</span> &#123; NativeModules &#125; <span class="keyword">from</span> <span class="string">&#x27;react-native&#x27;</span>;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> updateWidget = <span class="function">(<span class="params">count: <span class="built_in">number</span></span>) =&gt;</span></span><br><span class="line">  NativeModules.WidgetBridge.update(&#123; count &#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="步骤三：编写-Widget-UI-和时间线逻辑"><a href="#步骤三：编写-Widget-UI-和时间线逻辑" class="headerlink" title="步骤三：编写 Widget UI 和时间线逻辑"></a>步骤三：编写 Widget UI 和时间线逻辑</h2><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">SimpleEntry</span>: <span class="title">TimelineEntry</span> </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> date: <span class="type">Date</span></span><br><span class="line">    <span class="keyword">let</span> count: <span class="type">Int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Provider</span>: <span class="title">TimelineProvider</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">placeholder</span>(<span class="params">in</span> <span class="params">ctx</span>: <span class="type">Context</span>)</span> -&gt; <span class="type">SimpleEntry</span> &#123; .<span class="keyword">init</span>(date: .now, count: <span class="number">0</span>) &#125;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">getSnapshot</span>(<span class="params">in</span> <span class="params">ctx</span>: <span class="type">Context</span>, <span class="params">completion</span>: <span class="keyword">@escaping</span> (<span class="type">SimpleEntry</span>) -&gt; <span class="type">Void</span>)</span> &#123;</span><br><span class="line">        completion(entry())</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">getTimeline</span>(<span class="params">in</span> <span class="params">ctx</span>: <span class="type">Context</span>, <span class="params">completion</span>: <span class="keyword">@escaping</span> (<span class="type">Timeline</span>&lt;<span class="type">SimpleEntry</span>&gt;) -&gt; <span class="type">Void</span>)</span> &#123;</span><br><span class="line">        completion(<span class="type">Timeline</span>(entries: [entry()], policy: .after(.now <span class="operator">+</span> <span class="number">1800</span>)))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">func</span> <span class="title">entry</span>()</span> -&gt; <span class="type">SimpleEntry</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> defaults <span class="operator">=</span> <span class="type">UserDefaults</span>(suiteName: <span class="string">&quot;group.com.example.myapp.shared&quot;</span>)<span class="operator">!</span></span><br><span class="line">        <span class="keyword">return</span> .<span class="keyword">init</span>(date: .now, count: defaults.integer(forKey: <span class="string">&quot;count&quot;</span>))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">MyAppWidgetEntryView</span>: <span class="title">View</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> entry: <span class="type">Provider</span>.<span class="type">Entry</span></span><br><span class="line">    <span class="keyword">var</span> body: <span class="keyword">some</span> <span class="type">View</span> &#123;</span><br><span class="line">        <span class="type">VStack</span> &#123;</span><br><span class="line">            <span class="type">Text</span>(<span class="string">&quot;📊 次数&quot;</span>)</span><br><span class="line">            <span class="type">Text</span>(<span class="string">&quot;<span class="subst">\(entry.count)</span>&quot;</span>)</span><br><span class="line">                .font(.largeTitle)</span><br><span class="line">                .bold()</span><br><span class="line">        &#125;</span><br><span class="line">        .widgetURL(<span class="type">URL</span>(string: <span class="string">&quot;myapp://counter&quot;</span>))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@main</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">MyAppWidget</span>: <span class="title">Widget</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> body: <span class="keyword">some</span> <span class="type">WidgetConfiguration</span> &#123;</span><br><span class="line">        <span class="type">StaticConfiguration</span>(kind: <span class="string">&quot;MyAppWidget&quot;</span>, provider: <span class="type">Provider</span>()) &#123; entry <span class="keyword">in</span></span><br><span class="line">            <span class="type">MyAppWidgetEntryView</span>(entry: entry)</span><br><span class="line">        &#125;</span><br><span class="line">        .supportedFamilies([.systemSmall, .systemMedium])</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="步骤四：React-Native-端调用"><a href="#步骤四：React-Native-端调用" class="headerlink" title="步骤四：React Native 端调用"></a>步骤四：React Native 端调用</h2><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React, &#123; useState &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; View, Text, Button &#125; <span class="keyword">from</span> <span class="string">&#x27;react-native&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; updateWidget &#125; <span class="keyword">from</span> <span class="string">&#x27;./WidgetBridge&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> <span class="title">CounterScreen</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> [count, setCount] = useState(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">View</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">Text</span>&gt;</span>&#123;count&#125;<span class="tag">&lt;/<span class="name">Text</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">Button</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">        <span class="attr">title</span>=<span class="string">&quot;增加&quot;</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">        <span class="attr">onPress</span>=<span class="string">&#123;()</span> =&gt;</span> &#123;</span></span><br><span class="line"><span class="xml">          const next = count + 1;</span></span><br><span class="line"><span class="xml">          setCount(next);</span></span><br><span class="line"><span class="xml">          updateWidget(next);</span></span><br><span class="line"><span class="xml">        &#125;&#125;</span></span><br><span class="line"><span class="xml">      /&gt;</span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">View</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="步骤五：打包-amp-注意事项"><a href="#步骤五：打包-amp-注意事项" class="headerlink" title="步骤五：打包 &amp; 注意事项"></a>步骤五：打包 &amp; 注意事项</h2><h3 id="5-1-Podfile-中添加-Widget-支持"><a href="#5-1-Podfile-中添加-Widget-支持" class="headerlink" title="5.1 Podfile 中添加 Widget 支持"></a>5.1 Podfile 中添加 Widget 支持</h3><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">target <span class="string">&#x27;MyAppWidgetExtension&#x27;</span> <span class="keyword">do</span></span><br><span class="line">  inherit! <span class="symbol">:search_paths</span></span><br><span class="line">  use_frameworks!</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="5-2-Xcode-Archive-注意事项"><a href="#5-2-Xcode-Archive-注意事项" class="headerlink" title="5.2 Xcode Archive 注意事项"></a>5.2 Xcode Archive 注意事项</h3><ul>
+<li>勾选 Widget target 的 Build。</li>
+<li>如使用 Expo，需先 <code>expo prebuild</code> 并用 <code>expo config plugins</code> 添加 <code>app.extensions</code>。</li>
+</ul>
+<h2 id="常见问题与解决"><a href="#常见问题与解决" class="headerlink" title="常见问题与解决"></a>常见问题与解决</h2><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>可能原因</th>
+<th>解决方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Widget 无法读取数据</td>
+<td>UserDefaults 组名错误</td>
+<td>确认 App Group 一致</td>
+</tr>
+<tr>
+<td>Widget 显示空白</td>
+<td>getTimeline 没有返回 entry</td>
+<td>检查 timeline 返回值</td>
+</tr>
+<tr>
+<td>React Native 调用无效</td>
+<td>reloadAllTimelines 只允许主 app 调用</td>
+<td>不要在 extension 内调用</td>
+</tr>
+</tbody></table>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>UI 在 SwiftUI，数据在 App Group，触发在 WidgetCenter。把 React Native 仅当“数据生产者”，其它都按原生 iOS WidgetKit 流程走，既能保证性能，又不会和 RN 运行时耦合过深。</p>
+<ul>
+<li>   第 1 次集成建议仅做 StaticConfiguration + 列表展示。  </li>
+<li>   若要互动（按钮/滑块），升级到 AppIntents+Interactive Widgets。  </li>
+<li>   若需要后台实时刷新，可结合 Push Widget Reload 或 BackgroundTasks。  </li>
+</ul>
+<p>按以上步骤，你就能在现有 RN 代码基础上，发布带 iOS 小组件 的版本，并且可以用熟悉的 JS 方法更新数据。后续如需深入 AppIntents、动态 Island（Live Activities）或 Android Glance 小组件，也都可以类似拓展。祝接入顺利!</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/hexo/" rel="tag"># hexo</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/01/30/2023_01_30_dom_vs_ios/" rel="prev" title="通过类比 DOM 与 iOS 的思考">
+      <i class="fa fa-chevron-left"></i> 通过类比 DOM 与 iOS 的思考
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/07/28/2024_07_28_what_is_new_in_es_2024/" rel="next" title="ECMAScript 2024（ES15）都更新了什么？">
+      ECMAScript 2024（ES15）都更新了什么？ <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9C%A8-React-Native-%E9%A1%B9%E7%9B%AE%E4%B8%AD%E6%B7%BB%E5%8A%A0-iOS-WidgetKit-%E5%B0%8F%E7%BB%84%E4%BB%B6%EF%BC%88iOS-17-%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">在 React Native 项目中添加 iOS WidgetKit 小组件（iOS 17+）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="nav-number">1.1.</span> <span class="nav-text">环境准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E4%B8%80%EF%BC%9A%E5%9C%A8-Xcode-%E4%B8%AD%E6%B7%BB%E5%8A%A0-Widget-Extension"><span class="nav-number">1.2.</span> <span class="nav-text">步骤一：在 Xcode 中添加 Widget Extension</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E4%BA%8C%EF%BC%9A%E9%85%8D%E7%BD%AE-App-Group-%E5%92%8C%E6%A1%A5%E6%8E%A5-JS-%E2%87%84-Widget-%E6%95%B0%E6%8D%AE"><span class="nav-number">1.3.</span> <span class="nav-text">步骤二：配置 App Group 和桥接 JS ⇄ Widget 数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E5%BC%80%E5%90%AF-App-Group"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 开启 App Group</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E5%88%9B%E5%BB%BA-Swift-%E5%8E%9F%E7%94%9F%E6%A1%A5%E6%8E%A5"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 创建 Swift 原生桥接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E6%9A%B4%E9%9C%B2%E7%BB%99-React-Native"><span class="nav-number">1.3.3.</span> <span class="nav-text">2.3 暴露给 React Native</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E4%B8%89%EF%BC%9A%E7%BC%96%E5%86%99-Widget-UI-%E5%92%8C%E6%97%B6%E9%97%B4%E7%BA%BF%E9%80%BB%E8%BE%91"><span class="nav-number">1.4.</span> <span class="nav-text">步骤三：编写 Widget UI 和时间线逻辑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E5%9B%9B%EF%BC%9AReact-Native-%E7%AB%AF%E8%B0%83%E7%94%A8"><span class="nav-number">1.5.</span> <span class="nav-text">步骤四：React Native 端调用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E4%BA%94%EF%BC%9A%E6%89%93%E5%8C%85-amp-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.6.</span> <span class="nav-text">步骤五：打包 &amp; 注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-Podfile-%E4%B8%AD%E6%B7%BB%E5%8A%A0-Widget-%E6%94%AF%E6%8C%81"><span class="nav-number">1.6.1.</span> <span class="nav-text">5.1 Podfile 中添加 Widget 支持</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-Xcode-Archive-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.6.2.</span> <span class="nav-text">5.2 Xcode Archive 注意事项</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E4%B8%8E%E8%A7%A3%E5%86%B3"><span class="nav-number">1.7.</span> <span class="nav-text">常见问题与解决</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">小结</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Wong</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/uonlyliveonce" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;uonlyliveonce" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:u_only_live_once@outlook.com" title="E-Mail → mailto:u_only_live_once@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wong</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"uonlyliveonce.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="ECMAScript 2024（ES15）都更新了什么？ECMAScript 2024（ES15）于2024年6月正式发布，带来了多项增强 JavaScript 功能的新特性，提升了开发效率和代码可读性。以下是主要更新内容：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ECMAScript 2024（ES15）都更新了什么？">
+<meta property="og:url" content="https://uonlyliveonce.com/2024/07/28/2024_07_28_what_is_new_in_es_2024/index.html">
+<meta property="og:site_name" content="Wong&#39;s Blog">
+<meta property="og:description" content="ECMAScript 2024（ES15）都更新了什么？ECMAScript 2024（ES15）于2024年6月正式发布，带来了多项增强 JavaScript 功能的新特性，提升了开发效率和代码可读性。以下是主要更新内容：">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-07-28T15:11:44.000Z">
+<meta property="article:modified_time" content="2025-06-12T04:07:03.875Z">
+<meta property="article:author" content="Wong">
+<meta property="article:tag" content="hexo">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://uonlyliveonce.com/2024/07/28/2024_07_28_what_is_new_in_es_2024/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ECMAScript 2024（ES15）都更新了什么？ | Wong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Wong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You only live once!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://uonlyliveonce.com/2024/07/28/2024_07_28_what_is_new_in_es_2024/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Wong">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ECMAScript 2024（ES15）都更新了什么？
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-07-28 23:11:44" itemprop="dateCreated datePublished" datetime="2024-07-28T23:11:44+08:00">2024-07-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Front-End/" itemprop="url" rel="index"><span itemprop="name">Front-End</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="ECMAScript-2024（ES15）都更新了什么？"><a href="#ECMAScript-2024（ES15）都更新了什么？" class="headerlink" title="ECMAScript 2024（ES15）都更新了什么？"></a>ECMAScript 2024（ES15）都更新了什么？</h1><p>ECMAScript 2024（ES15）于2024年6月正式发布，带来了多项增强 JavaScript 功能的新特性，提升了开发效率和代码可读性。以下是主要更新内容： </p>
+<span id="more"></span>
+
+<h2 id="Object-groupBy-与-Map-groupBy"><a href="#Object-groupBy-与-Map-groupBy" class="headerlink" title="Object.groupBy() 与 Map.groupBy()"></a>Object.groupBy() 与 Map.groupBy()</h2><p>它们的共同作用是对数组或其他可迭代对象进行分组，但它们返回的数据结构有所不同：</p>
+<ul>
+<li>   Object.groupBy() 返回对象。</li>
+<li>   Map.groupBy() 返回Map实例。</li>
+</ul>
+<h3 id="Object-groupBy"><a href="#Object-groupBy" class="headerlink" title="Object.groupBy()"></a>Object.groupBy()</h3><h4 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h4><p>Object.groupBy(iterable, callbackFn)</p>
+<ul>
+<li>   iterable：可迭代对象（例如数组）</li>
+<li>   callbackFn：分组回调函数，用于确定分组依据的键</li>
+</ul>
+<h4 id="用法示例"><a href="#用法示例" class="headerlink" title="用法示例"></a>用法示例</h4><p>例如，按数字正负分类：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> nums = [-<span class="number">1</span>, -<span class="number">5</span>, <span class="number">0</span>, <span class="number">3</span>, <span class="number">4</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> result = <span class="built_in">Object</span>.groupBy(nums, <span class="function">(<span class="params">num</span>) =&gt;</span> <span class="built_in">Math</span>.sign(num));</span><br><span class="line"><span class="built_in">console</span>.log(result);</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;-1&quot;</span>: [-<span class="number">1</span>, -<span class="number">5</span>],</span><br><span class="line">  <span class="string">&quot;0&quot;</span>: [<span class="number">0</span>],</span><br><span class="line">  <span class="string">&quot;1&quot;</span>: [<span class="number">3</span>, <span class="number">4</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意：</p>
+<ul>
+<li>   返回的是普通 JavaScript 对象。</li>
+<li>   键始终是字符串，自动转化为字符串类型。</li>
+</ul>
+<h4 id="实用示例场景"><a href="#实用示例场景" class="headerlink" title="实用示例场景"></a>实用示例场景</h4><p>示例：按字符串长度分组</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> words = [<span class="string">&#x27;apple&#x27;</span>, <span class="string">&#x27;banana&#x27;</span>, <span class="string">&#x27;kiwi&#x27;</span>, <span class="string">&#x27;pear&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> grouped = <span class="built_in">Object</span>.groupBy(words, <span class="function">(<span class="params">word</span>) =&gt;</span> word.length);</span><br><span class="line"><span class="built_in">console</span>.log(grouped);</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;4&quot;</span>: [<span class="string">&quot;kiwi&quot;</span>, <span class="string">&quot;pear&quot;</span>],</span><br><span class="line">  <span class="string">&quot;5&quot;</span>: [<span class="string">&quot;apple&quot;</span>],</span><br><span class="line">  <span class="string">&quot;6&quot;</span>: [<span class="string">&quot;banana&quot;</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>示例：按对象属性分组</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> users = [</span><br><span class="line">  &#123; <span class="attr">name</span>: <span class="string">&quot;Alice&quot;</span>, <span class="attr">role</span>: <span class="string">&quot;admin&quot;</span> &#125;,</span><br><span class="line">  &#123; <span class="attr">name</span>: <span class="string">&quot;Bob&quot;</span>, <span class="attr">role</span>: <span class="string">&quot;user&quot;</span> &#125;,</span><br><span class="line">  &#123; <span class="attr">name</span>: <span class="string">&quot;Charlie&quot;</span>, <span class="attr">role</span>: <span class="string">&quot;admin&quot;</span> &#125;</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> groupedByRole = <span class="built_in">Object</span>.groupBy(users, <span class="function"><span class="params">user</span> =&gt;</span> user.role);</span><br><span class="line"><span class="built_in">console</span>.log(groupedByRole);</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;admin&quot;</span>: [</span><br><span class="line">    &#123; <span class="attr">name</span>: <span class="string">&quot;Alice&quot;</span>, <span class="attr">role</span>: <span class="string">&quot;admin&quot;</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">name</span>: <span class="string">&quot;Charlie&quot;</span>, <span class="attr">role</span>: <span class="string">&quot;admin&quot;</span> &#125;</span><br><span class="line">  ],</span><br><span class="line">  <span class="string">&quot;user&quot;</span>: [</span><br><span class="line">    &#123; <span class="attr">name</span>: <span class="string">&quot;Bob&quot;</span>, <span class="attr">role</span>: <span class="string">&quot;user&quot;</span> &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Map-groupBy"><a href="#Map-groupBy" class="headerlink" title="Map.groupBy()"></a>Map.groupBy()</h3><h4 id="基本用法-1"><a href="#基本用法-1" class="headerlink" title="基本用法"></a>基本用法</h4><p>Map.groupBy(iterable, callbackFn)  </p>
+<ul>
+<li>返回的是Map 实例，而不是普通对象。</li>
+<li>   键不限制为字符串，可以是任何数据类型，包括对象、数组等。</li>
+</ul>
+<h4 id="用法示例-1"><a href="#用法示例-1" class="headerlink" title="用法示例"></a>用法示例</h4><p>以下使用对象作为键：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> items = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> grouped = <span class="built_in">Map</span>.groupBy(items, <span class="function">(<span class="params">num</span>) =&gt;</span> (num % <span class="number">2</span> === <span class="number">0</span> ? <span class="string">&#x27;even&#x27;</span> : <span class="string">&#x27;odd&#x27;</span>));</span><br><span class="line"><span class="built_in">console</span>.log(grouped);</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Map</span> &#123;</span><br><span class="line">  <span class="string">&#x27;odd&#x27;</span> =&gt; [<span class="number">1</span>, <span class="number">3</span>],</span><br><span class="line">  <span class="string">&#x27;even&#x27;</span> =&gt; [<span class="number">2</span>, <span class="number">4</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用复杂类型（对象）作为键：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> people = [</span><br><span class="line">  &#123; <span class="attr">name</span>: <span class="string">&quot;Alice&quot;</span>, <span class="attr">age</span>: <span class="number">20</span> &#125;,</span><br><span class="line">  &#123; <span class="attr">name</span>: <span class="string">&quot;Bob&quot;</span>, <span class="attr">age</span>: <span class="number">25</span> &#125;,</span><br><span class="line">  &#123; <span class="attr">name</span>: <span class="string">&quot;Charlie&quot;</span>, <span class="attr">age</span>: <span class="number">20</span> &#125;</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> groupedByAge = <span class="built_in">Map</span>.groupBy(people, <span class="function"><span class="params">person</span> =&gt;</span> person.age);</span><br><span class="line"><span class="built_in">console</span>.log(groupedByAge);</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Map</span> &#123;</span><br><span class="line">  <span class="number">20</span> =&gt; [&#123; <span class="attr">name</span>: <span class="string">&quot;Alice&quot;</span>, <span class="attr">age</span>: <span class="number">20</span> &#125;, &#123; <span class="attr">name</span>: <span class="string">&quot;Charlie&quot;</span>, <span class="attr">age</span>: <span class="number">20</span> &#125;],</span><br><span class="line">  <span class="number">25</span> =&gt; [&#123; <span class="attr">name</span>: <span class="string">&quot;Bob&quot;</span>, <span class="attr">age</span>: <span class="number">25</span> &#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意这里键的类型是数字。</p>
+<h3 id="对比总结"><a href="#对比总结" class="headerlink" title="对比总结"></a>对比总结</h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>Object.groupBy()</th>
+<th>Map.groupBy()</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>返回类型</td>
+<td>对象（Object）</td>
+<td>Map 实例</td>
+</tr>
+<tr>
+<td>键类型</td>
+<td>仅字符串</td>
+<td>任意数据类型</td>
+</tr>
+<tr>
+<td>键的易用性</td>
+<td>自动转为字符串</td>
+<td>支持任意复杂类型</td>
+</tr>
+<tr>
+<td>性能特性</td>
+<td>快速访问简单键</td>
+<td>更灵活但需要get方法访问</td>
+</tr>
+</tbody></table>
+<p>适用场景：  </p>
+<p>Object.groupBy()：  </p>
+<ul>
+<li>   数据量较小、键明确为字符串时。</li>
+<li>   快速读取属性。</li>
+</ul>
+<p>Map.groupBy()：  </p>
+<ul>
+<li>   键类型复杂、非字符串类型或数据量较大。</li>
+<li>   对键的顺序有明确要求。</li>
+</ul>
+<h3 id="兼容性及支持情况"><a href="#兼容性及支持情况" class="headerlink" title="兼容性及支持情况"></a>兼容性及支持情况</h3><p>这是 ES2024（ES15）新增功能，在现代浏览器和 Node.js 的最新版中逐渐得到支持。<br>对于尚未支持的环境，临时 polyfill 可以这样实现：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!<span class="built_in">Object</span>.groupBy) &#123;</span><br><span class="line">  <span class="built_in">Object</span>.groupBy = <span class="function"><span class="keyword">function</span>(<span class="params">iterable, callback</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">Array</span>.from(iterable).reduce(<span class="function">(<span class="params">acc, item</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> key = callback(item);</span><br><span class="line">      (acc[key] ||= []).push(item);</span><br><span class="line">      <span class="keyword">return</span> acc;</span><br><span class="line">    &#125;, &#123;&#125;);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!<span class="built_in">Map</span>.groupBy) &#123;</span><br><span class="line">  <span class="built_in">Map</span>.groupBy = <span class="function"><span class="keyword">function</span>(<span class="params">iterable, callback</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> map = <span class="keyword">new</span> <span class="built_in">Map</span>();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">const</span> item <span class="keyword">of</span> iterable) &#123;</span><br><span class="line">      <span class="keyword">const</span> key = callback(item);</span><br><span class="line">      <span class="keyword">if</span> (!map.has(key)) map.set(key, []);</span><br><span class="line">      map.get(key).push(item);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> map;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Object.groupBy() 和 Map.groupBy() 提供了一种便捷的方式对数据进行分组归类。<br>根据实际情况选择合适的方法：  </p>
+<ul>
+<li>   若需键为复杂类型、顺序稳定，选择 Map.groupBy()。</li>
+<li>   若仅需简单键快速访问，选择 Object.groupBy()。</li>
+</ul>
+<p>以上功能的引入使 JavaScript 在处理数据时更加高效、直观，简化了日常数据处理的逻辑和代码量。</p>
+<h2 id="Promise-withResolvers"><a href="#Promise-withResolvers" class="headerlink" title="Promise.withResolvers()"></a>Promise.withResolvers()</h2><h3 id="引入背景"><a href="#引入背景" class="headerlink" title="引入背景"></a>引入背景</h3><p>在 JavaScript 中，创建一个 Promise 通常是这样：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> promise = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 异步操作，完成后调用 resolve 或 reject</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>这种方式的问题在于：</p>
+<ul>
+<li>   必须在构造函数的回调函数内定义异步操作和 Promise 控制。</li>
+<li>   如果异步操作需要外部进行触发或控制（例如：事件监听器），则这种方式不够灵活。</li>
+</ul>
+<h3 id="什么是-Promise-withResolvers-？"><a href="#什么是-Promise-withResolvers-？" class="headerlink" title="什么是 Promise.withResolvers()？"></a>什么是 Promise.withResolvers()？</h3><p>为了更灵活地控制 Promise，ES2024 提供了新的静态方法 Promise.withResolvers()。  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; promise, resolve, reject &#125; = <span class="built_in">Promise</span>.withResolvers();</span><br></pre></td></tr></table></figure>
+
+<p>这个方法返回一个对象，包含：</p>
+<ul>
+<li>   一个新的 promise</li>
+<li>   与该 promise 绑定的 resolve 和 reject 方法，可以从外部调用</li>
+<li>   promise：返回一个新的 Promise 实例。</li>
+<li>   resolve(value)：调用此方法，Promise 状态变为成功（fulfilled）。</li>
+<li>   reject(reason)：调用此方法，Promise 状态变为失败（rejected）。</li>
+</ul>
+<h3 id="基本用法示例"><a href="#基本用法示例" class="headerlink" title="基本用法示例"></a>基本用法示例</h3><h4 id="最基本的示例："><a href="#最基本的示例：" class="headerlink" title="最基本的示例："></a>最基本的示例：</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; promise, resolve, reject &#125; = <span class="built_in">Promise</span>.withResolvers();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 外部控制 promise</span></span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  resolve(<span class="string">&#x27;任务成功&#x27;</span>);</span><br><span class="line">&#125;, <span class="number">1000</span>);</span><br><span class="line"></span><br><span class="line">promise.then(<span class="function">(<span class="params">value</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(value);  <span class="comment">// 一秒后输出：&quot;任务成功&quot;</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>在这个例子中，resolve 可以在外部被调用，非常适合需要在事件或其他条件触发时才解决 Promise 的情况。</p>
+<h4 id="异步事件监听器场景："><a href="#异步事件监听器场景：" class="headerlink" title="异步事件监听器场景："></a>异步事件监听器场景：</h4><p>假设我们想等待某个按钮被点击：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; promise, resolve &#125; = <span class="built_in">Promise</span>.withResolvers();</span><br><span class="line"></span><br><span class="line"><span class="built_in">document</span>.querySelector(<span class="string">&#x27;button&#x27;</span>).addEventListener(<span class="string">&#x27;click&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  resolve(<span class="string">&#x27;按钮已点击&#x27;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">promise.then(<span class="function">(<span class="params">message</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(message);  <span class="comment">// 按钮点击后输出：&quot;按钮已点击&quot;</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="与传统方式对比"><a href="#与传统方式对比" class="headerlink" title="与传统方式对比"></a>与传统方式对比</h3><p>传统方式控制外部 resolve/reject：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> resolvePromise;</span><br><span class="line"><span class="keyword">const</span> promise = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">  resolvePromise = resolve; <span class="comment">// 将resolve赋给外部变量</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">resolvePromise(<span class="string">&#x27;done&#x27;</span>);</span><br></pre></td></tr></table></figure>
+<p>这样虽然也能做到，但写法不优雅且容易出错。</p>
+<p>使用 Promise.withResolvers() 更直观、更安全：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; promise, resolve &#125; = <span class="built_in">Promise</span>.withResolvers();</span><br><span class="line">resolve(<span class="string">&#x27;done&#x27;</span>); <span class="comment">// 直接调用resolve</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="典型应用场景"><a href="#典型应用场景" class="headerlink" title="典型应用场景"></a>典型应用场景</h3><ul>
+<li>   事件驱动编程： 等待用户交互、DOM 事件等。</li>
+<li>   条件触发： 外部异步任务（如网络请求、WebSockets）在外部状态改变时触发。</li>
+<li>   复杂异步流程控制： 外部管理多个异步任务时，更清晰的分离逻辑和控制。</li>
+</ul>
+<p>例如，一个简单的异步确认框：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">asyncConfirm</span>(<span class="params">message</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; promise, resolve &#125; = <span class="built_in">Promise</span>.withResolvers();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> confirmed = <span class="built_in">window</span>.confirm(message);</span><br><span class="line">  resolve(confirmed);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> promise;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">asyncConfirm(<span class="string">&#x27;确定要删除吗？&#x27;</span>).then(<span class="function">(<span class="params">confirmed</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (confirmed) &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;用户确认删除。&#x27;</span>);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;用户取消删除。&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="兼容性及支持情况-1"><a href="#兼容性及支持情况-1" class="headerlink" title="兼容性及支持情况"></a>兼容性及支持情况</h3><p>ECMAScript 2024（ES15）引入的新特性，现代浏览器和 Node.js 新版逐渐支持。</p>
+<p>如果在旧环境使用，可暂时通过 polyfill 实现类似效果：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Promise</span>.withResolvers = <span class="built_in">Promise</span>.withResolvers || <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> resolve, reject;</span><br><span class="line">  <span class="keyword">const</span> promise = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">res, rej</span>) =&gt;</span> &#123;</span><br><span class="line">    resolve = res;</span><br><span class="line">    reject = rej;</span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="keyword">return</span> &#123; promise, resolve, reject &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><p>Promise.withResolvers() 提供了一种更为灵活的创建和控制 Promise 的方式。它帮助开发者将 Promise 的控制权明确分离，从而更清晰、更灵活地实现异步逻辑。这种方式尤其适用于需要外部条件触发或更复杂的异步控制场景。</p>
+<h2 id="正则表达式新标志-v"><a href="#正则表达式新标志-v" class="headerlink" title="正则表达式新标志 /v"></a>正则表达式新标志 <code>/v</code></h2><p>这个新标志称为集合标志（Set Notation flag），用于增强 Unicode 字符集的匹配能力，并允许更复杂的字符集合操作。</p>
+<h3 id="为什么要引入-v-标志？"><a href="#为什么要引入-v-标志？" class="headerlink" title="为什么要引入 /v 标志？"></a>为什么要引入 <code>/v</code> 标志？</h3><p>传统 JavaScript 正则表达式的字符集合匹配能力比较有限，尤其涉及到 Unicode 字符集的时候：  </p>
+<ul>
+<li>   无法简单地表示字符集之间的交集、差集或嵌套组合。</li>
+<li>   对 Unicode 的支持局限于简单的字符类，难以描述更复杂的字符集合。</li>
+</ul>
+<p>新的 <code>/v</code> 标志提供了集合操作的能力，可以轻松描述复杂的字符集合。</p>
+<h3 id="v-标志的主要特性与语法"><a href="#v-标志的主要特性与语法" class="headerlink" title="/v 标志的主要特性与语法"></a><code>/v</code> 标志的主要特性与语法</h3><p>使用 /v 标志后，可以在字符类 ([]) 中使用以下运算符：</p>
+<ul>
+<li>   并集（Union）：[A B] 或 [A||B]</li>
+<li>   交集（Intersection）：[A&amp;&amp;B]</li>
+<li>   差集（Subtraction）：[A–B]</li>
+<li>   字符类嵌套（Nested character classes）：可直接在字符类中嵌套另一字符类。</li>
+</ul>
+<p>示例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 匹配同时属于十六进制和ASCII字母的字符 (即 A-F, a-f)</span></span><br><span class="line"><span class="keyword">const</span> regex = <span class="regexp">/[\p&#123;ASCII&#125;&amp;&amp;\p&#123;Hex_Digit&#125;]/</span>v;</span><br><span class="line"></span><br><span class="line">regex.test(<span class="string">&#x27;F&#x27;</span>); <span class="comment">// true</span></span><br><span class="line">regex.test(<span class="string">&#x27;9&#x27;</span>); <span class="comment">// true</span></span><br><span class="line">regex.test(<span class="string">&#x27;G&#x27;</span>); <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="v-标志与-Unicode-属性转义的结合"><a href="#v-标志与-Unicode-属性转义的结合" class="headerlink" title="/v 标志与 Unicode 属性转义的结合"></a><code>/v</code> 标志与 Unicode 属性转义的结合</h3><p><code>/v</code> 标志可以结合 Unicode 属性（如\p{}）进行更强大的匹配：</p>
+<p>示例：匹配拉丁字母或希腊字母：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> regex = <span class="regexp">/[\p&#123;Script=Latin&#125;||\p&#123;Script=Greek&#125;]/</span>v;</span><br><span class="line"></span><br><span class="line">regex.test(<span class="string">&#x27;A&#x27;</span>); <span class="comment">// true (拉丁字母)</span></span><br><span class="line">regex.test(<span class="string">&#x27;α&#x27;</span>); <span class="comment">// true (希腊字母)</span></span><br><span class="line">regex.test(<span class="string">&#x27;你&#x27;</span>); <span class="comment">// false (汉字)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="使用-v-标志的典型示例"><a href="#使用-v-标志的典型示例" class="headerlink" title="使用 /v 标志的典型示例"></a>使用 <code>/v</code> 标志的典型示例</h3><h4 id="并集（Union）"><a href="#并集（Union）" class="headerlink" title="并集（Union）"></a>并集（Union）</h4><p>匹配数字或大写字母：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> regex = <span class="regexp">/[\p&#123;Number&#125;||\p&#123;Uppercase_Letter&#125;]/</span>v;</span><br><span class="line"></span><br><span class="line">regex.test(<span class="string">&#x27;A&#x27;</span>); <span class="comment">// true</span></span><br><span class="line">regex.test(<span class="string">&#x27;3&#x27;</span>); <span class="comment">// true</span></span><br><span class="line">regex.test(<span class="string">&#x27;a&#x27;</span>); <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="交集（Intersection）"><a href="#交集（Intersection）" class="headerlink" title="交集（Intersection）"></a>交集（Intersection）</h4><p>匹配ASCII字符集中同时是字母的字符：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> regex = <span class="regexp">/[\p&#123;ASCII&#125;&amp;&amp;\p&#123;Letter&#125;]/</span>v;</span><br><span class="line"></span><br><span class="line">regex.test(<span class="string">&#x27;A&#x27;</span>); <span class="comment">// true</span></span><br><span class="line">regex.test(<span class="string">&#x27;g&#x27;</span>); <span class="comment">// true</span></span><br><span class="line">regex.test(<span class="string">&#x27;1&#x27;</span>); <span class="comment">// false</span></span><br><span class="line">regex.test(<span class="string">&#x27;你&#x27;</span>); <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="差集（Subtraction）"><a href="#差集（Subtraction）" class="headerlink" title="差集（Subtraction）"></a>差集（Subtraction）</h4><p>匹配所有小写字母但排除元音字母：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> regex = <span class="regexp">/[\p&#123;Lowercase_Letter&#125;--[aeiou]]/</span>v;</span><br><span class="line"></span><br><span class="line">regex.test(<span class="string">&#x27;b&#x27;</span>); <span class="comment">// true</span></span><br><span class="line">regex.test(<span class="string">&#x27;a&#x27;</span>); <span class="comment">// false (元音字母)</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="字符类嵌套"><a href="#字符类嵌套" class="headerlink" title="字符类嵌套"></a>字符类嵌套</h4><p>字符类内再嵌套一个字符类：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> regex = <span class="regexp">/[\p&#123;Number&#125;||[\p&#123;Letter&#125;&amp;&amp;\p&#123;Uppercase_Letter&#125;]]/</span>v;</span><br><span class="line"></span><br><span class="line">regex.test(<span class="string">&#x27;3&#x27;</span>); <span class="comment">// true</span></span><br><span class="line">regex.test(<span class="string">&#x27;A&#x27;</span>); <span class="comment">// true</span></span><br><span class="line">regex.test(<span class="string">&#x27;a&#x27;</span>); <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+<p>这里的含义是匹配数字或大写字母。</p>
+<h3 id="v-标志与其它正则标志的关系"><a href="#v-标志与其它正则标志的关系" class="headerlink" title="/v 标志与其它正则标志的关系"></a><code>/v</code> 标志与其它正则标志的关系</h3><ul>
+<li>   <code>/v</code> 标志与 <code>/u</code> 标志是互斥的，不能同时使用。</li>
+<li>   <code>/v</code> 标志自动支持完整的 Unicode 模式，具备 <code>/u</code> 的能力且更加高级。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> regex = <span class="regexp">/[a-z&amp;&amp;[^aeiou]]/</span>v; <span class="comment">// 有效</span></span><br><span class="line"><span class="keyword">const</span> regex = <span class="regexp">/[a-z]/u</span>v; <span class="comment">// 无效，会抛出语法错误</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="常见注意事项与限制"><a href="#常见注意事项与限制" class="headerlink" title="常见注意事项与限制"></a>常见注意事项与限制</h3><ul>
+<li>   <code>/v</code> 标志要求字符类使用明确的集合表示法，且不能与传统字符类混用旧式范围（如 [a-z]）和集合操作。</li>
+<li>   建议使用 Unicode 属性表示字符类，以充分发挥 <code>/v</code> 标志的优势。</li>
+</ul>
+<h3 id="支持情况与兼容性"><a href="#支持情况与兼容性" class="headerlink" title="支持情况与兼容性"></a>支持情况与兼容性</h3><p>各主流 JavaScript 引擎（Chrome、Firefox、Safari、Node.js）逐步实现中，注意版本更新。如需兼容老旧环境，可以继续使用 Babel 或正则表达式库如 XRegExp 处理复杂情况。</p>
+<h3 id="使用场景与优势总结"><a href="#使用场景与优势总结" class="headerlink" title="使用场景与优势总结"></a>使用场景与优势总结</h3><p>使用 /v 标志的优势：</p>
+<ul>
+<li>   简化复杂字符集合的定义，增强代码可读性和维护性。</li>
+<li>   更好地支持<strong>国际化（i18n）</strong>字符处理场景。</li>
+<li>   大幅简化以前需要多个正则表达式组合的复杂匹配逻辑。</li>
+</ul>
+<p>典型使用场景包括：</p>
+<ul>
+<li>   多语言输入验证</li>
+<li>   Unicode 字符范围匹配（例如密码验证）</li>
+<li>   字符串内容过滤与清洗</li>
+</ul>
+<h3 id="示例综合案例"><a href="#示例综合案例" class="headerlink" title="示例综合案例"></a>示例综合案例</h3><p>验证用户名（仅允许拉丁字母、希腊字母和数字）：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> usernameRegex = <span class="regexp">/^[\p&#123;Script=Latin&#125;||\p&#123;Script=Greek&#125;||\p&#123;Number&#125;]+$/</span>v;</span><br><span class="line"></span><br><span class="line">usernameRegex.test(<span class="string">&#x27;Alex123&#x27;</span>);    <span class="comment">// true</span></span><br><span class="line">usernameRegex.test(<span class="string">&#x27;Αλέξανδρος&#x27;</span>); <span class="comment">// true (希腊字母)</span></span><br><span class="line">usernameRegex.test(<span class="string">&#x27;用户&#x27;</span>);         <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="总结-2"><a href="#总结-2" class="headerlink" title="总结"></a>总结</h3><p>正则表达式的新标志 <code>/v</code> 为开发者提供了更加强大的集合操作能力，使 JavaScript 中的字符匹配变得更加灵活与精准。此功能尤其适用于 Unicode 和国际化处理，提供更直观、更简洁的正则表达式写法，极大提升开发效率和表达能力。</p>
+<h2 id="ArrayBuffer-与-SharedArrayBuffer-的增强"><a href="#ArrayBuffer-与-SharedArrayBuffer-的增强" class="headerlink" title="ArrayBuffer 与 SharedArrayBuffer 的增强"></a>ArrayBuffer 与 SharedArrayBuffer 的增强</h2><h3 id="背景介绍"><a href="#背景介绍" class="headerlink" title="背景介绍"></a>背景介绍</h3><h4 id="ArrayBuffer-简介"><a href="#ArrayBuffer-简介" class="headerlink" title="ArrayBuffer 简介"></a>ArrayBuffer 简介</h4><ul>
+<li>   ArrayBuffer 用于表示固定长度的二进制数据缓冲区。</li>
+<li>   它本身并不能直接操作数据，通常搭配 <strong>视图（如TypedArray）</strong> 来读写。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> buffer = <span class="keyword">new</span> <span class="built_in">ArrayBuffer</span>(<span class="number">8</span>);</span><br><span class="line"><span class="keyword">const</span> view = <span class="keyword">new</span> <span class="built_in">Uint8Array</span>(buffer);</span><br><span class="line">view[<span class="number">0</span>] = <span class="number">255</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="SharedArrayBuffer-简介"><a href="#SharedArrayBuffer-简介" class="headerlink" title="SharedArrayBuffer 简介"></a>SharedArrayBuffer 简介</h4><ul>
+<li>   SharedArrayBuffer 允许多个线程（Web Workers）共享同一块内存区域，适用于多线程环境。</li>
+<li>   通常用于并发编程、数据同步等场景。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 主线程</span></span><br><span class="line"><span class="keyword">const</span> sharedBuffer = <span class="keyword">new</span> SharedArrayBuffer(<span class="number">1024</span>);</span><br><span class="line">worker.postMessage(sharedBuffer);</span><br></pre></td></tr></table></figure>
+
+<h3 id="Resizable-ArrayBuffer-可调整大小"><a href="#Resizable-ArrayBuffer-可调整大小" class="headerlink" title="Resizable ArrayBuffer (可调整大小)"></a>Resizable ArrayBuffer (可调整大小)</h3><p>在 ES2024 中，ArrayBuffer 允许在创建后动态地调整大小（增大或缩小）：</p>
+<h4 id="创建可调整大小的-ArrayBuffer："><a href="#创建可调整大小的-ArrayBuffer：" class="headerlink" title="创建可调整大小的 ArrayBuffer："></a>创建可调整大小的 ArrayBuffer：</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const buffer = new ArrayBuffer(8, &#123; maxByteLength: 64 &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>参数：</p>
+<ul>
+<li>   初始大小 (例如：8字节)</li>
+<li>   maxByteLength 表示缓冲区的最大允许大小。</li>
+</ul>
+<h4 id="调整大小方法："><a href="#调整大小方法：" class="headerlink" title="调整大小方法："></a>调整大小方法：</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">buffer.resize(newByteLength);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>   如果新尺寸超过 maxByteLength，将抛出错误。</li>
+<li>   调整后原来的数据保留（如果新尺寸较大，多出的部分用零填充；如果尺寸缩小，尾部数据丢弃）。</li>
+</ul>
+<h4 id="示例："><a href="#示例：" class="headerlink" title="示例："></a>示例：</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">const buffer = new ArrayBuffer(8, &#123; maxByteLength: 16 &#125;);</span><br><span class="line">console.log(buffer.byteLength); // 8</span><br><span class="line"></span><br><span class="line">buffer.resize(12);</span><br><span class="line">console.log(buffer.byteLength); // 12</span><br><span class="line"></span><br><span class="line">buffer.resize(6);</span><br><span class="line">console.log(buffer.byteLength); // 6</span><br></pre></td></tr></table></figure>
+
+<h3 id="Transferable-ArrayBuffer-可转移"><a href="#Transferable-ArrayBuffer-可转移" class="headerlink" title="Transferable ArrayBuffer (可转移)"></a>Transferable ArrayBuffer (可转移)</h3><p>新的 .transfer() 方法允许你将一个 ArrayBuffer 的内存转移到另一个缓冲区：</p>
+<h4 id="基本语法："><a href="#基本语法：" class="headerlink" title="基本语法："></a>基本语法：</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> newBuffer = buffer.transfer(newByteLength);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>   调用后，原来的 buffer 会被标记为“detached”，无法再访问。</li>
+<li>   新的缓冲区可以更大或更小；原有数据根据新尺寸截断或填充。</li>
+</ul>
+<h4 id="示例：-1"><a href="#示例：-1" class="headerlink" title="示例："></a>示例：</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> buffer1 = <span class="keyword">new</span> <span class="built_in">ArrayBuffer</span>(<span class="number">8</span>);</span><br><span class="line"><span class="keyword">const</span> view1 = <span class="keyword">new</span> <span class="built_in">Uint8Array</span>(buffer1);</span><br><span class="line">view1.set([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> buffer2 = buffer1.transfer(<span class="number">16</span>);</span><br><span class="line"><span class="keyword">const</span> view2 = <span class="keyword">new</span> <span class="built_in">Uint8Array</span>(buffer2);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(view2); <span class="comment">// Uint8Array(16) [1, 2, 3, 4, 0, 0, ...]</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// buffer1 此时已经被分离（detached），不可用</span></span><br><span class="line"><span class="built_in">console</span>.log(buffer1.byteLength); <span class="comment">// 抛出错误</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Resizable-SharedArrayBuffer（可扩展共享内存）"><a href="#Resizable-SharedArrayBuffer（可扩展共享内存）" class="headerlink" title="Resizable SharedArrayBuffer（可扩展共享内存）"></a>Resizable SharedArrayBuffer（可扩展共享内存）</h3><p>SharedArrayBuffer 在 ES2024 中也获得了扩展内存大小的能力</p>
+<h4 id="创建可扩展的-SharedArrayBuffer："><a href="#创建可扩展的-SharedArrayBuffer：" class="headerlink" title="创建可扩展的 SharedArrayBuffer："></a>创建可扩展的 SharedArrayBuffer：</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> sharedBuffer = <span class="keyword">new</span> SharedArrayBuffer(<span class="number">1024</span>, &#123; <span class="attr">maxByteLength</span>: <span class="number">4096</span> &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>可共享的缓冲区初始大小1024字节，最大可扩展到4096字节。</p>
+<h4 id="扩展缓冲区大小："><a href="#扩展缓冲区大小：" class="headerlink" title="扩展缓冲区大小："></a>扩展缓冲区大小：</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sharedBuffer.grow(newByteLength);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>   注意：SharedArrayBuffer 只能扩大，不能缩小。</li>
+<li>   扩展后的新空间由零填充。</li>
+</ul>
+<h4 id="示例：-2"><a href="#示例：-2" class="headerlink" title="示例："></a>示例：</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> sharedBuffer = <span class="keyword">new</span> SharedArrayBuffer(<span class="number">1024</span>, &#123; <span class="attr">maxByteLength</span>: <span class="number">2048</span> &#125;);</span><br><span class="line"></span><br><span class="line">sharedBuffer.grow(<span class="number">1536</span>);</span><br><span class="line"><span class="built_in">console</span>.log(sharedBuffer.byteLength); <span class="comment">// 1536</span></span><br><span class="line"></span><br><span class="line">sharedBuffer.grow(<span class="number">512</span>); <span class="comment">// 错误，不能缩小</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="与视图（TypedArray）配合使用时的注意事项"><a href="#与视图（TypedArray）配合使用时的注意事项" class="headerlink" title="与视图（TypedArray）配合使用时的注意事项"></a>与视图（TypedArray）配合使用时的注意事项</h3><p>TypedArray 在底层缓冲区发生变化时有特殊表现：</p>
+<ul>
+<li>   Resizable ArrayBuffer 调整大小后，基于该缓冲区的视图（如Uint8Array）可能会因超出范围而被自动调整大小。</li>
+<li>   Transferable ArrayBuffer 在转移后，原来的视图会失效（无法再访问）。</li>
+<li>   SharedArrayBuffer 在扩展后，视图仍保持原始长度，若需要访问新增部分，需重新创建视图。</li>
+</ul>
+<p>示例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> buffer = <span class="keyword">new</span> <span class="built_in">ArrayBuffer</span>(<span class="number">8</span>, &#123; <span class="attr">maxByteLength</span>: <span class="number">16</span> &#125;);</span><br><span class="line"><span class="keyword">const</span> view = <span class="keyword">new</span> <span class="built_in">Uint8Array</span>(buffer);</span><br><span class="line"><span class="built_in">console</span>.log(view.length); <span class="comment">// 8</span></span><br><span class="line"></span><br><span class="line">buffer.resize(<span class="number">12</span>);</span><br><span class="line"><span class="built_in">console</span>.log(view.length); <span class="comment">// 自动调整为12</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="适用场景与优势总结"><a href="#适用场景与优势总结" class="headerlink" title="适用场景与优势总结"></a>适用场景与优势总结</h3><p>这些增强功能尤其适用于：</p>
+<ul>
+<li>   动态内存管理（例如：音视频处理、大数据传输）</li>
+<li>   多线程、高性能计算（Web Workers、WebAssembly）</li>
+<li>   性能敏感且内存需求动态变化的场景（游戏开发、图形处理）</li>
+</ul>
+<p>优势：</p>
+<ul>
+<li>   提高内存管理的灵活性。</li>
+<li>   避免内存浪费，提升性能。</li>
+<li>   降低开发复杂性（无需频繁创建新的缓冲区）。</li>
+</ul>
+<h3 id="兼容性说明"><a href="#兼容性说明" class="headerlink" title="兼容性说明"></a>兼容性说明</h3><ul>
+<li>   ES2024（ES15）引入的新功能，正在逐步被现代浏览器和Node.js环境支持。</li>
+<li>   尚未支持的环境需等待更新或使用Polyfill / Babel进行兼容处理。</li>
+</ul>
+<h3 id="总结-3"><a href="#总结-3" class="headerlink" title="总结"></a>总结</h3><p>ES2024 中的 ArrayBuffer 与 SharedArrayBuffer 增强为 JavaScript 带来了更高效、更灵活、更安全的底层内存控制能力：</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>ArrayBuffer</th>
+<th>SharedArrayBuffer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>可调整大小（Resizable）</td>
+<td>可增大或者减小</td>
+<td>仅可以增大</td>
+</tr>
+<tr>
+<td>可转移（Transferable）</td>
+<td>可转移（transfer）</td>
+<td>不可转移</td>
+</tr>
+<tr>
+<td>用途</td>
+<td>单线程灵活内存管理</td>
+<td>多线程共享内存</td>
+</tr>
+</tbody></table>
+<p>开发者通过使用这些功能，可以更精准地管理内存、优化性能，特别是在更为复杂和性能敏感的应用场景中。</p>
+<h2 id="字符串格式验证方法"><a href="#字符串格式验证方法" class="headerlink" title="字符串格式验证方法"></a>字符串格式验证方法</h2><h3 id="什么是“格式正确”（Well-Formed）的字符串？"><a href="#什么是“格式正确”（Well-Formed）的字符串？" class="headerlink" title="什么是“格式正确”（Well-Formed）的字符串？"></a>什么是“格式正确”（Well-Formed）的字符串？</h3><p>在 Unicode 中，<strong>格式正确（Well-Formed）</strong> 的字符串意味着字符串没有包含：</p>
+<ul>
+<li>   孤立的代理项（lone surrogate）</li>
+<li>   Unicode 代理对（surrogate pair）由 <strong>高代理项（High surrogate, \uD800 - \uDBFF）和低代理项（Low surrogate, \uDC00 - \uDFFF）</strong> 组成，用于表示超出BMP（基本多语言平面）的字符。</li>
+<li>   孤立代理项是指只有高代理项或只有低代理项而没有匹配的配对项。</li>
+</ul>
+<p>例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> invalid = <span class="string">&quot;\uD800&quot;</span>; <span class="comment">// 孤立的高代理项，不合规</span></span><br></pre></td></tr></table></figure>
+<p>这样的字符串是无效的，可能在后续处理中导致错误或异常。</p>
+<h3 id="String-prototype-isWellFormed"><a href="#String-prototype-isWellFormed" class="headerlink" title="String.prototype.isWellFormed()"></a>String.prototype.isWellFormed()</h3><p>作用：  </p>
+<p>检查字符串是否为格式正确的Unicode字符串。<br>返回一个布尔值（true/false）：  </p>
+<ul>
+<li>   true：格式正确，无孤立代理项。  </li>
+<li>   false：包含孤立代理项或其他无效字符。  </li>
+</ul>
+<p>基本用法示例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> validStr = <span class="string">&quot;Hello&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> invalidStr = <span class="string">&quot;Hello\uD800World&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(validStr.isWellFormed());   <span class="comment">// true</span></span><br><span class="line"><span class="built_in">console</span>.log(invalidStr.isWellFormed()); <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+<p>第一个字符串无问题，因此返回 true。<br>第二个字符串包含孤立代理项，因此返回 false。</p>
+<h3 id="String-prototype-toWellFormed"><a href="#String-prototype-toWellFormed" class="headerlink" title="String.prototype.toWellFormed()"></a>String.prototype.toWellFormed()</h3><p>作用：</p>
+<ul>
+<li>   将无效的（ill-formed）字符串转换为格式正确的字符串。</li>
+<li>   替换孤立代理项为 Unicode 替代字符（U+FFFD，�）。</li>
+</ul>
+<p>基本用法示例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> validStr = <span class="string">&quot;Hello&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> invalidStr = <span class="string">&quot;Hello\uD800World&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(validStr.isWellFormed());   <span class="comment">// true</span></span><br><span class="line"><span class="built_in">console</span>.log(invalidStr.isWellFormed()); <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+<p>第一个字符串无问题，因此返回 true。<br>第二个字符串包含孤立代理项，因此返回 false。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> invalidStr = <span class="string">&quot;Hello\uD800World&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> correctedStr = invalidStr.toWellFormed();</span><br><span class="line"><span class="built_in">console</span>.log(correctedStr); </span><br><span class="line"><span class="comment">// 输出: &quot;Hello�World&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>\uD800</code> 是孤立代理项，因此被替换成 <code>�</code>。</p>
+<h3 id="典型使用场景"><a href="#典型使用场景" class="headerlink" title="典型使用场景"></a>典型使用场景</h3><h4 id="安全的网络通信"><a href="#安全的网络通信" class="headerlink" title="安全的网络通信"></a>安全的网络通信</h4><p>确保发送给服务器或API的数据总是格式正确，避免服务器端处理异常：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">safeSend</span>(<span class="params">data</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> safeData = data.toWellFormed();</span><br><span class="line">  fetch(<span class="string">&#x27;/api/send&#x27;</span>, &#123;</span><br><span class="line">    <span class="attr">method</span>: <span class="string">&#x27;POST&#x27;</span>,</span><br><span class="line">    <span class="attr">body</span>: <span class="built_in">JSON</span>.stringify(&#123; <span class="attr">data</span>: safeData &#125;)</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="用户输入校验"><a href="#用户输入校验" class="headerlink" title="用户输入校验"></a>用户输入校验</h4><p>检查用户输入文本，避免无效的字符导致异常：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> userInput = inputElement.value;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!userInput.isWellFormed()) &#123;</span><br><span class="line">  alert(<span class="string">&quot;输入中包含无效字符，已自动替换！&quot;</span>);</span><br><span class="line">  inputElement.value = userInput.toWellFormed();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="日志记录与数据存储"><a href="#日志记录与数据存储" class="headerlink" title="日志记录与数据存储"></a>日志记录与数据存储</h4><p>保证日志或数据记录中的字符串是安全且格式化正确的：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">logMessage</span>(<span class="params">msg</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> safeMsg = msg.toWellFormed();</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">`[Log]: <span class="subst">$&#123;safeMsg&#125;</span>`</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="常见问题和注意事项"><a href="#常见问题和注意事项" class="headerlink" title="常见问题和注意事项"></a>常见问题和注意事项</h3><ul>
+<li>   这两个方法不改变原字符串，而是返回新的字符串或布尔值。</li>
+<li>   无法修复语义上的问题，仅在字符编码层面修正孤立代理项等无效格式。</li>
+</ul>
+<h3 id="兼容性和Polyfill方案"><a href="#兼容性和Polyfill方案" class="headerlink" title="兼容性和Polyfill方案"></a>兼容性和Polyfill方案</h3><p>目前ES2024标准新推出，现代浏览器和Node.js版本逐步支持中。</p>
+<p>临时Polyfill示例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!<span class="built_in">String</span>.prototype.isWellFormed) &#123;</span><br><span class="line">  <span class="built_in">String</span>.prototype.isWellFormed = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> !<span class="regexp">/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?&lt;![\uD800-\uDBFF])[\uDC00-\uDFFF]/</span>.test(<span class="built_in">this</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!<span class="built_in">String</span>.prototype.toWellFormed) &#123;</span><br><span class="line">  <span class="built_in">String</span>.prototype.toWellFormed = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.replace(<span class="regexp">/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?&lt;![\uD800-\uDBFF])[\uDC00-\uDFFF]/g</span>, <span class="string">&quot;\uFFFD&quot;</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个Polyfill用正则表达式临时实现类似功能，但可能性能不如原生实现。</p>
+<h3 id="方法对比总结"><a href="#方法对比总结" class="headerlink" title="方法对比总结"></a>方法对比总结</h3><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>功能</th>
+<th>返回值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>isWellFormed()</td>
+<td>检查字符串格式</td>
+<td>布尔值（true 或 false）</td>
+</tr>
+<tr>
+<td>toWellFormed()</td>
+<td>修正字符串格式</td>
+<td>新的安全字符串</td>
+</tr>
+</tbody></table>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> data = [<span class="string">&quot;Hello&quot;</span>, <span class="string">&quot;World\uD800&quot;</span>, <span class="string">&quot;😊&quot;</span>, <span class="string">&quot;\uD800Test&quot;</span>];</span><br><span class="line"></span><br><span class="line">data.forEach(<span class="function"><span class="params">item</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (!item.isWellFormed()) &#123;</span><br><span class="line">    <span class="built_in">console</span>.warn(<span class="string">`检测到无效字符串: <span class="subst">$&#123;item&#125;</span>`</span>);</span><br><span class="line">    <span class="keyword">const</span> fixed = item.toWellFormed();</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`修复后的字符串: <span class="subst">$&#123;fixed&#125;</span>`</span>);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`有效字符串: <span class="subst">$&#123;item&#125;</span>`</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">有效字符串: Hello</span><br><span class="line">检测到无效字符串: World�</span><br><span class="line">修复后的字符串: World�</span><br><span class="line">有效字符串: 😊</span><br><span class="line">检测到无效字符串: �Test</span><br><span class="line">修复后的字符串: �Test</span><br></pre></td></tr></table></figure>
+
+<h3 id="总结-4"><a href="#总结-4" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>   提高了JavaScript处理Unicode字符串的安全性和可靠性。</li>
+<li>   简单易用，有效避免潜在的字符串格式问题。</li>
+<li>   推荐广泛应用于网络通信、用户输入校验、数据处理等场景，保障系统的健壮性与数据安全性。</li>
+</ul>
+<h2 id="Atomics-waitAsync"><a href="#Atomics-waitAsync" class="headerlink" title="Atomics.waitAsync()"></a>Atomics.waitAsync()</h2><h3 id="背景：什么是-Atomics-wait-？"><a href="#背景：什么是-Atomics-wait-？" class="headerlink" title="背景：什么是 Atomics.wait()？"></a>背景：什么是 Atomics.wait()？</h3><p>在引入 Atomics.waitAsync() 前，JavaScript 已有 Atomics.wait() 方法：</p>
+<ul>
+<li>   Atomics.wait() 是同步阻塞调用。</li>
+<li>   仅能在Worker线程中使用，主线程无法使用，否则会抛出异常。</li>
+<li>   等待指定的共享内存位置的值变化。</li>
+</ul>
+<p>示例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// worker.js 中</span></span><br><span class="line"><span class="keyword">const</span> sharedBuffer = <span class="keyword">new</span> SharedArrayBuffer(<span class="number">4</span>);</span><br><span class="line"><span class="keyword">const</span> sharedArray = <span class="keyword">new</span> <span class="built_in">Int32Array</span>(sharedBuffer);</span><br><span class="line"></span><br><span class="line">Atomics.wait(sharedArray, <span class="number">0</span>, <span class="number">0</span>);  <span class="comment">// 阻塞等待直到索引0的值不是0</span></span><br></pre></td></tr></table></figure>
+
+<p>缺点：</p>
+<ul>
+<li>   主线程无法使用，导致场景受限。</li>
+<li>   同步阻塞可能影响性能和响应性。</li>
+</ul>
+<h3 id="引入原因：为什么需要-Atomics-waitAsync-？"><a href="#引入原因：为什么需要-Atomics-waitAsync-？" class="headerlink" title="引入原因：为什么需要 Atomics.waitAsync()？"></a>引入原因：为什么需要 Atomics.waitAsync()？</h3><p>为了解决上述问题，ES2024 推出了 Atomics.waitAsync()：</p>
+<ul>
+<li>   异步非阻塞，返回一个 Promise。</li>
+<li>   可在主线程和 Worker线程中使用。</li>
+<li>   提升多线程通信性能，避免阻塞主线程UI。</li>
+</ul>
+<h3 id="基本语法与用法"><a href="#基本语法与用法" class="headerlink" title="基本语法与用法"></a>基本语法与用法</h3><p>语法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Atomics.waitAsync(typedArray, index, value[, timeout]);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>   typedArray：共享内存的 Int32Array 或 BigInt64Array。</li>
+<li>   index：要检查的元素索引。</li>
+<li>   value：期望等待的值。</li>
+<li>   timeout (可选)：等待超时时间（毫秒），默认无限等待。</li>
+</ul>
+<p>返回值：</p>
+<ul>
+<li>   返回一个对象，其中的 .value 是一个 Promise：</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">async</span>: <span class="literal">true</span>,  <span class="comment">// 总是true</span></span><br><span class="line">  <span class="attr">value</span>: <span class="built_in">Promise</span>&lt;&#123;<span class="attr">value</span>: <span class="string">&quot;ok&quot;</span> | <span class="string">&quot;not-equal&quot;</span> | <span class="string">&quot;timed-out&quot;</span>&#125;&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="用法示例详解"><a href="#用法示例详解" class="headerlink" title="用法示例详解"></a>用法示例详解</h3><h4 id="基本异步等待（主线程中可用）"><a href="#基本异步等待（主线程中可用）" class="headerlink" title="基本异步等待（主线程中可用）"></a>基本异步等待（主线程中可用）</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> sharedBuffer = <span class="keyword">new</span> SharedArrayBuffer(<span class="number">4</span>);</span><br><span class="line"><span class="keyword">const</span> sharedArray = <span class="keyword">new</span> <span class="built_in">Int32Array</span>(sharedBuffer);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 异步等待 sharedArray[0] 的值变为非0</span></span><br><span class="line">Atomics.waitAsync(sharedArray, <span class="number">0</span>, <span class="number">0</span>).value.then(<span class="function"><span class="params">result</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(result); <span class="comment">// &#123; value: &quot;ok&quot; &#125;</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 假设worker线程会在1秒后更改 sharedArray[0] 的值</span></span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  Atomics.store(sharedArray, <span class="number">0</span>, <span class="number">1</span>); <span class="comment">// 修改共享内存的值</span></span><br><span class="line">  Atomics.notify(sharedArray, <span class="number">0</span>);   <span class="comment">// 唤醒等待者</span></span><br><span class="line">&#125;, <span class="number">1000</span>);</span><br></pre></td></tr></table></figure>
+<p>1秒后打印 { value: “ok” }，表明成功等待到值变化。</p>
+<h4 id="带有超时的等待"><a href="#带有超时的等待" class="headerlink" title="带有超时的等待"></a>带有超时的等待</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Atomics.waitAsync(sharedArray, <span class="number">0</span>, <span class="number">0</span>, <span class="number">5000</span>).value.then(<span class="function"><span class="params">result</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (result.value === <span class="string">&quot;timed-out&quot;</span>) &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;等待超时&#x27;</span>);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;值发生变化:&#x27;</span>, result.value);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>若5秒内未发生变化，则打印 ‘等待超时’。</p>
+<h3 id="返回值状态说明"><a href="#返回值状态说明" class="headerlink" title="返回值状态说明"></a>返回值状态说明</h3><p>Atomics.waitAsync() 返回的 Promise 解决时包含以下三种可能状态：</p>
+<ul>
+<li>   ok：指定位置的值被更改，并触发了Atomics.notify()。</li>
+<li>   not-equal：调用时，位置的值已经不等于期待值，无需等待。</li>
+<li>   timed-out：等待超时，位置的值未发生变化。</li>
+</ul>
+<p>示例（立刻返回的情况）：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> sharedArray = <span class="keyword">new</span> <span class="built_in">Int32Array</span>(<span class="keyword">new</span> SharedArrayBuffer(<span class="number">4</span>));</span><br><span class="line">sharedArray[<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 当前值不等于预期值0，因此立即返回&quot;not-equal&quot;</span></span><br><span class="line">Atomics.waitAsync(sharedArray, <span class="number">0</span>, <span class="number">0</span>).value.then(<span class="function"><span class="params">result</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(result); <span class="comment">// &#123; value: &quot;not-equal&quot; &#125;</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="Atomics-notify-与-Atomics-waitAsync-的配合使用"><a href="#Atomics-notify-与-Atomics-waitAsync-的配合使用" class="headerlink" title="Atomics.notify() 与 Atomics.waitAsync() 的配合使用"></a>Atomics.notify() 与 Atomics.waitAsync() 的配合使用</h3><p>通常，等待线程（主线程或Worker线程）使用waitAsync()等待，另一线程用notify()通知：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 等待线程 (主线程或Worker)</span></span><br><span class="line">Atomics.waitAsync(sharedArray, <span class="number">0</span>, <span class="number">0</span>).value.then(<span class="function"><span class="params">result</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (result.value === <span class="string">&#x27;ok&#x27;</span>) &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;收到通知，值已变化&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 通知线程 (通常是Worker)</span></span><br><span class="line">Atomics.store(sharedArray, <span class="number">0</span>, <span class="number">1</span>);</span><br><span class="line">Atomics.notify(sharedArray, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="与-Atomics-wait-的差异"><a href="#与-Atomics-wait-的差异" class="headerlink" title="与 Atomics.wait() 的差异"></a>与 Atomics.wait() 的差异</h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>Atomics.wait()</th>
+<th>Atomics.waitAsync()</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>阻塞方式</td>
+<td>同步阻塞</td>
+<td>异步非阻塞</td>
+</tr>
+<tr>
+<td>主线程可用性</td>
+<td>不支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>返回值</td>
+<td>直接返回状态字符串</td>
+<td>返回Promise对象</td>
+</tr>
+<tr>
+<td>场景适用性</td>
+<td>Worker线程（计算密集）</td>
+<td>主线程&amp;Worker线程</td>
+</tr>
+</tbody></table>
+<h3 id="适用场景与优势总结-1"><a href="#适用场景与优势总结-1" class="headerlink" title="适用场景与优势总结"></a>适用场景与优势总结</h3><p>场景：</p>
+<ul>
+<li>   主线程异步等待共享状态：避免UI线程阻塞，提高应用响应性。</li>
+<li>   WebAssembly 与JavaScript 交互：异步等待WASM计算完成。</li>
+<li>   游戏开发、多线程渲染、音视频处理等需要高性能且非阻塞的场景。</li>
+</ul>
+<p>优势：</p>
+<ul>
+<li>   避免线程阻塞，提高程序效率。</li>
+<li>   更友好的多线程通信模型。</li>
+<li>   主线程中实现高效等待，避免频繁轮询（polling）。</li>
+</ul>
+<h3 id="兼容性说明与Polyfill"><a href="#兼容性说明与Polyfill" class="headerlink" title="兼容性说明与Polyfill"></a>兼容性说明与Polyfill</h3><ul>
+<li>   现代浏览器逐步支持（Chrome、Firefox、Safari逐渐适配）。</li>
+<li>   尚未广泛支持时，可退化到传统的Atomics.wait()（仅Worker可用）或基于消息的通信机制。</li>
+</ul>
+<h3 id="完整代码示例（主线程异步等待Worker线程计算结果）"><a href="#完整代码示例（主线程异步等待Worker线程计算结果）" class="headerlink" title="完整代码示例（主线程异步等待Worker线程计算结果）"></a>完整代码示例（主线程异步等待Worker线程计算结果）</h3><p>主线程：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> sharedBuffer = <span class="keyword">new</span> SharedArrayBuffer(<span class="number">4</span>);</span><br><span class="line"><span class="keyword">const</span> sharedArray = <span class="keyword">new</span> <span class="built_in">Int32Array</span>(sharedBuffer);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> worker = <span class="keyword">new</span> Worker(<span class="string">&#x27;worker.js&#x27;</span>);</span><br><span class="line">worker.postMessage(sharedBuffer);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 主线程异步等待worker线程结果</span></span><br><span class="line">Atomics.waitAsync(sharedArray, <span class="number">0</span>, <span class="number">0</span>).value.then(<span class="function"><span class="params">result</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (result.value === <span class="string">&#x27;ok&#x27;</span>) &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;Worker计算完成，结果:&#x27;</span>, sharedArray[<span class="number">0</span>]);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>Worker线程 (worker.js)：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">onmessage = <span class="function">(<span class="params">event</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> sharedArray = <span class="keyword">new</span> <span class="built_in">Int32Array</span>(event.data);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 模拟计算</span></span><br><span class="line">  <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    sharedArray[<span class="number">0</span>] = <span class="number">42</span>;        <span class="comment">// 写入结果</span></span><br><span class="line">    Atomics.notify(sharedArray, <span class="number">0</span>); <span class="comment">// 通知主线程</span></span><br><span class="line">  &#125;, <span class="number">1000</span>);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>Atomics.waitAsync() 是对JavaScript多线程环境的重要增强，极大提高主线程与Worker之间通信的灵活性和性能。开发者可用它实现高效、非阻塞的异步等待，特别适用于需要频繁通信或状态同步的高性能应用场景。</p>
+<h2 id="管道操作符-gt"><a href="#管道操作符-gt" class="headerlink" title="管道操作符 |&gt;"></a>管道操作符 |&gt;</h2><p>管道操作符是一种语法糖，用于更清晰、更简洁地实现函数的链式调用，尤其适合连续多个函数处理同一个数据的场景。</p>
+<h3 id="为什么引入管道操作符？"><a href="#为什么引入管道操作符？" class="headerlink" title="为什么引入管道操作符？"></a>为什么引入管道操作符？</h3><p>管道操作符通过一种更优雅的方式解决以下问题：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> result = value |&gt; first |&gt; second |&gt; third;</span><br></pre></td></tr></table></figure>
+
+<p>在没有管道操作符之前，函数链式调用通常是以下形式之一：</p>
+<h4 id="嵌套调用（Nested-functions）"><a href="#嵌套调用（Nested-functions）" class="headerlink" title="嵌套调用（Nested functions）"></a>嵌套调用（Nested functions）</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> result = third(second(first(value)));</span><br></pre></td></tr></table></figure>
+<p>缺点：嵌套层次深时可读性差。</p>
+<h4 id="临时变量"><a href="#临时变量" class="headerlink" title="临时变量"></a>临时变量</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> result1 = first(value);</span><br><span class="line"><span class="keyword">const</span> result2 = second(result1);</span><br><span class="line"><span class="keyword">const</span> result3 = third(result2);</span><br></pre></td></tr></table></figure>
+<p>缺点：引入额外临时变量。</p>
+<h3 id="基本语法与规则"><a href="#基本语法与规则" class="headerlink" title="基本语法与规则"></a>基本语法与规则</h3><p>管道操作符的基本语法为：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">expression |&gt; <span class="function"><span class="keyword">function</span></span></span><br></pre></td></tr></table></figure>
+<p>管道操作符会将左侧表达式的结果作为右侧函数的第一个参数。左侧表达式的结果自动成为函数调用的输入。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> double = <span class="function"><span class="params">x</span> =&gt;</span> x * <span class="number">2</span>;</span><br><span class="line"><span class="keyword">const</span> increment = <span class="function"><span class="params">x</span> =&gt;</span> x + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> result = <span class="number">3</span> |&gt; double |&gt; increment;  </span><br><span class="line"><span class="comment">// 等价于 increment(double(3))</span></span><br><span class="line"><span class="built_in">console</span>.log(result); <span class="comment">// 输出 7</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="与传统调用方式的对比示例"><a href="#与传统调用方式的对比示例" class="headerlink" title="与传统调用方式的对比示例"></a>与传统调用方式的对比示例</h3><p>传统方式：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">trim</span>(<span class="params">str</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> str.trim();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">capitalize</span>(<span class="params">str</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> str.charAt(<span class="number">0</span>).toUpperCase() + str.slice(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> result = capitalize(trim(<span class="string">&quot;   hello   &quot;</span>));</span><br><span class="line"><span class="built_in">console</span>.log(result); <span class="comment">// &quot;Hello&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>使用管道操作符：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> result = <span class="string">&quot;   hello   &quot;</span></span><br><span class="line">  |&gt; trim</span><br><span class="line">  |&gt; capitalize;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(result); <span class="comment">// &quot;Hello&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>优势：</p>
+<ul>
+<li>   更直观、更容易阅读。</li>
+<li>   减少代码嵌套。</li>
+</ul>
+<h3 id="匿名函数与箭头函数的用法"><a href="#匿名函数与箭头函数的用法" class="headerlink" title="匿名函数与箭头函数的用法"></a>匿名函数与箭头函数的用法</h3><p>管道操作符也支持使用匿名函数或箭头函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> result = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]</span><br><span class="line">  |&gt; (<span class="function"><span class="params">arr</span> =&gt;</span> arr.filter(<span class="function"><span class="params">x</span> =&gt;</span> x % <span class="number">2</span> === <span class="number">0</span>))</span><br><span class="line">  |&gt; (<span class="function"><span class="params">evens</span> =&gt;</span> evens.map(<span class="function"><span class="params">x</span> =&gt;</span> x * <span class="number">10</span>));</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(result); <span class="comment">// [20, 40]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="使用场景示例"><a href="#使用场景示例" class="headerlink" title="使用场景示例"></a>使用场景示例</h3><p>管道操作符适用于：</p>
+<ul>
+<li>   数据变换（data transformation）</li>
+<li>   函数式编程（functional programming）</li>
+<li>   链式方法调用</li>
+</ul>
+<p>场景1：数据处理链</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fetchData = <span class="function">() =&gt;</span> [<span class="number">3</span>, <span class="number">1</span>, <span class="number">4</span>, <span class="number">1</span>, <span class="number">5</span>, <span class="number">9</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> sortedUniqueData = fetchData()</span><br><span class="line">  |&gt; (<span class="function"><span class="params">data</span> =&gt;</span> [...new <span class="built_in">Set</span>(data)]) <span class="comment">// 去重</span></span><br><span class="line">  |&gt; (<span class="function"><span class="params">uniqueData</span> =&gt;</span> uniqueData.sort()); <span class="comment">// 排序</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(sortedUniqueData); <span class="comment">// [1, 3, 4, 5, 9]</span></span><br></pre></td></tr></table></figure>
+
+<p>场景2：字符串处理</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> normalizeText = <span class="function"><span class="params">text</span> =&gt;</span> text.toLowerCase();</span><br><span class="line"><span class="keyword">const</span> removePunctuation = <span class="function"><span class="params">text</span> =&gt;</span> text.replace(<span class="regexp">/[.,!?]/g</span>, <span class="string">&#x27;&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> splitWords = <span class="function"><span class="params">text</span> =&gt;</span> text.split(<span class="string">&#x27; &#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> words = <span class="string">&quot;Hello, World! Welcome to JavaScript.&quot;</span></span><br><span class="line">  |&gt; normalizeText</span><br><span class="line">  |&gt; removePunctuation</span><br><span class="line">  |&gt; splitWords;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(words);</span><br><span class="line"><span class="comment">// [&quot;hello&quot;, &quot;world&quot;, &quot;welcome&quot;, &quot;to&quot;, &quot;javascript&quot;]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="管道操作符的注意事项"><a href="#管道操作符的注意事项" class="headerlink" title="管道操作符的注意事项"></a>管道操作符的注意事项</h3><h4 id="函数调用方式："><a href="#函数调用方式：" class="headerlink" title="函数调用方式："></a>函数调用方式：</h4><p>管道右侧必须是单一参数函数或明确接受左侧值为首参数的函数：</p>
+<p>正确：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> result = value |&gt; someFunction;</span><br></pre></td></tr></table></figure>
+
+<p>错误（直接调用函数）：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 错误写法（因为此处someFunction()立即调用，没有传入左侧值）</span></span><br><span class="line"><span class="keyword">const</span> result = value |&gt; someFunction();</span><br></pre></td></tr></table></figure>
+
+<p>正确方式是：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> result = value |&gt; (<span class="function"><span class="params">v</span> =&gt;</span> someFunction(v));</span><br></pre></td></tr></table></figure>
+
+<h4 id="暂不支持的调用："><a href="#暂不支持的调用：" class="headerlink" title="暂不支持的调用："></a>暂不支持的调用：</h4><p>当前标准（ES2024）暂时不支持部分应用（partial application）语法，如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 暂不支持的语法</span></span><br><span class="line"><span class="keyword">const</span> result = value |&gt; someFunction(?, extraArg);</span><br></pre></td></tr></table></figure>
+
+<p>如需额外参数，可以通过箭头函数实现：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> result = value |&gt; (<span class="function"><span class="params">v</span> =&gt;</span> someFunction(v, extraArg));</span><br></pre></td></tr></table></figure>
+
+<h3 id="兼容性与polyfill方案"><a href="#兼容性与polyfill方案" class="headerlink" title="兼容性与polyfill方案"></a>兼容性与polyfill方案</h3><p>目前为 ES2024 新特性，浏览器和 Node.js 最新版本逐步支持。<br>Babel 提供插件用于支持旧版本环境：Babel插件 <a target="_blank" rel="noopener" href="https://babeljs.io/docs/en/babel-plugin-proposal-pipeline-operator">babel-plugin-proposal-pipeline-operator</a></p>
+<p>安装与配置示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install @babel/plugin-proposal-pipeline-operator --save-dev</span><br></pre></td></tr></table></figure>
+
+<p>在 .babelrc 中：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;plugins&quot;</span>: [</span><br><span class="line">    [<span class="string">&quot;@babel/plugin-proposal-pipeline-operator&quot;</span>, &#123; <span class="attr">&quot;proposal&quot;</span>: <span class="string">&quot;minimal&quot;</span> &#125;]</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="优势总结"><a href="#优势总结" class="headerlink" title="优势总结"></a>优势总结</h3><ul>
+<li>   提高代码可读性与维护性。</li>
+<li>   消除多层嵌套调用，降低代码复杂度。</li>
+<li>   使函数链调用更直观。</li>
+</ul>
+<h3 id="综合示例：数据处理链"><a href="#综合示例：数据处理链" class="headerlink" title="综合示例：数据处理链"></a>综合示例：数据处理链</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> data = [<span class="number">5</span>, <span class="number">2</span>, <span class="number">8</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">2</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> processData = <span class="function"><span class="params">arr</span> =&gt;</span> arr</span><br><span class="line">  |&gt; (<span class="function"><span class="params">data</span> =&gt;</span> [...new <span class="built_in">Set</span>(data)])       <span class="comment">// 去重</span></span><br><span class="line">  |&gt; (<span class="function"><span class="params">uniqueData</span> =&gt;</span> uniqueData.sort())  <span class="comment">// 排序</span></span><br><span class="line">  |&gt; (<span class="function"><span class="params">sorted</span> =&gt;</span> sorted.map(<span class="function"><span class="params">x</span> =&gt;</span> x * x)); <span class="comment">// 求平方</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> result = processData(data);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(result); <span class="comment">// [4, 9, 25, 64]</span></span><br></pre></td></tr></table></figure>
+
+<p>上述代码直观且易于理解：首先去重 → 排序 → 再求平方。</p>
+<h3 id="总结-5"><a href="#总结-5" class="headerlink" title="总结"></a>总结</h3><p>管道操作符（|&gt;）是 ES2024 中最重要的语法增强之一：</p>
+<ul>
+<li>   简洁清晰：提升代码可读性。</li>
+<li>   灵活高效：适合处理复杂的数据流与函数链调用。</li>
+</ul>
+<p>在未来JavaScript开发中，它可能成为函数式编程风格的重要组成部分，使得代码编写和维护更加高效且易懂。</p>
+<h2 id="不可变的数据结构：记录（Record）与元组（Tuple）"><a href="#不可变的数据结构：记录（Record）与元组（Tuple）" class="headerlink" title="不可变的数据结构：记录（Record）与元组（Tuple）"></a>不可变的数据结构：记录（Record）与元组（Tuple）</h2><h3 id="引入背景：什么是不变性（Immutability）？"><a href="#引入背景：什么是不变性（Immutability）？" class="headerlink" title="引入背景：什么是不变性（Immutability）？"></a>引入背景：什么是不变性（Immutability）？</h3><p>不可变数据结构：</p>
+<ul>
+<li>   一旦创建，其内部数据便不能再被修改。</li>
+<li>   修改操作只会生成新的数据结构，不会更改旧的结构。</li>
+</ul>
+<p>不可变结构的优势：</p>
+<ul>
+<li>   数据安全性：避免意外的副作用，简化调试。</li>
+<li>   性能优化：数据引用可安全共享，减少内存拷贝。</li>
+<li>   状态管理更简单：在 React 和其他框架中，不可变数据结构广泛用于状态管理（如 Redux）。</li>
+</ul>
+<h3 id="记录（Record）简介与用法"><a href="#记录（Record）简介与用法" class="headerlink" title="记录（Record）简介与用法"></a>记录（Record）简介与用法</h3><h4 id="基本定义："><a href="#基本定义：" class="headerlink" title="基本定义："></a>基本定义：</h4><ul>
+<li>   记录（Record）类似于普通 JavaScript 对象，但具有不可变性。</li>
+<li>   使用特殊语法 #{} 定义：</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> record = #&#123; <span class="attr">x</span>: <span class="number">10</span>, <span class="attr">y</span>: <span class="number">20</span> &#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="特性说明"><a href="#特性说明" class="headerlink" title="特性说明"></a>特性说明</h4><p>不可修改属性：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">record.x = <span class="number">30</span>; <span class="comment">// 错误，无法修改</span></span><br></pre></td></tr></table></figure>
+
+<p>属性值必须是：</p>
+<ul>
+<li>   原始值（number, string, boolean, null, undefined）</li>
+<li>   另一个 Record 或 Tuple</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> nestedRecord = #&#123; <span class="attr">a</span>: <span class="number">1</span>, <span class="attr">b</span>: #&#123; <span class="attr">nested</span>: <span class="literal">true</span> &#125; &#125;;</span><br></pre></td></tr></table></figure>
+
+<p>引用相等性（Reference Equality）：<br>两个记录值相同时，共享同一个引用（类似于字符串的 interning）：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#&#123;<span class="attr">a</span>: <span class="number">1</span>&#125; === #&#123;<span class="attr">a</span>: <span class="number">1</span>&#125;  <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+
+<p>用法示例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> user = #&#123; <span class="attr">name</span>: <span class="string">&quot;Alice&quot;</span>, <span class="attr">age</span>: <span class="number">30</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建新的记录（扩展或修改）</span></span><br><span class="line"><span class="keyword">const</span> updatedUser = #&#123; ...user, <span class="attr">age</span>: <span class="number">31</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(user.age);         <span class="comment">// 30</span></span><br><span class="line"><span class="built_in">console</span>.log(updatedUser.age);  <span class="comment">// 31</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="元组（Tuple）简介与用法"><a href="#元组（Tuple）简介与用法" class="headerlink" title="元组（Tuple）简介与用法"></a>元组（Tuple）简介与用法</h3><h4 id="基本定义：-1"><a href="#基本定义：-1" class="headerlink" title="基本定义："></a>基本定义：</h4><ul>
+<li>   元组（Tuple）类似于数组，但同样具有不可变性。</li>
+<li>   使用特殊语法 #[] 定义：</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> tuple = #[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br></pre></td></tr></table></figure>
+
+<h4 id="特性说明："><a href="#特性说明：" class="headerlink" title="特性说明："></a>特性说明：</h4><h5 id="不可修改元素："><a href="#不可修改元素：" class="headerlink" title="不可修改元素："></a>不可修改元素：</h5><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tuple[<span class="number">0</span>] = <span class="number">10</span>; <span class="comment">// 错误，不允许修改</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="元素必须是："><a href="#元素必须是：" class="headerlink" title="元素必须是："></a>元素必须是：</h5><ul>
+<li>   原始值</li>
+<li>   记录（Record）</li>
+<li>   另一个元组（Tuple）</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> complexTuple = #[<span class="number">1</span>, #[<span class="number">2</span>, <span class="number">3</span>], #&#123; <span class="attr">a</span>: <span class="number">4</span> &#125;];</span><br></pre></td></tr></table></figure>
+
+<h5 id="引用相等性："><a href="#引用相等性：" class="headerlink" title="引用相等性："></a>引用相等性：</h5><p>两个元组内容相同时，共享引用：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#[<span class="number">1</span>,<span class="number">2</span>] === #[<span class="number">1</span>,<span class="number">2</span>]; <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="用法示例："><a href="#用法示例：" class="headerlink" title="用法示例："></a>用法示例：</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> point = #[<span class="number">10</span>, <span class="number">20</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建新元组</span></span><br><span class="line"><span class="keyword">const</span> movedPoint = #[...point, <span class="number">30</span>];</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(point);       <span class="comment">// #[10, 20]</span></span><br><span class="line"><span class="built_in">console</span>.log(movedPoint);  <span class="comment">// #[10, 20, 30]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="记录与元组的组合用法示例"><a href="#记录与元组的组合用法示例" class="headerlink" title="记录与元组的组合用法示例"></a>记录与元组的组合用法示例</h3><p>记录和元组可以互相嵌套：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> data = #&#123;</span><br><span class="line">  <span class="attr">user</span>: #&#123; <span class="attr">name</span>: <span class="string">&quot;Bob&quot;</span>, <span class="attr">tags</span>: #[<span class="string">&quot;admin&quot;</span>, <span class="string">&quot;editor&quot;</span>] &#125;,</span><br><span class="line">  <span class="attr">scores</span>: #[<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>]</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(data.user.name);   <span class="comment">// &quot;Bob&quot;</span></span><br><span class="line"><span class="built_in">console</span>.log(data.scores[<span class="number">1</span>]);   <span class="comment">// 20</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="不可变数据结构与普通结构的比较"><a href="#不可变数据结构与普通结构的比较" class="headerlink" title="不可变数据结构与普通结构的比较"></a>不可变数据结构与普通结构的比较</h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>普通对象与数组</th>
+<th>Record &amp; Tuple（不可变）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>可变性</td>
+<td>是</td>
+<td>否</td>
+</tr>
+<tr>
+<td>引用相等性（内容相同时）</td>
+<td>否</td>
+<td>是（相同内容共享引用）</td>
+</tr>
+<tr>
+<td>支持嵌套复杂性</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td>线程安全</td>
+<td>否</td>
+<td>是（因不可变）</td>
+</tr>
+<tr>
+<td>内存使用效率</td>
+<td>一般</td>
+<td>高（引用共享减少内存使用）</td>
+</tr>
+</tbody></table>
+<h3 id="记录和元组的适用场景"><a href="#记录和元组的适用场景" class="headerlink" title="记录和元组的适用场景"></a>记录和元组的适用场景</h3><h4 id="React状态管理"><a href="#React状态管理" class="headerlink" title="React状态管理"></a>React状态管理</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> initialState = #&#123;</span><br><span class="line">  <span class="attr">user</span>: #&#123; <span class="attr">id</span>: <span class="number">1</span>, <span class="attr">name</span>: <span class="string">&quot;Alice&quot;</span> &#125;,</span><br><span class="line">  <span class="attr">loggedIn</span>: <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">roles</span>: #[<span class="string">&quot;user&quot;</span>, <span class="string">&quot;admin&quot;</span>]</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>优势：</p>
+<ul>
+<li>   状态不被意外改变。</li>
+<li>   简化 React 中的 PureComponent / React.memo 判断。</li>
+</ul>
+<h4 id="高效缓存数据"><a href="#高效缓存数据" class="headerlink" title="高效缓存数据"></a>高效缓存数据</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> cache = <span class="keyword">new</span> <span class="built_in">Map</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> key = #&#123; <span class="attr">x</span>: <span class="number">10</span>, <span class="attr">y</span>: <span class="number">20</span> &#125;; </span><br><span class="line">cache.set(key, <span class="string">&quot;cached value&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 相同内容的记录，引用相同，可以直接命中</span></span><br><span class="line"><span class="keyword">const</span> lookupKey = #&#123; <span class="attr">x</span>: <span class="number">10</span>, <span class="attr">y</span>: <span class="number">20</span> &#125;;</span><br><span class="line">cache.get(lookupKey);  <span class="comment">// &quot;cached value&quot;</span></span><br></pre></td></tr></table></figure>
+<p>优势：</p>
+<ul>
+<li>   提高缓存命中率，减少内存开销。</li>
+</ul>
+<h3 id="综合示例"><a href="#综合示例" class="headerlink" title="综合示例"></a>综合示例</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> todos = #[</span><br><span class="line">  #&#123; <span class="attr">id</span>: <span class="number">1</span>, <span class="attr">text</span>: <span class="string">&quot;Buy milk&quot;</span>, <span class="attr">done</span>: <span class="literal">false</span> &#125;,</span><br><span class="line">  #&#123; <span class="attr">id</span>: <span class="number">2</span>, <span class="attr">text</span>: <span class="string">&quot;Clean room&quot;</span>, <span class="attr">done</span>: <span class="literal">true</span> &#125;</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 标记任务完成，生成新的元组</span></span><br><span class="line"><span class="keyword">const</span> updatedTodos = todos.map(<span class="function"><span class="params">todo</span> =&gt;</span> </span><br><span class="line">  todo.id === <span class="number">1</span> ? #&#123;...todo, <span class="attr">done</span>: <span class="literal">true</span>&#125; : todo</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(todos[<span class="number">0</span>].done);        <span class="comment">// false (原数据不变)</span></span><br><span class="line"><span class="built_in">console</span>.log(updatedTodos[<span class="number">0</span>].done); <span class="comment">// true  (新数据更新)</span></span><br></pre></td></tr></table></figure>
+
+<p>通过记录和元组，JavaScript 在原生层面提供了高效的不可变数据支持，极大地提升了代码的安全性和性能，并为前端开发中复杂数据管理场景提供了极佳的解决方案。</p>
+<h3 id="注意事项与限制"><a href="#注意事项与限制" class="headerlink" title="注意事项与限制"></a>注意事项与限制</h3><ul>
+<li>   记录和元组不允许存储函数或具有状态的对象，只能存储不可变的值。</li>
+<li>   操作记录或元组时，总是产生新的结构，原有结构保持不变。</li>
+</ul>
+<h3 id="兼容性与-Polyfill"><a href="#兼容性与-Polyfill" class="headerlink" title="兼容性与 Polyfill"></a>兼容性与 Polyfill</h3><p>ES2024 新引入，目前仅最新的浏览器和Node.js版本支持。对旧环境，可考虑第三方库 immutable.js 来模拟类似行为（语法不同）：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; <span class="built_in">Map</span>, List &#125; = <span class="built_in">require</span>(<span class="string">&#x27;immutable&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> record = <span class="built_in">Map</span>(&#123; <span class="attr">a</span>: <span class="number">1</span> &#125;);</span><br><span class="line"><span class="keyword">const</span> tuple = List([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);</span><br></pre></td></tr></table></figure>
+
+<h3 id="总结-6"><a href="#总结-6" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>   安全性更高：不可变性保障数据安全。</li>
+<li>   高效性更强：引用共享提高性能和减少内存占用。</li>
+<li>   状态管理更容易：特别适合React、Redux等状态管理框架。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/hexo/" rel="tag"># hexo</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/07/08/2024_07_08_react-native-ios-widget/" rel="prev" title="在 React Native 项目中添加 iOS WidgetKit 小组件（iOS 17+）">
+      <i class="fa fa-chevron-left"></i> 在 React Native 项目中添加 iOS WidgetKit 小组件（iOS 17+）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/04/04/2025_04_04_what_is_new_in_swift_6_1/" rel="next" title="Swift 6.1 有哪些新变化？">
+      Swift 6.1 有哪些新变化？ <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ECMAScript-2024%EF%BC%88ES15%EF%BC%89%E9%83%BD%E6%9B%B4%E6%96%B0%E4%BA%86%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">ECMAScript 2024（ES15）都更新了什么？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Object-groupBy-%E4%B8%8E-Map-groupBy"><span class="nav-number">1.1.</span> <span class="nav-text">Object.groupBy() 与 Map.groupBy()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Object-groupBy"><span class="nav-number">1.1.1.</span> <span class="nav-text">Object.groupBy()</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">基本用法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%A8%E6%B3%95%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">用法示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%94%A8%E7%A4%BA%E4%BE%8B%E5%9C%BA%E6%99%AF"><span class="nav-number">1.1.1.3.</span> <span class="nav-text">实用示例场景</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Map-groupBy"><span class="nav-number">1.1.2.</span> <span class="nav-text">Map.groupBy()</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95-1"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">基本用法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%A8%E6%B3%95%E7%A4%BA%E4%BE%8B-1"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">用法示例</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E6%AF%94%E6%80%BB%E7%BB%93"><span class="nav-number">1.1.3.</span> <span class="nav-text">对比总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%BC%E5%AE%B9%E6%80%A7%E5%8F%8A%E6%94%AF%E6%8C%81%E6%83%85%E5%86%B5"><span class="nav-number">1.1.4.</span> <span class="nav-text">兼容性及支持情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">1.1.5.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Promise-withResolvers"><span class="nav-number">1.2.</span> <span class="nav-text">Promise.withResolvers()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E5%85%A5%E8%83%8C%E6%99%AF"><span class="nav-number">1.2.1.</span> <span class="nav-text">引入背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-Promise-withResolvers-%EF%BC%9F"><span class="nav-number">1.2.2.</span> <span class="nav-text">什么是 Promise.withResolvers()？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.2.3.</span> <span class="nav-text">基本用法示例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E5%9F%BA%E6%9C%AC%E7%9A%84%E7%A4%BA%E4%BE%8B%EF%BC%9A"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">最基本的示例：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%82%E6%AD%A5%E4%BA%8B%E4%BB%B6%E7%9B%91%E5%90%AC%E5%99%A8%E5%9C%BA%E6%99%AF%EF%BC%9A"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">异步事件监听器场景：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8E%E4%BC%A0%E7%BB%9F%E6%96%B9%E5%BC%8F%E5%AF%B9%E6%AF%94"><span class="nav-number">1.2.4.</span> <span class="nav-text">与传统方式对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B8%E5%9E%8B%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.2.5.</span> <span class="nav-text">典型应用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%BC%E5%AE%B9%E6%80%A7%E5%8F%8A%E6%94%AF%E6%8C%81%E6%83%85%E5%86%B5-1"><span class="nav-number">1.2.6.</span> <span class="nav-text">兼容性及支持情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-1"><span class="nav-number">1.2.7.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%96%B0%E6%A0%87%E5%BF%97-v"><span class="nav-number">1.3.</span> <span class="nav-text">正则表达式新标志 &#x2F;v</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%BC%95%E5%85%A5-v-%E6%A0%87%E5%BF%97%EF%BC%9F"><span class="nav-number">1.3.1.</span> <span class="nav-text">为什么要引入 &#x2F;v 标志？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#v-%E6%A0%87%E5%BF%97%E7%9A%84%E4%B8%BB%E8%A6%81%E7%89%B9%E6%80%A7%E4%B8%8E%E8%AF%AD%E6%B3%95"><span class="nav-number">1.3.2.</span> <span class="nav-text">&#x2F;v 标志的主要特性与语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#v-%E6%A0%87%E5%BF%97%E4%B8%8E-Unicode-%E5%B1%9E%E6%80%A7%E8%BD%AC%E4%B9%89%E7%9A%84%E7%BB%93%E5%90%88"><span class="nav-number">1.3.3.</span> <span class="nav-text">&#x2F;v 标志与 Unicode 属性转义的结合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-v-%E6%A0%87%E5%BF%97%E7%9A%84%E5%85%B8%E5%9E%8B%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.3.4.</span> <span class="nav-text">使用 &#x2F;v 标志的典型示例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B9%B6%E9%9B%86%EF%BC%88Union%EF%BC%89"><span class="nav-number">1.3.4.1.</span> <span class="nav-text">并集（Union）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%A4%E9%9B%86%EF%BC%88Intersection%EF%BC%89"><span class="nav-number">1.3.4.2.</span> <span class="nav-text">交集（Intersection）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%AE%E9%9B%86%EF%BC%88Subtraction%EF%BC%89"><span class="nav-number">1.3.4.3.</span> <span class="nav-text">差集（Subtraction）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%B5%8C%E5%A5%97"><span class="nav-number">1.3.4.4.</span> <span class="nav-text">字符类嵌套</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#v-%E6%A0%87%E5%BF%97%E4%B8%8E%E5%85%B6%E5%AE%83%E6%AD%A3%E5%88%99%E6%A0%87%E5%BF%97%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.3.5.</span> <span class="nav-text">&#x2F;v 标志与其它正则标志的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%E4%B8%8E%E9%99%90%E5%88%B6"><span class="nav-number">1.3.6.</span> <span class="nav-text">常见注意事项与限制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%AF%E6%8C%81%E6%83%85%E5%86%B5%E4%B8%8E%E5%85%BC%E5%AE%B9%E6%80%A7"><span class="nav-number">1.3.7.</span> <span class="nav-text">支持情况与兼容性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF%E4%B8%8E%E4%BC%98%E5%8A%BF%E6%80%BB%E7%BB%93"><span class="nav-number">1.3.8.</span> <span class="nav-text">使用场景与优势总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E7%BB%BC%E5%90%88%E6%A1%88%E4%BE%8B"><span class="nav-number">1.3.9.</span> <span class="nav-text">示例综合案例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-2"><span class="nav-number">1.3.10.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ArrayBuffer-%E4%B8%8E-SharedArrayBuffer-%E7%9A%84%E5%A2%9E%E5%BC%BA"><span class="nav-number">1.4.</span> <span class="nav-text">ArrayBuffer 与 SharedArrayBuffer 的增强</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.4.1.</span> <span class="nav-text">背景介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ArrayBuffer-%E7%AE%80%E4%BB%8B"><span class="nav-number">1.4.1.1.</span> <span class="nav-text">ArrayBuffer 简介</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SharedArrayBuffer-%E7%AE%80%E4%BB%8B"><span class="nav-number">1.4.1.2.</span> <span class="nav-text">SharedArrayBuffer 简介</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Resizable-ArrayBuffer-%E5%8F%AF%E8%B0%83%E6%95%B4%E5%A4%A7%E5%B0%8F"><span class="nav-number">1.4.2.</span> <span class="nav-text">Resizable ArrayBuffer (可调整大小)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%8F%AF%E8%B0%83%E6%95%B4%E5%A4%A7%E5%B0%8F%E7%9A%84-ArrayBuffer%EF%BC%9A"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">创建可调整大小的 ArrayBuffer：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B0%83%E6%95%B4%E5%A4%A7%E5%B0%8F%E6%96%B9%E6%B3%95%EF%BC%9A"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">调整大小方法：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%EF%BC%9A"><span class="nav-number">1.4.2.3.</span> <span class="nav-text">示例：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Transferable-ArrayBuffer-%E5%8F%AF%E8%BD%AC%E7%A7%BB"><span class="nav-number">1.4.3.</span> <span class="nav-text">Transferable ArrayBuffer (可转移)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95%EF%BC%9A"><span class="nav-number">1.4.3.1.</span> <span class="nav-text">基本语法：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%EF%BC%9A-1"><span class="nav-number">1.4.3.2.</span> <span class="nav-text">示例：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Resizable-SharedArrayBuffer%EF%BC%88%E5%8F%AF%E6%89%A9%E5%B1%95%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98%EF%BC%89"><span class="nav-number">1.4.4.</span> <span class="nav-text">Resizable SharedArrayBuffer（可扩展共享内存）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%8F%AF%E6%89%A9%E5%B1%95%E7%9A%84-SharedArrayBuffer%EF%BC%9A"><span class="nav-number">1.4.4.1.</span> <span class="nav-text">创建可扩展的 SharedArrayBuffer：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E7%BC%93%E5%86%B2%E5%8C%BA%E5%A4%A7%E5%B0%8F%EF%BC%9A"><span class="nav-number">1.4.4.2.</span> <span class="nav-text">扩展缓冲区大小：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%EF%BC%9A-2"><span class="nav-number">1.4.4.3.</span> <span class="nav-text">示例：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8E%E8%A7%86%E5%9B%BE%EF%BC%88TypedArray%EF%BC%89%E9%85%8D%E5%90%88%E4%BD%BF%E7%94%A8%E6%97%B6%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.4.5.</span> <span class="nav-text">与视图（TypedArray）配合使用时的注意事项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF%E4%B8%8E%E4%BC%98%E5%8A%BF%E6%80%BB%E7%BB%93"><span class="nav-number">1.4.6.</span> <span class="nav-text">适用场景与优势总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%BC%E5%AE%B9%E6%80%A7%E8%AF%B4%E6%98%8E"><span class="nav-number">1.4.7.</span> <span class="nav-text">兼容性说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-3"><span class="nav-number">1.4.8.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%A0%BC%E5%BC%8F%E9%AA%8C%E8%AF%81%E6%96%B9%E6%B3%95"><span class="nav-number">1.5.</span> <span class="nav-text">字符串格式验证方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E2%80%9C%E6%A0%BC%E5%BC%8F%E6%AD%A3%E7%A1%AE%E2%80%9D%EF%BC%88Well-Formed%EF%BC%89%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%EF%BC%9F"><span class="nav-number">1.5.1.</span> <span class="nav-text">什么是“格式正确”（Well-Formed）的字符串？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#String-prototype-isWellFormed"><span class="nav-number">1.5.2.</span> <span class="nav-text">String.prototype.isWellFormed()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#String-prototype-toWellFormed"><span class="nav-number">1.5.3.</span> <span class="nav-text">String.prototype.toWellFormed()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B8%E5%9E%8B%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.5.4.</span> <span class="nav-text">典型使用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E7%9A%84%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1"><span class="nav-number">1.5.4.1.</span> <span class="nav-text">安全的网络通信</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%A8%E6%88%B7%E8%BE%93%E5%85%A5%E6%A0%A1%E9%AA%8C"><span class="nav-number">1.5.4.2.</span> <span class="nav-text">用户输入校验</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8"><span class="nav-number">1.5.4.3.</span> <span class="nav-text">日志记录与数据存储</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E5%92%8C%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.5.5.</span> <span class="nav-text">常见问题和注意事项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%BC%E5%AE%B9%E6%80%A7%E5%92%8CPolyfill%E6%96%B9%E6%A1%88"><span class="nav-number">1.5.6.</span> <span class="nav-text">兼容性和Polyfill方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E5%AF%B9%E6%AF%94%E6%80%BB%E7%BB%93"><span class="nav-number">1.5.7.</span> <span class="nav-text">方法对比总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.5.8.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-4"><span class="nav-number">1.5.9.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Atomics-waitAsync"><span class="nav-number">1.6.</span> <span class="nav-text">Atomics.waitAsync()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF%EF%BC%9A%E4%BB%80%E4%B9%88%E6%98%AF-Atomics-wait-%EF%BC%9F"><span class="nav-number">1.6.1.</span> <span class="nav-text">背景：什么是 Atomics.wait()？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E5%85%A5%E5%8E%9F%E5%9B%A0%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-Atomics-waitAsync-%EF%BC%9F"><span class="nav-number">1.6.2.</span> <span class="nav-text">引入原因：为什么需要 Atomics.waitAsync()？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95%E4%B8%8E%E7%94%A8%E6%B3%95"><span class="nav-number">1.6.3.</span> <span class="nav-text">基本语法与用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%A8%E6%B3%95%E7%A4%BA%E4%BE%8B%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.6.4.</span> <span class="nav-text">用法示例详解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%BC%82%E6%AD%A5%E7%AD%89%E5%BE%85%EF%BC%88%E4%B8%BB%E7%BA%BF%E7%A8%8B%E4%B8%AD%E5%8F%AF%E7%94%A8%EF%BC%89"><span class="nav-number">1.6.4.1.</span> <span class="nav-text">基本异步等待（主线程中可用）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B8%A6%E6%9C%89%E8%B6%85%E6%97%B6%E7%9A%84%E7%AD%89%E5%BE%85"><span class="nav-number">1.6.4.2.</span> <span class="nav-text">带有超时的等待</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%94%E5%9B%9E%E5%80%BC%E7%8A%B6%E6%80%81%E8%AF%B4%E6%98%8E"><span class="nav-number">1.6.5.</span> <span class="nav-text">返回值状态说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Atomics-notify-%E4%B8%8E-Atomics-waitAsync-%E7%9A%84%E9%85%8D%E5%90%88%E4%BD%BF%E7%94%A8"><span class="nav-number">1.6.6.</span> <span class="nav-text">Atomics.notify() 与 Atomics.waitAsync() 的配合使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8E-Atomics-wait-%E7%9A%84%E5%B7%AE%E5%BC%82"><span class="nav-number">1.6.7.</span> <span class="nav-text">与 Atomics.wait() 的差异</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF%E4%B8%8E%E4%BC%98%E5%8A%BF%E6%80%BB%E7%BB%93-1"><span class="nav-number">1.6.8.</span> <span class="nav-text">适用场景与优势总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%BC%E5%AE%B9%E6%80%A7%E8%AF%B4%E6%98%8E%E4%B8%8EPolyfill"><span class="nav-number">1.6.9.</span> <span class="nav-text">兼容性说明与Polyfill</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B%EF%BC%88%E4%B8%BB%E7%BA%BF%E7%A8%8B%E5%BC%82%E6%AD%A5%E7%AD%89%E5%BE%85Worker%E7%BA%BF%E7%A8%8B%E8%AE%A1%E7%AE%97%E7%BB%93%E6%9E%9C%EF%BC%89"><span class="nav-number">1.6.10.</span> <span class="nav-text">完整代码示例（主线程异步等待Worker线程计算结果）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">1.6.11.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%A1%E9%81%93%E6%93%8D%E4%BD%9C%E7%AC%A6-gt"><span class="nav-number">1.7.</span> <span class="nav-text">管道操作符 |&gt;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BC%95%E5%85%A5%E7%AE%A1%E9%81%93%E6%93%8D%E4%BD%9C%E7%AC%A6%EF%BC%9F"><span class="nav-number">1.7.1.</span> <span class="nav-text">为什么引入管道操作符？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B5%8C%E5%A5%97%E8%B0%83%E7%94%A8%EF%BC%88Nested-functions%EF%BC%89"><span class="nav-number">1.7.1.1.</span> <span class="nav-text">嵌套调用（Nested functions）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%B4%E6%97%B6%E5%8F%98%E9%87%8F"><span class="nav-number">1.7.1.2.</span> <span class="nav-text">临时变量</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95%E4%B8%8E%E8%A7%84%E5%88%99"><span class="nav-number">1.7.2.</span> <span class="nav-text">基本语法与规则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8E%E4%BC%A0%E7%BB%9F%E8%B0%83%E7%94%A8%E6%96%B9%E5%BC%8F%E7%9A%84%E5%AF%B9%E6%AF%94%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.7.3.</span> <span class="nav-text">与传统调用方式的对比示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8C%BF%E5%90%8D%E5%87%BD%E6%95%B0%E4%B8%8E%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E7%9A%84%E7%94%A8%E6%B3%95"><span class="nav-number">1.7.4.</span> <span class="nav-text">匿名函数与箭头函数的用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.7.5.</span> <span class="nav-text">使用场景示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%A1%E9%81%93%E6%93%8D%E4%BD%9C%E7%AC%A6%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.7.6.</span> <span class="nav-text">管道操作符的注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E6%96%B9%E5%BC%8F%EF%BC%9A"><span class="nav-number">1.7.6.1.</span> <span class="nav-text">函数调用方式：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9A%82%E4%B8%8D%E6%94%AF%E6%8C%81%E7%9A%84%E8%B0%83%E7%94%A8%EF%BC%9A"><span class="nav-number">1.7.6.2.</span> <span class="nav-text">暂不支持的调用：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%BC%E5%AE%B9%E6%80%A7%E4%B8%8Epolyfill%E6%96%B9%E6%A1%88"><span class="nav-number">1.7.7.</span> <span class="nav-text">兼容性与polyfill方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E5%8A%BF%E6%80%BB%E7%BB%93"><span class="nav-number">1.7.8.</span> <span class="nav-text">优势总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%BC%E5%90%88%E7%A4%BA%E4%BE%8B%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E9%93%BE"><span class="nav-number">1.7.9.</span> <span class="nav-text">综合示例：数据处理链</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-5"><span class="nav-number">1.7.10.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8D%E5%8F%AF%E5%8F%98%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%9A%E8%AE%B0%E5%BD%95%EF%BC%88Record%EF%BC%89%E4%B8%8E%E5%85%83%E7%BB%84%EF%BC%88Tuple%EF%BC%89"><span class="nav-number">1.8.</span> <span class="nav-text">不可变的数据结构：记录（Record）与元组（Tuple）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E5%85%A5%E8%83%8C%E6%99%AF%EF%BC%9A%E4%BB%80%E4%B9%88%E6%98%AF%E4%B8%8D%E5%8F%98%E6%80%A7%EF%BC%88Immutability%EF%BC%89%EF%BC%9F"><span class="nav-number">1.8.1.</span> <span class="nav-text">引入背景：什么是不变性（Immutability）？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%B0%E5%BD%95%EF%BC%88Record%EF%BC%89%E7%AE%80%E4%BB%8B%E4%B8%8E%E7%94%A8%E6%B3%95"><span class="nav-number">1.8.2.</span> <span class="nav-text">记录（Record）简介与用法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%AE%9A%E4%B9%89%EF%BC%9A"><span class="nav-number">1.8.2.1.</span> <span class="nav-text">基本定义：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%89%B9%E6%80%A7%E8%AF%B4%E6%98%8E"><span class="nav-number">1.8.2.2.</span> <span class="nav-text">特性说明</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%83%E7%BB%84%EF%BC%88Tuple%EF%BC%89%E7%AE%80%E4%BB%8B%E4%B8%8E%E7%94%A8%E6%B3%95"><span class="nav-number">1.8.3.</span> <span class="nav-text">元组（Tuple）简介与用法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%AE%9A%E4%B9%89%EF%BC%9A-1"><span class="nav-number">1.8.3.1.</span> <span class="nav-text">基本定义：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%89%B9%E6%80%A7%E8%AF%B4%E6%98%8E%EF%BC%9A"><span class="nav-number">1.8.3.2.</span> <span class="nav-text">特性说明：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%8D%E5%8F%AF%E4%BF%AE%E6%94%B9%E5%85%83%E7%B4%A0%EF%BC%9A"><span class="nav-number">1.8.3.2.1.</span> <span class="nav-text">不可修改元素：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%85%83%E7%B4%A0%E5%BF%85%E9%A1%BB%E6%98%AF%EF%BC%9A"><span class="nav-number">1.8.3.2.2.</span> <span class="nav-text">元素必须是：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BC%95%E7%94%A8%E7%9B%B8%E7%AD%89%E6%80%A7%EF%BC%9A"><span class="nav-number">1.8.3.2.3.</span> <span class="nav-text">引用相等性：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%A8%E6%B3%95%E7%A4%BA%E4%BE%8B%EF%BC%9A"><span class="nav-number">1.8.3.3.</span> <span class="nav-text">用法示例：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%B0%E5%BD%95%E4%B8%8E%E5%85%83%E7%BB%84%E7%9A%84%E7%BB%84%E5%90%88%E7%94%A8%E6%B3%95%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.8.4.</span> <span class="nav-text">记录与元组的组合用法示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E5%8F%AF%E5%8F%98%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E6%99%AE%E9%80%9A%E7%BB%93%E6%9E%84%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">1.8.5.</span> <span class="nav-text">不可变数据结构与普通结构的比较</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%B0%E5%BD%95%E5%92%8C%E5%85%83%E7%BB%84%E7%9A%84%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.8.6.</span> <span class="nav-text">记录和元组的适用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#React%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86"><span class="nav-number">1.8.6.1.</span> <span class="nav-text">React状态管理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%AB%98%E6%95%88%E7%BC%93%E5%AD%98%E6%95%B0%E6%8D%AE"><span class="nav-number">1.8.6.2.</span> <span class="nav-text">高效缓存数据</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%BC%E5%90%88%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.8.7.</span> <span class="nav-text">综合示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%E4%B8%8E%E9%99%90%E5%88%B6"><span class="nav-number">1.8.8.</span> <span class="nav-text">注意事项与限制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%BC%E5%AE%B9%E6%80%A7%E4%B8%8E-Polyfill"><span class="nav-number">1.8.9.</span> <span class="nav-text">兼容性与 Polyfill</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-6"><span class="nav-number">1.8.10.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Wong</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/uonlyliveonce" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;uonlyliveonce" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:u_only_live_once@outlook.com" title="E-Mail → mailto:u_only_live_once@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wong</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

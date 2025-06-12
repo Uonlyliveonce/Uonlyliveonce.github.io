@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"uonlyliveonce.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="记得上次更新是半年前了，转眼就到了18年的Q3了。回顾一下我的博客的空窗期，记得在年初的时候前东家孵化了个线上的视频约见的项目，自己也算是尽力在做。之后又对项目管理感兴趣学了些报了个项目管理的考试，然而在最后一门论文崩盘也是心塞。在工作学习中发现，自己接触的越多越会感觉到自己的渺小自己的不足，同时考完试之后跳了一家更大的公司也搬了家，在项目组里面默默无闻，尽力去做的更好去完善自己吧，咳咳，扯多了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CoreText跳坑">
+<meta property="og:url" content="https://uonlyliveonce.com/2018/07/05/2018_07_05_start_to_use_coretext/index.html">
+<meta property="og:site_name" content="Wong&#39;s Blog">
+<meta property="og:description" content="记得上次更新是半年前了，转眼就到了18年的Q3了。回顾一下我的博客的空窗期，记得在年初的时候前东家孵化了个线上的视频约见的项目，自己也算是尽力在做。之后又对项目管理感兴趣学了些报了个项目管理的考试，然而在最后一门论文崩盘也是心塞。在工作学习中发现，自己接触的越多越会感觉到自己的渺小自己的不足，同时考完试之后跳了一家更大的公司也搬了家，在项目组里面默默无闻，尽力去做的更好去完善自己吧，咳咳，扯多了">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://uonlyliveonce.com/images/CoreText/1.png">
+<meta property="og:image" content="https://developer.apple.com/library/archive/documentation/StringsTextFonts/Conceptual/TextAndWebiPhoneOS/Art/text_kit_arch_2x.png">
+<meta property="og:image" content="https://developer.apple.com/library/archive/documentation/StringsTextFonts/Conceptual/CoreText_Programming/Art/core_text_arch_2x.png">
+<meta property="article:published_time" content="2018-07-05T12:54:26.000Z">
+<meta property="article:modified_time" content="2025-06-12T02:53:53.537Z">
+<meta property="article:author" content="Wong">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="OC">
+<meta property="article:tag" content="Core Text">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://uonlyliveonce.com/images/CoreText/1.png">
+
+<link rel="canonical" href="https://uonlyliveonce.com/2018/07/05/2018_07_05_start_to_use_coretext/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>CoreText跳坑 | Wong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Wong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You only live once!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://uonlyliveonce.com/2018/07/05/2018_07_05_start_to_use_coretext/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Wong">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CoreText跳坑
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-07-05 20:54:26" itemprop="dateCreated datePublished" datetime="2018-07-05T20:54:26+08:00">2018-07-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mobile/" itemprop="url" rel="index"><span itemprop="name">Mobile</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>记得上次更新是半年前了，转眼就到了18年的Q3了。回顾一下我的博客的空窗期，记得在年初的时候前东家孵化了个线上的视频约见的项目，自己也算是尽力在做。之后又对项目管理感兴趣学了些报了个项目管理的考试，然而在最后一门论文崩盘也是心塞。在工作学习中发现，自己接触的越多越会感觉到自己的渺小自己的不足，同时考完试之后跳了一家更大的公司也搬了家，在项目组里面默默无闻，尽力去做的更好去完善自己吧，咳咳，扯多了，作为回归的第一篇还是得有点质量，总结一下CoreText的相关的东西，尽量用最少的文字讲更多的东西</p>
+</blockquote>
+<span id="more"></span>
+
+<h1 id="Core-Text"><a href="#Core-Text" class="headerlink" title="Core Text"></a>Core Text</h1><h2 id="OverView"><a href="#OverView" class="headerlink" title="OverView"></a>OverView</h2><p>Core Text提供了一个底层的编程接口，用于文本的布局和处理字体。Core Text布局引擎旨在实现高性能，易用性以及与Core Foundation的紧密集成。文本布局API提供高质量的排版，包括字符到字形的转换，带有连字，字距调整等。互补的Core Text字体技术提供自动字体替换，字体描述符和集合，轻松访问字体度量和字形数据以及许多其他功能。</p>
+<p>多线程中的注意事项：Core Text中的所有单个函数都是线程安全的。字体对象（<strong>CTFont</strong>，<strong>CTFontDescriptor</strong>和相关的对象）可以被多个任务、队列或线程同时使用。但是，布局对象（<strong>CTTypesetter</strong>，<strong>CTFramesetter</strong>，<strong>CTRun</strong>，<strong>CTLine</strong>，<strong>CTFrame</strong>和关联对象）应该在单个操作，工作队列或线程中使用。</p>
+<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p><span id = "1-2-1"></span></p>
+<h3 id="坐标系相关"><a href="#坐标系相关" class="headerlink" title="坐标系相关"></a>坐标系相关</h3><p>我们如果不做任何转换的话我们应该绘制的是这个样子的</p>
+<p><img src="/images/CoreText/1.png" alt="1.png"></p>
+<p>可能图有点小，大致就是y轴反向的样子，因为<code>Core Text</code>期初是<code>OS X</code>系统上面的底层库，y轴为向上的方向，原点坐标是在左下，而<code>iOS</code>的原点坐标是在左上角的，y轴正好是反方向</p>
+<h3 id="Core-Text相关概念"><a href="#Core-Text相关概念" class="headerlink" title="Core Text相关概念"></a>Core Text相关概念</h3><p>今天我们尽量不去涉及<strong>Text Kit</strong>相关的东西，我们只是借用一下图，<strong>Text Kit</strong>是对<strong>Core Text</strong>的更高级的封装。</p>
+<p><img src="https://developer.apple.com/library/archive/documentation/StringsTextFonts/Conceptual/TextAndWebiPhoneOS/Art/text_kit_arch_2x.png"></p>
+<p>如下图我们可以了解到<strong>Core Text</strong>的形成层次结构，最上层的是<code>CTFramesetter</code>工厂对象<code>CTFramesetterRef</code>可以理解为负责一个区域的图文绘制的对象，随后这个工厂对象会根据属性字符串去调用<code>CTTypesetter</code>对象去做排版相关的操作，同时根据属性字符串<code>CTFramesetter</code>对象生成若干<code>CTFrame</code>段落对象，每个段落对象又生成若干的<code>CTLine</code>对象可以理解为每个段落中的行的对象，最后每个<code>CTLine</code>行对象中又生成若干<code>CTRun</code>字形运行时对象，每个对象里面的每个字形都有相同的属性，比如一行6个字里面<code>cccccc</code>，每个字母都不一样的颜色那这个<code>CTLine</code>对象就有6个<code>CTRun</code>对象</p>
+<p><img src="https://developer.apple.com/library/archive/documentation/StringsTextFonts/Conceptual/CoreText_Programming/Art/core_text_arch_2x.png"></p>
+<p><a target="_blank" rel="noopener" href="https://developer.apple.com/library/archive/documentation/StringsTextFonts/Conceptual/TextAndWebiPhoneOS/Introduction/Introduction.html">可以看相关的文档做更深入了解</a></p>
+<p><a target="_blank" rel="noopener" href="https://developer.apple.com/library/archive/documentation/StringsTextFonts/Conceptual/CoreText_Programming/Overview/Overview.html">还有这里</a></p>
+<h2 id="基本Class"><a href="#基本Class" class="headerlink" title="基本Class"></a>基本Class</h2><h3 id="CTFont"><a href="#CTFont" class="headerlink" title="CTFont"></a>CTFont</h3><p><code>CTFont</code>用来表示<code>Core Text</code>字体对象。字体对象表示应用程序的字体，<code>CTFont</code>提供对字体描述的访问，例如磅值，变换矩阵属性和其他属性。字体提供了相对于彼此布置字形的帮助，并用于在图形上下文中绘制时设置字体。</p>
+<h3 id="CTFontCollection"><a href="#CTFontCollection" class="headerlink" title="CTFontCollection"></a>CTFontCollection</h3><p><code>CTFontCollection</code>用来表示字体描述对象集合，即一组字体合成的单个对象。</p>
+<h3 id="CTFontDescriptor"><a href="#CTFontDescriptor" class="headerlink" title="CTFontDescriptor"></a>CTFontDescriptor</h3><p><code>CTFontDescriptor</code>用来表示字体描述对象，可以指定字体的属性字典（例如名称，磅值和变体）。</p>
+<h3 id="CTFrame"><a href="#CTFrame" class="headerlink" title="CTFrame"></a>CTFrame</h3><p><code>CTFrame</code>用来表示包含多行文本的框架。帧对象是由框架集对象执行的文本框架处理产生的输出。</p>
+<h3 id="CTFramesetter"><a href="#CTFramesetter" class="headerlink" title="CTFramesetter"></a>CTFramesetter</h3><p><code>CTFramesetter</code>类型用于生成CTFrame对象。CTFramesetter是CTFrame对象的对象工厂。</p>
+<h3 id="CTGlyphInfo"><a href="#CTGlyphInfo" class="headerlink" title="CTGlyphInfo"></a>CTGlyphInfo</h3><p><code>CTGlyphInfo</code>类型让你可以覆盖字体从Unicode到字形ID的指定映射。</p>
+<h3 id="CTLine"><a href="#CTLine" class="headerlink" title="CTLine"></a>CTLine</h3><p><code>CTLine</code>用来表示一行文本。</p>
+<h3 id="CTParagraphStyle"><a href="#CTParagraphStyle" class="headerlink" title="CTParagraphStyle"></a>CTParagraphStyle</h3><p><code>CTParagraphStyle</code>用来表示属性字符串中的段落或标尺属性对象。</p>
+<h3 id="CTRun"><a href="#CTRun" class="headerlink" title="CTRun"></a>CTRun</h3><p><code>CTRun</code>用来表示字形运行，它是一组拥有相同属性和方向的连续字形。</p>
+<h3 id="CTRunDelegate"><a href="#CTRunDelegate" class="headerlink" title="CTRunDelegate"></a>CTRunDelegate</h3><p><code>CTRunDelegate </code>用来表示一个运行代理，其被分配到一个运行（属性范围），以控制印刷性状例如字的向上偏移量，字的向下偏移量，和字宽。</p>
+<h3 id="CTTextTab"><a href="#CTTextTab" class="headerlink" title="CTTextTab"></a>CTTextTab</h3><p><code>CTTextTab</code>用来表示段落样式中的选项卡，存储对齐类型和位置。</p>
+<h3 id="CTTypesetter"><a href="#CTTypesetter" class="headerlink" title="CTTypesetter"></a>CTTypesetter</h3><p><code>CTTypesetter</code>用来表示排版器，它执行行布局。</p>
+<p><a target="_blank" rel="noopener" href="https://developer.apple.com/documentation/coretext?language=objc">查看详细文档</a></p>
+<h1 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h1><h2 id="简单的绘制文字"><a href="#简单的绘制文字" class="headerlink" title="简单的绘制文字"></a>简单的绘制文字</h2><p>因为<code>Core Text</code>底层是使用<code>Core Graphics</code>来绘制的，我们要在<code>UIView</code>的<code>drawRect</code>中写相关的代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">//1</span><br><span class="line">CGContextRef context = UIGraphicsGetCurrentContext();</span><br><span class="line"></span><br><span class="line">//2</span><br><span class="line">CGMutablePathRef path = CGPathCreateMutable();</span><br><span class="line">CGPathAddRect(path , NULL , self.bounds);</span><br><span class="line"></span><br><span class="line">//3</span><br><span class="line">CGContextSetTextMatrix(context, CGAffineTransformIdentity);</span><br><span class="line">CGContextTranslateCTM(context , 0, self.bounds.size.height);</span><br><span class="line">CGContextScaleCTM(context, 1.0, -1.0);</span><br><span class="line"></span><br><span class="line">//4.</span><br><span class="line">NSAttributedString *att = ...;</span><br><span class="line"></span><br><span class="line">//5.</span><br><span class="line">CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)att);</span><br><span class="line"></span><br><span class="line">//6.</span><br><span class="line">CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, [att length]), path , NULL);</span><br><span class="line"></span><br><span class="line">//7.1</span><br><span class="line">CTFrameDraw(frame, context);</span><br><span class="line">//7.2</span><br><span class="line">CFArrayRef lines = CTFrameGetLines(frame);</span><br><span class="line">CFIndex lineNumber =  CFArrayGetCount(lines);</span><br><span class="line">CGPoint lineOrigins[lineNumber];</span><br><span class="line">CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins);</span><br><span class="line">for (int i = 0 ; i &lt; lineNumber; i++) &#123;</span><br><span class="line">	CTLineRef line = CFArrayGetValueAtIndex(lines, i);</span><br><span class="line">	CGContextSetTextPosition(context, lineOrigins[i].x, lineOrigins[i].y);</span><br><span class="line">	CTLineDraw(line , context);</span><br><span class="line">&#125;</span><br><span class="line">//7.3</span><br><span class="line">CFArrayRef lines = CTFrameGetLines(frame);</span><br><span class="line">CFIndex lineNumber =  CFArrayGetCount(lines);</span><br><span class="line">CGPoint lineOrigins[lineNumber];</span><br><span class="line">CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins);</span><br><span class="line">for (int i = 0 ; i &lt; CFArrayGetCount(lines); i++) &#123;</span><br><span class="line">	CTLineRef line = CFArrayGetValueAtIndex(lines, i);</span><br><span class="line">	CGContextSetTextPosition(context, lineOrigins[i].x, lineOrigins[i].y);</span><br><span class="line">	CFArrayRef runs = CTLineGetGlyphRuns(line);</span><br><span class="line">	CFIndex runNumber = CFArrayGetCount(runs);</span><br><span class="line">	for (int j = 0; j &lt; runNumber; j++) &#123;</span><br><span class="line">		CTRunRef run = CFArrayGetValueAtIndex(runs, j);</span><br><span class="line">		CTRunDraw(run, context, CFRangeMake(0, 0));</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//8</span><br><span class="line">CFRelease(path);</span><br><span class="line">CFRelease(framesetter);</span><br><span class="line">CFRelease(frame);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="代码详解"><a href="#代码详解" class="headerlink" title="代码详解"></a>代码详解</h2><h3 id="1"><a href="#1" class="headerlink" title="1"></a>1</h3><p>应该不用过多的解释，就是因为<code>drawRect</code>方法内部是由<code>Core Graphics</code>来做绘制任务的，再次可以取到当前绘制的上下文对象<code>CGContextRef</code>。虽然在其他的地方可以自己去创建<code>CGContextRef</code>上下文对象，然后自己去绘制，然后再释放，但系统在<code>drawRect</code>绘制方法的时候会压栈进去一个系统创建的<code>CGContextRef</code>上下文对象，我们为什么不去用呢，毕竟写<code>Core Graphics</code>的代码也是很刺激，如果动态性很强建议不要在<code>drawRect</code>中重写相关的代码，因为一旦重写了这个方法系统会自动给你分配一块内存去做绘制任务，大家可以使用断点打印一下<code>self.layer.contents</code>，当没有实现<code>drawRect</code>方法的时候是<code>nil</code></p>
+<p><strong>咳咳，跑题了，大家可以看下面两个博客简单了解一下</strong></p>
+<p><a target="_blank" rel="noopener" href="https://objccn.io/issue-3-1/">绘制像素到屏幕上</a></p>
+<p><a target="_blank" rel="noopener" href="http://bihongbo.com/2016/01/03/memoryGhostdrawRect/">内存恶鬼drawRect(其实也不至于题目说的那么严重…)</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CGContextRef context = UIGraphicsGetCurrentContext();</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="2"><a href="#2" class="headerlink" title="2"></a>2</h3><p>这里我们可以对绘制区域做更细化的限制，如果<code>Core Graphcis</code>用着不习惯就用<code>UIBezierPath</code>来限制绘制区域吧，请注意这里面使用的仍然是系统坐标，如果需要绘制被排除的区域，需要使用系统坐标</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//初始化绘制的区域</span><br><span class="line">CGMutablePathRef path = CGPathCreateMutable();</span><br><span class="line">//绘制形状限制为矩形</span><br><span class="line">CGPathAddRect(path , NULL , self.bounds);</span><br></pre></td></tr></table></figure>
+
+<h3 id="3"><a href="#3" class="headerlink" title="3"></a>3</h3><p>坐标系相关概念如果还不是很理解可以去前面再看一下</p>
+<p><a href="#1-2-1" target="_self">灰机票</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//设置字形的变换矩阵不做图形变换</span><br><span class="line">CGContextSetTextMatrix(context, CGAffineTransformIdentity);</span><br><span class="line">//将画布向上平移相应的高度</span><br><span class="line">CGContextTranslateCTM(context, 0, self.bounds.size.height);</span><br><span class="line">//x轴缩放系数为1，y轴缩放系数为-1，以x轴为轴旋转180度</span><br><span class="line">CGContextScaleCTM(context, 1.0, -1.0);</span><br></pre></td></tr></table></figure>
+
+<h3 id="4"><a href="#4" class="headerlink" title="4"></a>4</h3><p>不解释</p>
+<h3 id="5"><a href="#5" class="headerlink" title="5"></a>5</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//初始化framesetter工厂对象</span><br><span class="line">CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)att);</span><br></pre></td></tr></table></figure>
+
+<h3 id="6"><a href="#6" class="headerlink" title="6"></a>6</h3><p>这也有多种写法，如果喜欢用<code>UIBezierPath</code>也可以</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, [att length]), path , NULL);</span><br></pre></td></tr></table></figure>
+
+<p>我们可以将 <strong>2</strong> 和 <strong>6</strong> 这样写</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">UIBezierPath * path = [UIBezierPath bezierPathWithRect:self.bounds];</span><br><span class="line">//注意，这里面使用的系统坐标</span><br><span class="line">UIBezierPath * cirlePath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(10, 200, 100, 100)];</span><br><span class="line">[path appendPath:cirlePath];</span><br><span class="line">CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, [att length]), path.CGPath, NULL);</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-1"><a href="#7-1" class="headerlink" title="7.1"></a>7.1</h3><p>这个时候绘制区域对象已经准备好了，如果没有其他操作的话就可以直接绘制到<code>self.layer</code>上面了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CTFrameDraw(frame, context);</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-2"><a href="#7-2" class="headerlink" title="7.2"></a>7.2</h3><p>但是有的时候我们需要对不同的行做操作，这个时候我们就要对CTLine分别做绘制了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">//获取CTLine数组</span><br><span class="line">CFArrayRef lines = CTFrameGetLines(frame);</span><br><span class="line">//获取CTLine对象数量</span><br><span class="line">CFIndex lineNumber =  CFArrayGetCount(lines);</span><br><span class="line">//初始化行原点数组</span><br><span class="line">CGPoint lineOrigins[lineNumber];</span><br><span class="line">//获取每行的原点</span><br><span class="line">CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins);</span><br><span class="line">for (int i = 0 ; i &lt; lineNumber; i++) &#123;</span><br><span class="line">	//获取行对象</span><br><span class="line">	CTLineRef line = CFArrayGetValueAtIndex(lines, i);</span><br><span class="line">	//设置行的绘制的原点</span><br><span class="line">	CGContextSetTextPosition(context, lineOrigins[i].x, lineOrigins[i].y);</span><br><span class="line">	//绘制一行的内容</span><br><span class="line">	CTLineDraw(line , context);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="7-3"><a href="#7-3" class="headerlink" title="7.3"></a>7.3</h3><p>同时我们有的时候要对每行的<code>CTRun</code>对象做不同的操作</p>
+<p>我们将<strong>7.2</strong>的最后的操作换成下面的代码就是遍历每行的<code>CTRun</code>进行绘制</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CFArrayRef runs = CTLineGetGlyphRuns(line);</span><br><span class="line">for (int j = 0; j &lt; CFArrayGetCount(runs); j++) &#123;</span><br><span class="line">	CTRunRef run = CFArrayGetValueAtIndex(runs, j);</span><br><span class="line">	CTRunDraw(run, context, CFRangeMake(0, 0));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="8"><a href="#8" class="headerlink" title="8"></a>8</h3><p>值得一提的就是，之前向系统申请的<code>Context</code>不需要释放，系统会在恰当的时机去释放</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CFRelease(path);</span><br><span class="line">CFRelease(framesetter);</span><br><span class="line">CFRelease(frame);</span><br></pre></td></tr></table></figure>
+
+<h3 id="简单介绍一下概念，具体项目中可以用到的功能持续更新"><a href="#简单介绍一下概念，具体项目中可以用到的功能持续更新" class="headerlink" title="简单介绍一下概念，具体项目中可以用到的功能持续更新~"></a>简单介绍一下概念，具体项目中可以用到的功能持续更新~</h3><p>随后我们会讲到图文混排、文字点击回调、文字点击高亮等相关操作</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/uonlyliveonce/CoreTextDemo">Demo</a></p>
+<p>英文水平贼渣的我看了好久英文文档和博客总结的，如果转载请附上链接<a href="https://uonlyliveonce.com/2018/07/05/2018_07_05_start_to_use_coretext/">https://uonlyliveonce.com/2018/07/05/2018_07_05_start_to_use_coretext/</a>，万分感谢</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/OC/" rel="tag"># OC</a>
+              <a href="/tags/Core-Text/" rel="tag"># Core Text</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/12/19/2017-12-19-communication_between_swift_and_rn/" rel="prev" title="Swift原生与RN通信的实现">
+      <i class="fa fa-chevron-left"></i> Swift原生与RN通信的实现
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/07/09/2018_07_09_coretext_attribute/" rel="next" title="CoreText图文混排">
+      CoreText图文混排 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Core-Text"><span class="nav-number">1.</span> <span class="nav-text">Core Text</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#OverView"><span class="nav-number">1.1.</span> <span class="nav-text">OverView</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">1.2.</span> <span class="nav-text">基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9D%90%E6%A0%87%E7%B3%BB%E7%9B%B8%E5%85%B3"><span class="nav-number">1.2.1.</span> <span class="nav-text">坐标系相关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Core-Text%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="nav-number">1.2.2.</span> <span class="nav-text">Core Text相关概念</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%ACClass"><span class="nav-number">1.3.</span> <span class="nav-text">基本Class</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CTFont"><span class="nav-number">1.3.1.</span> <span class="nav-text">CTFont</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CTFontCollection"><span class="nav-number">1.3.2.</span> <span class="nav-text">CTFontCollection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CTFontDescriptor"><span class="nav-number">1.3.3.</span> <span class="nav-text">CTFontDescriptor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CTFrame"><span class="nav-number">1.3.4.</span> <span class="nav-text">CTFrame</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CTFramesetter"><span class="nav-number">1.3.5.</span> <span class="nav-text">CTFramesetter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CTGlyphInfo"><span class="nav-number">1.3.6.</span> <span class="nav-text">CTGlyphInfo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CTLine"><span class="nav-number">1.3.7.</span> <span class="nav-text">CTLine</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CTParagraphStyle"><span class="nav-number">1.3.8.</span> <span class="nav-text">CTParagraphStyle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CTRun"><span class="nav-number">1.3.9.</span> <span class="nav-text">CTRun</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CTRunDelegate"><span class="nav-number">1.3.10.</span> <span class="nav-text">CTRunDelegate</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CTTextTab"><span class="nav-number">1.3.11.</span> <span class="nav-text">CTTextTab</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CTTypesetter"><span class="nav-number">1.3.12.</span> <span class="nav-text">CTTypesetter</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Demo"><span class="nav-number">2.</span> <span class="nav-text">Demo</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E7%9A%84%E7%BB%98%E5%88%B6%E6%96%87%E5%AD%97"><span class="nav-number">2.1.</span> <span class="nav-text">简单的绘制文字</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3"><span class="nav-number">2.2.</span> <span class="nav-text">代码详解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1"><span class="nav-number">2.2.1.</span> <span class="nav-text">1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2"><span class="nav-number">2.2.2.</span> <span class="nav-text">2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3"><span class="nav-number">2.2.3.</span> <span class="nav-text">3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4"><span class="nav-number">2.2.4.</span> <span class="nav-text">4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5"><span class="nav-number">2.2.5.</span> <span class="nav-text">5</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6"><span class="nav-number">2.2.6.</span> <span class="nav-text">6</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1"><span class="nav-number">2.2.7.</span> <span class="nav-text">7.1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-2"><span class="nav-number">2.2.8.</span> <span class="nav-text">7.2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-3"><span class="nav-number">2.2.9.</span> <span class="nav-text">7.3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8"><span class="nav-number">2.2.10.</span> <span class="nav-text">8</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D%E4%B8%80%E4%B8%8B%E6%A6%82%E5%BF%B5%EF%BC%8C%E5%85%B7%E4%BD%93%E9%A1%B9%E7%9B%AE%E4%B8%AD%E5%8F%AF%E4%BB%A5%E7%94%A8%E5%88%B0%E7%9A%84%E5%8A%9F%E8%83%BD%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0"><span class="nav-number">2.2.11.</span> <span class="nav-text">简单介绍一下概念，具体项目中可以用到的功能持续更新~</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Wong</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/uonlyliveonce" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;uonlyliveonce" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:u_only_live_once@outlook.com" title="E-Mail → mailto:u_only_live_once@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wong</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
