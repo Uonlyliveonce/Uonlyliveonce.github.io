@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"uonlyliveonce.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="精益制造的理解和敏捷的对比最近接触比较多供应链的知识，对于互联网数字化产品和实体制造企业的运营方式有一些思考">
+<meta property="og:type" content="article">
+<meta property="og:title" content="精益制造的理解和敏捷的对比">
+<meta property="og:url" content="https://uonlyliveonce.com/2025/03/08/2025_03_08_lean_and_scrum/index.html">
+<meta property="og:site_name" content="Wong&#39;s Blog">
+<meta property="og:description" content="精益制造的理解和敏捷的对比最近接触比较多供应链的知识，对于互联网数字化产品和实体制造企业的运营方式有一些思考">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-03-08T11:59:51.000Z">
+<meta property="article:modified_time" content="2025-06-17T03:58:55.585Z">
+<meta property="article:author" content="Wong">
+<meta property="article:tag" content="Supply Chain">
+<meta property="article:tag" content="Lean">
+<meta property="article:tag" content="Scrum">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://uonlyliveonce.com/2025/03/08/2025_03_08_lean_and_scrum/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>精益制造的理解和敏捷的对比 | Wong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Wong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">You only live once!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://uonlyliveonce.com/2025/03/08/2025_03_08_lean_and_scrum/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Wong">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          精益制造的理解和敏捷的对比
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-03-08 19:59:51" itemprop="dateCreated datePublished" datetime="2025-03-08T19:59:51+08:00">2025-03-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Supply-Chain/" itemprop="url" rel="index"><span itemprop="name">Supply Chain</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="精益制造的理解和敏捷的对比"><a href="#精益制造的理解和敏捷的对比" class="headerlink" title="精益制造的理解和敏捷的对比"></a>精益制造的理解和敏捷的对比</h1><p>最近接触比较多供应链的知识，对于互联网数字化产品和实体制造企业的运营方式有一些思考</p>
+<span id="more"></span>
+
+<h2 id="精益的核心概念"><a href="#精益的核心概念" class="headerlink" title="精益的核心概念"></a>精益的核心概念</h2><p>精益（Lean）最早起源于丰田生产方式（TPS，Toyota Production System），核心目标是最大化价值、最小化浪费，追求 <strong>用最少的资源，创造最大的客户价值</strong> 。</p>
+<h3 id="精益的五大原则"><a href="#精益的五大原则" class="headerlink" title="精益的五大原则"></a>精益的五大原则</h3><ol>
+<li><p>确定价值（Value），明确什么是真正对客户有价值的产品和服务。</p>
+</li>
+<li><p>价值流（Value Stream），全流程梳理，从原材料到交付客户，识别每一个环节，区分哪些增值、哪些是浪费。</p>
+</li>
+<li><p>流动（Flow），让增值活动顺畅无阻，减少等待、搬运、批量等非增值环节，实现 <strong>单件流</strong> 。</p>
+</li>
+<li><p>拉动（Pull），按需生产、按需补货，减少库存和过度生产， <strong>由客户需求拉动生产</strong> 。</p>
+</li>
+<li><p>追求完美（Perfection），持续改进，每次都比上一次更好，精益永无止境。</p>
+</li>
+</ol>
+<h3 id="精益中的-浪费"><a href="#精益中的-浪费" class="headerlink" title="精益中的 浪费"></a>精益中的 <strong>浪费</strong></h3><ul>
+<li><p>过量生产</p>
+</li>
+<li><p>等待</p>
+</li>
+<li><p>多余运输</p>
+</li>
+<li><p>不必要的加工</p>
+</li>
+<li><p>库存</p>
+</li>
+<li><p>多余动作</p>
+</li>
+<li><p>缺陷/返工</p>
+</li>
+<li><p>人才浪费（未充分发挥员工潜力）</p>
+</li>
+</ul>
+<h2 id="快消行业中的精益实践"><a href="#快消行业中的精益实践" class="headerlink" title="快消行业中的精益实践"></a>快消行业中的精益实践</h2><p>快消行业（FMCG）如食品饮料、日化、个人护理、包装等，市场竞争极其激烈，对供应链、生产和交付的效率要求很高。精益方法可以在多个环节应用，提升效率、降低成本、提升客户满意度。</p>
+<h3 id="供应链与生产端"><a href="#供应链与生产端" class="headerlink" title="供应链与生产端"></a>供应链与生产端</h3><h4 id="VSM（价值流图）分析"><a href="#VSM（价值流图）分析" class="headerlink" title="VSM（价值流图）分析"></a>VSM（价值流图）分析</h4><ul>
+<li>实践：通过绘制价值流图，识别从原材料采购、生产、包装、到分销的各个环节，找出瓶颈和浪费环节（比如过多的库存、频繁的换线导致的等待等）。</li>
+<li>效果：优化排产，缩短从下单到交付的周期。</li>
+</ul>
+<h4 id="拉动式补货"><a href="#拉动式补货" class="headerlink" title="拉动式补货"></a>拉动式补货</h4><ul>
+<li>实践：比如用看板（Kanban）系统，只有当超市端、经销商有实际销售和库存消耗时，工厂才补货，减少了 <strong>押货</strong> 压力和呆滞库存。</li>
+<li>效果：降低资金占用和仓储成本，提高周转率。</li>
+</ul>
+<h4 id="SMED（快速换模）"><a href="#SMED（快速换模）" class="headerlink" title="SMED（快速换模）"></a>SMED（快速换模）</h4><ul>
+<li>实践：快消行业SKU多、换线频繁，通过推行SMED（Single-Minute Exchange of Die，快速换模），将换线时间由数小时缩短到十几分钟。</li>
+<li>效果：柔性生产能力增强，适应市场小批量、多品种的需求。</li>
+</ul>
+<h4 id="5S与可视化管理"><a href="#5S与可视化管理" class="headerlink" title="5S与可视化管理"></a>5S与可视化管理</h4><ul>
+<li>实践：生产现场推进5S（整理、整顿、清扫、清洁、素养），明确物料、工具位置，减少寻找和搬运的浪费。</li>
+<li>效果：生产现场整洁，提升员工士气和操作效率。</li>
+</ul>
+<h3 id="物流与分销端"><a href="#物流与分销端" class="headerlink" title="物流与分销端"></a>物流与分销端</h3><h4 id="路线优化"><a href="#路线优化" class="headerlink" title="路线优化"></a>路线优化</h4><ul>
+<li>实践：通过数据分析优化配送路线，减少重复运输和空驶，提升车辆利用率。</li>
+<li>效果：降低配送成本，提高响应速度。</li>
+</ul>
+<h4 id="与零售终端合作"><a href="#与零售终端合作" class="headerlink" title="与零售终端合作"></a>与零售终端合作</h4><ul>
+<li>实践：共享销售数据，根据实际销售情况动态调整发货计划，实现 <strong>卖多少送多少</strong> 。</li>
+<li>效果：降低渠道库存，提升终端补货速度。</li>
+</ul>
+<h3 id="管理与文化"><a href="#管理与文化" class="headerlink" title="管理与文化"></a>管理与文化</h3><h4 id="持续改进（Kaizen）"><a href="#持续改进（Kaizen）" class="headerlink" title="持续改进（Kaizen）"></a>持续改进（Kaizen）</h4><ul>
+<li>实践：鼓励一线员工提出小改进建议，设立 <strong>合理化建议</strong> 激励制度。</li>
+<li>效果：从基层不断消除浪费，形成 <strong>全员改善</strong> 氛围。</li>
+</ul>
+<h4 id="标准化作业"><a href="#标准化作业" class="headerlink" title="标准化作业"></a>标准化作业</h4><ul>
+<li>实践：针对关键岗位、关键工序建立标准作业流程（SOP），减少人为差异和失误。</li>
+<li>效果：确保产品质量稳定，便于新员工培训和快速上岗。</li>
+</ul>
+<h2 id="与敏捷的区别与结合"><a href="#与敏捷的区别与结合" class="headerlink" title="与敏捷的区别与结合"></a>与敏捷的区别与结合</h2><ul>
+<li>敏捷更多应用在软件与创新型业务开发，强调快速迭代、客户反馈；</li>
+<li>精益则更偏向于 <strong>效率</strong> 和 <strong>浪费消除</strong> ，在实体产品生产和供应链管理中作用更大，但两者都强调以客户为中心、快速响应变化；</li>
+<li>快消行业中，两者结合，可以实现新产品开发（敏捷开发流程）+高效落地生产与供应链（精益生产流程）。</li>
+</ul>
+<h2 id="了解到的快消巨头的案例"><a href="#了解到的快消巨头的案例" class="headerlink" title="了解到的快消巨头的案例"></a>了解到的快消巨头的案例</h2><ul>
+<li>宝洁（P&amp;G）：通过精益生产，大幅压缩供应链库存，推行 <strong>供应链可视化</strong> 项目，提升对市场波动的响应速度。</li>
+<li>可口可乐：在中国市场大量应用拉动式补货+柔性生产，跟随消费趋势快速调整产品和包装。</li>
+</ul>
+<h2 id="敏捷如何在精益快消公司中良好实践"><a href="#敏捷如何在精益快消公司中良好实践" class="headerlink" title="敏捷如何在精益快消公司中良好实践"></a>敏捷如何在精益快消公司中良好实践</h2><h3 id="典型困境，精益高度优化但缺乏灵活性"><a href="#典型困境，精益高度优化但缺乏灵活性" class="headerlink" title="典型困境，精益高度优化但缺乏灵活性"></a>典型困境，精益高度优化但缺乏灵活性</h3><p>快消巨头（如宝洁、联合利华、可口可乐等）在大规模生产、供应链和成本控制上极度推崇 <strong>精益</strong> ，因此企业内部常见，这些特质，能保证大规模低成本交付，但难以快速应对新市场、消费变化和创新需求。</p>
+<ul>
+<li>高度标准化流程</li>
+<li>高效但 <strong>僵化</strong> 的SOP</li>
+<li>成本与效率驱动压倒一切</li>
+<li>变革周期长，流程变更阻力大</li>
+</ul>
+<h3 id="敏捷可能给精益型快消企业带来的价值"><a href="#敏捷可能给精益型快消企业带来的价值" class="headerlink" title="敏捷可能给精益型快消企业带来的价值"></a>敏捷可能给精益型快消企业带来的价值</h3><h4 id="加速创新和新产品开发（NPD）"><a href="#加速创新和新产品开发（NPD）" class="headerlink" title="加速创新和新产品开发（NPD）"></a>加速创新和新产品开发（NPD）</h4><ul>
+<li>原来困境：新品上市流程长，审批复杂，市场机会稍纵即逝。</li>
+<li>敏捷实践：引入Scrum或迭代开发，用小团队跨部门（市场、研发、供应链、设计、财务），进行 <strong>最小可行产品（MVP）</strong> 的快速测试。例如，宝洁为新品洗发水做小批量测试，几周内迭代调整配方和包装，快速获得市场反馈后再规模化生产。</li>
+</ul>
+<h4 id="打破部门壁垒，提升协同"><a href="#打破部门壁垒，提升协同" class="headerlink" title="打破部门壁垒，提升协同"></a>打破部门壁垒，提升协同</h4><ul>
+<li>原来困境：精益下的各部门 <strong>只做自己的KPI</strong> ，信息壁垒多，容易推诿。</li>
+<li>敏捷实践：多部门 <strong>站会</strong>，用 <strong>看板（Kanban Board）</strong> 拉通任务和瓶颈，大家围绕项目目标协作，而不是各自为政。</li>
+</ul>
+<h4 id="快速应对市场变化"><a href="#快速应对市场变化" class="headerlink" title="快速应对市场变化"></a>快速应对市场变化</h4><ul>
+<li>原来困境：市场突发事件（如疫情、竞争新品上市）难以即时调整生产和渠道计划。</li>
+<li>敏捷实践：团队可以一周一小迭代，月度小复盘，迅速调整计划和策略。联合利华在部分市场已用 <strong>敏捷战队</strong> 响应电商平台的临时促销，甚至当天调整生产排产和发货优先级。</li>
+</ul>
+<h4 id="更好结合数字化转型"><a href="#更好结合数字化转型" class="headerlink" title="更好结合数字化转型"></a>更好结合数字化转型</h4><p>精益强调标准、数据驱动，敏捷强调快速反馈、灵活试错。结合后可以推动 <strong>数字精益</strong> ，用数据即时反馈，推动持续优化和创新。</p>
+<h3 id="敏捷实践典型一些做法举例"><a href="#敏捷实践典型一些做法举例" class="headerlink" title="敏捷实践典型一些做法举例"></a>敏捷实践典型一些做法举例</h3><ol>
+<li>新品孵化：设立独立的创新小组（Incubator），用敏捷方法做小批量实验，跳出大体系流程，迭代创新。</li>
+<li>营销团队：用敏捷Sprints快速做A/B测试、内容策划与上线，快速看到市场反应。</li>
+<li>敏捷供应链：如 <strong>敏捷制造单元</strong> ，可根据前端销售和预测快速切换生产线，响应市场定制化需求。</li>
+<li>数据反馈：构建敏捷数据分析团队，实时捕捉消费趋势，驱动新品和运营调整。</li>
+</ol>
+<h2 id="只用精益而忽视敏捷带来的困境"><a href="#只用精益而忽视敏捷带来的困境" class="headerlink" title="只用精益而忽视敏捷带来的困境"></a>只用精益而忽视敏捷带来的困境</h2><ol>
+<li>创新能力受限：只追求流程最优和成本最低，创新尝试被视为 <strong>浪费</strong> （因为创新往往失败率高、试错成本高），导致新品研发慢，市场敏锐度下降。</li>
+<li>市场变化响应滞后：面对消费趋势和渠道变化，标准化大生产很难快速调整。比如小众爆款、网红单品出来后，老牌快消巨头往往反应慢于新锐品牌。</li>
+<li>员工活力和主动性不足：精益过度强调标准和纪律，一线和中层员工缺乏 <strong>试错</strong>  <strong>提出新思路</strong> 的空间，易出现 <strong>只做本职、不多事</strong> 的氛围。</li>
+<li>数字化变革推进缓慢：精益更强调流程优化和物理现场改善，对于数字化、智能化和数据驱动的创新响应慢，容易被新型互联网快消企业弯道超车。</li>
+<li>容易错失新市场机遇：在品类碎片化、用户需求多元化的时代，靠流程与规模取胜的快消巨头，面对 <strong>个性化、小众化、网红化</strong> 消费风潮，往往顾此失彼，错失机会。</li>
+</ol>
+<h2 id="如何结合敏捷与精益"><a href="#如何结合敏捷与精益" class="headerlink" title="如何结合敏捷与精益"></a>如何结合敏捷与精益</h2><p>目前比较流行一些结合方式，不过需要一些部门的支持，以及打造开放的环境</p>
+<ul>
+<li>双轮驱动：大规模、核心品类走精益路线；创新业务、新渠道、跨界新品用敏捷模式孵化。</li>
+<li>流程弹性：为创新项目设 <strong>绿色通道</strong> ，授权更高、流程更简；成熟业务保持高效标准化。</li>
+<li>文化融合：既有 <strong>零浪费、极致效率</strong> 的精益文化，也鼓励 <strong>试错、快速反应</strong> 的敏捷氛围。</li>
+<li>数字化赋能：用数字工具提升精益执行效率，同时用实时数据驱动敏捷试错与创新决策。</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>精益其实不只是工具，更是一种 <strong>持续改进、追求最好</strong> 的管理思路。快消行业用精益能让供应链、生产、销售都变得又快又省又稳。不过，精益虽然效率高、成本低、质量好，但容易让企业变得死板、创新慢，反应也没那么快。而敏捷正好可以补这个短板，让企业能更快抓住市场机会、更容易创新、团队也更有活力。所以，精益和敏捷结合起来，既能保证企业稳扎稳打，又能在激烈的市场竞争中不断突破，不容易被淘汰。</p>
+<blockquote>
+<p>引用及参考：<br><a target="_blank" rel="noopener" href="https://www.researchgate.net/publication/220249734_Inventory_Optimization_at_Procter_Gamble_Achieving_Real_Benefits_Through_User_Adoption_of_Inventory_Tools">Inventory Optimization at Procter &amp; Gamble: Achieving Real Benefits Through User Adoption of Inventory Tools</a><br><a target="_blank" rel="noopener" href="https://www.sprintzeal.com/blog/coca-cola-project-management-strategy">Coca-Cola Project Management Strategy and Key Insights</a><br><a target="_blank" rel="noopener" href="https://supplychaindigital.com/operations/unilever-combines-lean-agile-scm">How Unilever is Combining Lean and Agile Approaches to SCM</a><br><a target="_blank" rel="noopener" href="https://marketlogicsoftware.com/blog/lean-agile-insights-generation-coca-cola">Lean and agile insights generation at Coca-Cola</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Supply-Chain/" rel="tag"># Supply Chain</a>
+              <a href="/tags/Lean/" rel="tag"># Lean</a>
+              <a href="/tags/Scrum/" rel="tag"># Scrum</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/07/28/2024_07_28_what_is_new_in_es_2024/" rel="prev" title="ECMAScript 2024（ES15）都更新了什么？">
+      <i class="fa fa-chevron-left"></i> ECMAScript 2024（ES15）都更新了什么？
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/04/04/2025_04_04_what_is_new_in_swift_6_1%20copy/" rel="next" title="Swift 6.1 有哪些新变化？">
+      Swift 6.1 有哪些新变化？ <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B2%BE%E7%9B%8A%E5%88%B6%E9%80%A0%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8C%E6%95%8F%E6%8D%B7%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="nav-number">1.</span> <span class="nav-text">精益制造的理解和敏捷的对比</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B2%BE%E7%9B%8A%E7%9A%84%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">精益的核心概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B2%BE%E7%9B%8A%E7%9A%84%E4%BA%94%E5%A4%A7%E5%8E%9F%E5%88%99"><span class="nav-number">1.1.1.</span> <span class="nav-text">精益的五大原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B2%BE%E7%9B%8A%E4%B8%AD%E7%9A%84-%E6%B5%AA%E8%B4%B9"><span class="nav-number">1.1.2.</span> <span class="nav-text">精益中的 浪费</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%AB%E6%B6%88%E8%A1%8C%E4%B8%9A%E4%B8%AD%E7%9A%84%E7%B2%BE%E7%9B%8A%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.2.</span> <span class="nav-text">快消行业中的精益实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%9B%E5%BA%94%E9%93%BE%E4%B8%8E%E7%94%9F%E4%BA%A7%E7%AB%AF"><span class="nav-number">1.2.1.</span> <span class="nav-text">供应链与生产端</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#VSM%EF%BC%88%E4%BB%B7%E5%80%BC%E6%B5%81%E5%9B%BE%EF%BC%89%E5%88%86%E6%9E%90"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">VSM（价值流图）分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8B%89%E5%8A%A8%E5%BC%8F%E8%A1%A5%E8%B4%A7"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">拉动式补货</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SMED%EF%BC%88%E5%BF%AB%E9%80%9F%E6%8D%A2%E6%A8%A1%EF%BC%89"><span class="nav-number">1.2.1.3.</span> <span class="nav-text">SMED（快速换模）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5S%E4%B8%8E%E5%8F%AF%E8%A7%86%E5%8C%96%E7%AE%A1%E7%90%86"><span class="nav-number">1.2.1.4.</span> <span class="nav-text">5S与可视化管理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%A9%E6%B5%81%E4%B8%8E%E5%88%86%E9%94%80%E7%AB%AF"><span class="nav-number">1.2.2.</span> <span class="nav-text">物流与分销端</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B7%AF%E7%BA%BF%E4%BC%98%E5%8C%96"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">路线优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8E%E9%9B%B6%E5%94%AE%E7%BB%88%E7%AB%AF%E5%90%88%E4%BD%9C"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">与零售终端合作</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%A1%E7%90%86%E4%B8%8E%E6%96%87%E5%8C%96"><span class="nav-number">1.2.3.</span> <span class="nav-text">管理与文化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8C%81%E7%BB%AD%E6%94%B9%E8%BF%9B%EF%BC%88Kaizen%EF%BC%89"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">持续改进（Kaizen）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%87%E5%87%86%E5%8C%96%E4%BD%9C%E4%B8%9A"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">标准化作业</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8E%E6%95%8F%E6%8D%B7%E7%9A%84%E5%8C%BA%E5%88%AB%E4%B8%8E%E7%BB%93%E5%90%88"><span class="nav-number">1.3.</span> <span class="nav-text">与敏捷的区别与结合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%86%E8%A7%A3%E5%88%B0%E7%9A%84%E5%BF%AB%E6%B6%88%E5%B7%A8%E5%A4%B4%E7%9A%84%E6%A1%88%E4%BE%8B"><span class="nav-number">1.4.</span> <span class="nav-text">了解到的快消巨头的案例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%8F%E6%8D%B7%E5%A6%82%E4%BD%95%E5%9C%A8%E7%B2%BE%E7%9B%8A%E5%BF%AB%E6%B6%88%E5%85%AC%E5%8F%B8%E4%B8%AD%E8%89%AF%E5%A5%BD%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.5.</span> <span class="nav-text">敏捷如何在精益快消公司中良好实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B8%E5%9E%8B%E5%9B%B0%E5%A2%83%EF%BC%8C%E7%B2%BE%E7%9B%8A%E9%AB%98%E5%BA%A6%E4%BC%98%E5%8C%96%E4%BD%86%E7%BC%BA%E4%B9%8F%E7%81%B5%E6%B4%BB%E6%80%A7"><span class="nav-number">1.5.1.</span> <span class="nav-text">典型困境，精益高度优化但缺乏灵活性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%8F%E6%8D%B7%E5%8F%AF%E8%83%BD%E7%BB%99%E7%B2%BE%E7%9B%8A%E5%9E%8B%E5%BF%AB%E6%B6%88%E4%BC%81%E4%B8%9A%E5%B8%A6%E6%9D%A5%E7%9A%84%E4%BB%B7%E5%80%BC"><span class="nav-number">1.5.2.</span> <span class="nav-text">敏捷可能给精益型快消企业带来的价值</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%A0%E9%80%9F%E5%88%9B%E6%96%B0%E5%92%8C%E6%96%B0%E4%BA%A7%E5%93%81%E5%BC%80%E5%8F%91%EF%BC%88NPD%EF%BC%89"><span class="nav-number">1.5.2.1.</span> <span class="nav-text">加速创新和新产品开发（NPD）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%93%E7%A0%B4%E9%83%A8%E9%97%A8%E5%A3%81%E5%9E%92%EF%BC%8C%E6%8F%90%E5%8D%87%E5%8D%8F%E5%90%8C"><span class="nav-number">1.5.2.2.</span> <span class="nav-text">打破部门壁垒，提升协同</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E5%BA%94%E5%AF%B9%E5%B8%82%E5%9C%BA%E5%8F%98%E5%8C%96"><span class="nav-number">1.5.2.3.</span> <span class="nav-text">快速应对市场变化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9B%B4%E5%A5%BD%E7%BB%93%E5%90%88%E6%95%B0%E5%AD%97%E5%8C%96%E8%BD%AC%E5%9E%8B"><span class="nav-number">1.5.2.4.</span> <span class="nav-text">更好结合数字化转型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%8F%E6%8D%B7%E5%AE%9E%E8%B7%B5%E5%85%B8%E5%9E%8B%E4%B8%80%E4%BA%9B%E5%81%9A%E6%B3%95%E4%B8%BE%E4%BE%8B"><span class="nav-number">1.5.3.</span> <span class="nav-text">敏捷实践典型一些做法举例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AA%E7%94%A8%E7%B2%BE%E7%9B%8A%E8%80%8C%E5%BF%BD%E8%A7%86%E6%95%8F%E6%8D%B7%E5%B8%A6%E6%9D%A5%E7%9A%84%E5%9B%B0%E5%A2%83"><span class="nav-number">1.6.</span> <span class="nav-text">只用精益而忽视敏捷带来的困境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E7%BB%93%E5%90%88%E6%95%8F%E6%8D%B7%E4%B8%8E%E7%B2%BE%E7%9B%8A"><span class="nav-number">1.7.</span> <span class="nav-text">如何结合敏捷与精益</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Wong</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">47</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/uonlyliveonce" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;uonlyliveonce" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:u_only_live_once@outlook.com" title="E-Mail → mailto:u_only_live_once@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wong</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
